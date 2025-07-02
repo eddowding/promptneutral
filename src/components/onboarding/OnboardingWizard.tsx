@@ -389,6 +389,7 @@ export const OnboardingWizard: React.FC = () => {
             )}
           </button>
         </div>
+        </div>
       </div>
     </ErrorBoundary>
   );
