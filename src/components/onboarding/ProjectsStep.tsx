@@ -161,6 +161,12 @@ export const ProjectsStep: React.FC<ProjectsStepProps> = ({
           Select a verified carbon offset project that aligns with your values. 
           All projects are certified by leading standards.
         </p>
+        {data.preferences.demoMode && (
+          <div className="mt-4 inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-full">
+            <div className="w-2 h-2 bg-blue-400 rounded-full mr-2"></div>
+            Demo Mode - These are sample projects for exploration
+          </div>
+        )}
       </div>
 
       {/* Project Type Filter */}

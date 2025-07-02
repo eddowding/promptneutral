@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff, ExternalLink, Check, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, ExternalLink, Check, AlertCircle, X, RefreshCw } from 'lucide-react';
 import { OnboardingData } from './OnboardingWizard';
+import { ApiValidationService, ValidationResult } from '../../services/apiValidation';
 
 interface ConnectServicesStepProps {
   data: OnboardingData;
@@ -52,19 +53,33 @@ export const ConnectServicesStep: React.FC<ConnectServicesStepProps> = ({
 }) => {
   const [showKeys, setShowKeys] = useState<Record<string, boolean>>({});
   const [validating, setValidating] = useState<Record<string, boolean>>({});
-  const [validated, setValidated] = useState<Record<string, boolean>>({});
+  const [validationResults, setValidationResults] = useState<Record<string, ValidationResult>>({});
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   const toggleKeyVisibility = (serviceId: string) => {
     setShowKeys(prev => ({ ...prev, [serviceId]: !prev[serviceId] }));
   };
 
   const updateServiceKey = (serviceId: keyof OnboardingData['services'], apiKey: string) => {
+    // Clear previous validation results when key changes
+    setValidationResults(prev => {
+      const newResults = { ...prev };
+      delete newResults[serviceId];
+      return newResults;
+    });
+    setValidationErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors[serviceId];
+      return newErrors;
+    });
+
     updateData({
       services: {
         ...data.services,
         [serviceId]: {
           apiKey,
           enabled: apiKey.length > 0,
+          validated: false,
         },
       },
     });
@@ -75,12 +90,102 @@ export const ConnectServicesStep: React.FC<ConnectServicesStepProps> = ({
     if (!apiKey) return;
 
     setValidating(prev => ({ ...prev, [serviceId]: true }));
+    setValidationErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors[serviceId];
+      return newErrors;
+    });
     
-    // Simulate API validation
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    setValidating(prev => ({ ...prev, [serviceId]: false }));
-    setValidated(prev => ({ ...prev, [serviceId]: true }));
+    try {
+      const result = await ApiValidationService.validateApiKey(serviceId, apiKey);
+      
+      setValidationResults(prev => ({ ...prev, [serviceId]: result }));
+      
+      if (result.isValid) {
+        // Update the service data with validation success
+        updateData({
+          services: {
+            ...data.services,
+            [serviceId]: {
+              ...data.services[serviceId]!,
+              validated: true,
+            },
+          },
+        });
+      } else {
+        setValidationErrors(prev => ({ 
+          ...prev, 
+          [serviceId]: result.error || 'Validation failed' 
+        }));
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Validation failed';
+      setValidationErrors(prev => ({ ...prev, [serviceId]: errorMessage }));
+      setValidationResults(prev => ({ 
+        ...prev, 
+        [serviceId]: { isValid: false, error: errorMessage } 
+      }));
+    } finally {
+      setValidating(prev => ({ ...prev, [serviceId]: false }));
+    }
+  };
+
+  const validateAllKeys = async () => {
+    const servicesToValidate = Object.entries(data.services)
+      .filter(([_, config]) => config?.apiKey && config.apiKey.length > 0)
+      .reduce((acc, [service, config]) => ({ 
+        ...acc, 
+        [service]: { apiKey: config.apiKey } 
+      }), {});
+
+    if (Object.keys(servicesToValidate).length === 0) return;
+
+    // Set all as validating
+    setValidating(prev => 
+      Object.keys(servicesToValidate).reduce((acc, service) => ({ 
+        ...acc, 
+        [service]: true 
+      }), prev)
+    );
+
+    try {
+      const results = await ApiValidationService.validateMultiple(servicesToValidate);
+      
+      setValidationResults(prev => ({ ...prev, ...results }));
+      
+      // Update service data with validation results
+      const updatedServices = { ...data.services };
+      Object.entries(results).forEach(([service, result]) => {
+        if (updatedServices[service as keyof OnboardingData['services']]) {
+          updatedServices[service as keyof OnboardingData['services']] = {
+            ...updatedServices[service as keyof OnboardingData['services']]!,
+            validated: result.isValid,
+          };
+        }
+      });
+
+      updateData({ services: updatedServices });
+
+      // Set errors for failed validations
+      const errors: Record<string, string> = {};
+      Object.entries(results).forEach(([service, result]) => {
+        if (!result.isValid) {
+          errors[service] = result.error || 'Validation failed';
+        }
+      });
+      setValidationErrors(errors);
+
+    } catch (error) {
+      console.error('Batch validation failed:', error);
+    } finally {
+      // Clear validating state
+      setValidating(prev => 
+        Object.keys(servicesToValidate).reduce((acc, service) => ({ 
+          ...acc, 
+          [service]: false 
+        }), prev)
+      );
+    }
   };
 
   const hasConnectedServices = Object.values(data.services).some(service => service?.enabled);
@@ -115,17 +220,24 @@ export const ConnectServicesStep: React.FC<ConnectServicesStepProps> = ({
       {/* Service Connections */}
       <div className="space-y-6 mb-8">
         {services.map((service) => {
-          const isConnected = data.services[service.id]?.enabled;
-          const apiKey = data.services[service.id]?.apiKey || '';
+          const serviceConfig = data.services[service.id];
+          const isConnected = serviceConfig?.enabled;
+          const apiKey = serviceConfig?.apiKey || '';
           const isValidating = validating[service.id];
-          const isValidated = validated[service.id];
+          const isValidated = serviceConfig?.validated;
+          const validationResult = validationResults[service.id];
+          const validationError = validationErrors[service.id];
 
           return (
             <div
               key={service.id}
               className={`border rounded-xl p-6 transition-colors ${
-                isConnected
+                isValidated
                   ? 'border-green-200 bg-green-50'
+                  : validationError
+                  ? 'border-red-200 bg-red-50'
+                  : isConnected
+                  ? 'border-yellow-200 bg-yellow-50'
                   : 'border-gray-200 bg-white hover:border-gray-300'
               }`}
             >
@@ -139,12 +251,22 @@ export const ConnectServicesStep: React.FC<ConnectServicesStepProps> = ({
                     <p className="text-sm text-gray-600">{service.description}</p>
                   </div>
                 </div>
-                {isConnected && (
+                {isValidated ? (
                   <div className="flex items-center space-x-2 text-green-600">
                     <Check className="w-5 h-5" />
-                    <span className="text-sm font-medium">Connected</span>
+                    <span className="text-sm font-medium">Validated</span>
                   </div>
-                )}
+                ) : validationError ? (
+                  <div className="flex items-center space-x-2 text-red-600">
+                    <X className="w-5 h-5" />
+                    <span className="text-sm font-medium">Invalid</span>
+                  </div>
+                ) : isConnected ? (
+                  <div className="flex items-center space-x-2 text-yellow-600">
+                    <AlertCircle className="w-5 h-5" />
+                    <span className="text-sm font-medium">Needs Validation</span>
+                  </div>
+                ) : null}
               </div>
 
               <div className="space-y-3">
@@ -164,14 +286,33 @@ export const ConnectServicesStep: React.FC<ConnectServicesStepProps> = ({
                       {apiKey && (
                         <button
                           onClick={() => validateKey(service.id)}
-                          disabled={isValidating || isValidated}
-                          className={`px-3 py-1 text-xs font-medium rounded ${
+                          disabled={isValidating}
+                          className={`px-3 py-1 text-xs font-medium rounded flex items-center space-x-1 ${
                             isValidated
                               ? 'bg-green-100 text-green-700'
+                              : validationError
+                              ? 'bg-red-100 text-red-700 hover:bg-red-200'
                               : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-                          } disabled:opacity-50`}
+                          } disabled:opacity-50 transition-colors`}
                         >
-                          {isValidating ? '...' : isValidated ? 'Valid' : 'Test'}
+                          {isValidating ? (
+                            <>
+                              <RefreshCw className="w-3 h-3 animate-spin" />
+                              <span>Testing...</span>
+                            </>
+                          ) : isValidated ? (
+                            <>
+                              <Check className="w-3 h-3" />
+                              <span>Valid</span>
+                            </>
+                          ) : validationError ? (
+                            <>
+                              <X className="w-3 h-3" />
+                              <span>Retry</span>
+                            </>
+                          ) : (
+                            <span>Test</span>
+                          )}
                         </button>
                       )}
                       <button
@@ -204,11 +345,74 @@ export const ConnectServicesStep: React.FC<ConnectServicesStepProps> = ({
                     </span>
                   )}
                 </div>
+
+                {/* Validation Error Display */}
+                {validationError && (
+                  <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <div className="flex items-start space-x-2">
+                      <AlertCircle className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="text-sm text-red-700 font-medium">Validation Failed</p>
+                        <p className="text-xs text-red-600 mt-1">{validationError}</p>
+                        <p className="text-xs text-red-500 mt-2">
+                          {ApiValidationService.getValidationSuggestion(service.id, validationError)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Validation Success Details */}
+                {isValidated && validationResult?.details && (
+                  <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <div className="flex items-start space-x-2">
+                      <Check className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="text-sm text-green-700 font-medium">API Key Validated</p>
+                        <div className="text-xs text-green-600 mt-1">
+                          {service.id === 'openai' && validationResult.details.modelCount && (
+                            <p>Access to {validationResult.details.modelCount} models{
+                              validationResult.details.hasGPT4 ? ' (including GPT-4)' : ''
+                            }</p>
+                          )}
+                          {service.id === 'google' && validationResult.details.modelCount && (
+                            <p>Access to {validationResult.details.modelCount} models{
+                              validationResult.details.hasGemini ? ' (including Gemini)' : ''
+                            }</p>
+                          )}
+                          {service.id === 'anthropic' && validationResult.details.hasAccess && (
+                            <p>API access confirmed</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           );
         })}
       </div>
+
+      {/* Validate All Button */}
+      {hasConnectedServices && (
+        <div className="mb-6">
+          <button
+            onClick={validateAllKeys}
+            disabled={Object.values(validating).some(v => v)}
+            className="w-full px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
+          >
+            {Object.values(validating).some(v => v) ? (
+              <>
+                <RefreshCw className="w-4 h-4 animate-spin" />
+                <span>Validating API Keys...</span>
+              </>
+            ) : (
+              <span>Validate All API Keys</span>
+            )}
+          </button>
+        </div>
+      )}
 
       {/* Skip Option */}
       <div className="bg-gray-50 rounded-lg p-4 mb-6">

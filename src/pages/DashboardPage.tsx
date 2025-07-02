@@ -13,13 +13,14 @@ import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { DataSourceToggle } from '../components/DataSourceToggle';
 import { ExportButton } from '../components/ExportButton';
+import { SyncStatus } from '../components/SyncStatus';
 import { useUsageData } from '../hooks/useUsageData';
 import { getDailySummaries, getModelTotals } from '../utils/dataProcessing';
 import { calculateEnvironmentalImpact, prepareStackedChartData } from '../utils/environmentalCalculations';
 
 export const DashboardPage: React.FC = () => {
   const [useLiveData, setUseLiveData] = useState(true);
-  const { data, data30Days, loading, error, refetch, usingSampleData } = useUsageData(useLiveData);
+  const { data, data30Days, loading, error, refetch, usingSampleData, syncData, lastSyncTime } = useUsageData(useLiveData);
 
   if (loading) {
     return <LoadingSpinner />;
@@ -65,6 +66,17 @@ export const DashboardPage: React.FC = () => {
             <ExportButton data={data} data30Days={data30Days} />
           </div>
         </div>
+
+        {/* Real-time sync status */}
+        {useLiveData && (
+          <div className="mb-6">
+            <SyncStatus 
+              lastSyncTime={lastSyncTime}
+              onSync={syncData}
+              className="max-w-sm"
+            />
+          </div>
+        )}
 
         <CarbonNeutralStatus impact={environmentalImpact} />
         

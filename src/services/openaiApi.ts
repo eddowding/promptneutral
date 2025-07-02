@@ -1,12 +1,15 @@
 import { UsageReport } from '../types/usage';
 import { ConfigService } from './config';
+import { DatabaseService } from './databaseService';
 
 export class OpenAIApiService {
   private static instance: OpenAIApiService;
   private configService: ConfigService;
+  private databaseService: DatabaseService;
 
   private constructor() {
     this.configService = ConfigService.getInstance();
+    this.databaseService = DatabaseService.getInstance();
   }
 
   static getInstance(): OpenAIApiService {
@@ -53,12 +56,91 @@ export class OpenAIApiService {
     return agg;
   }
 
-  async fetchLast7DaysUsage(): Promise<UsageReport> {
+  async fetchLast7DaysUsage(userId?: string): Promise<UsageReport> {
+    if (userId) {
+      return this.fetchUsageFromDatabase(userId, 7);
+    }
     return this.fetchUsageForDays(7);
   }
 
-  async fetchLast30DaysUsage(): Promise<UsageReport> {
+  async fetchLast30DaysUsage(userId?: string): Promise<UsageReport> {
+    if (userId) {
+      return this.fetchUsageFromDatabase(userId, 30);
+    }
     return this.fetchUsageForDays(30);
+  }
+
+  /**
+   * Fetch usage data from Supabase database
+   */
+  async fetchUsageFromDatabase(userId: string, days: number): Promise<UsageReport> {
+    try {
+      const endDate = new Date().toISOString().split('T')[0];
+      const startDate = new Date(Date.now() - (days - 1) * 24 * 60 * 60 * 1000)
+        .toISOString().split('T')[0];
+
+      console.log(`📊 Fetching ${days} days of data from database (${startDate} to ${endDate})`);
+      
+      const report = await this.databaseService.fetchUsageData(userId, startDate, endDate);
+      
+      console.log(`✓ Fetched ${Object.keys(report).length} days from database`);
+      return report;
+    } catch (error) {
+      console.error('Error fetching from database:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Sync data from OpenAI API to database
+   */
+  async syncDataToDatabase(userId: string, days: number = 7): Promise<void> {
+    try {
+      console.log(`🔄 Syncing ${days} days of OpenAI data to database for user ${userId}`);
+
+      // Check if user already has recent data
+      const hasRecentData = await this.databaseService.hasDataForRange(
+        userId,
+        new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 2 days ago
+        new Date().toISOString().split('T')[0]
+      );
+
+      if (hasRecentData) {
+        console.log('📂 Recent data found in database, skipping full sync');
+        // Only sync the last 2 days to catch any updates
+        days = 2;
+      }
+
+      // Fetch fresh data from OpenAI API
+      const report = await this.fetchUsageForDays(days);
+
+      // Store each day's data in the database
+      for (const [date, dayData] of Object.entries(report)) {
+        if ('error' in dayData) {
+          console.warn(`⚠️ Skipping ${date} due to error: ${dayData.error}`);
+          continue;
+        }
+
+        await this.databaseService.storeUsageData(userId, date, dayData);
+      }
+
+      console.log(`✅ Successfully synced ${Object.keys(report).length} days to database`);
+    } catch (error) {
+      console.error('Error syncing data to database:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get aggregated metrics from database
+   */
+  async getAggregatedMetrics(userId: string, days: number) {
+    try {
+      return await this.databaseService.fetchAggregatedData(userId, days);
+    } catch (error) {
+      console.error('Error fetching aggregated metrics:', error);
+      throw error;
+    }
   }
 
   private getCacheKey(days: number): string {

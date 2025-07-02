@@ -18,6 +18,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -29,6 +30,9 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess }) => {
     }
     if (submitError) {
       setSubmitError('');
+    }
+    if (successMessage) {
+      setSuccessMessage('');
     }
   };
 
@@ -77,7 +81,13 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess }) => {
     const result = await signup(formData.email, formData.password, formData.name);
     
     if (result.success) {
-      onSuccess?.();
+      if (result.error && result.error.includes('check your email')) {
+        // Email verification required
+        setSuccessMessage(result.error);
+      } else {
+        // Account created and logged in
+        onSuccess?.();
+      }
     } else {
       setSubmitError(result.error || 'Signup failed. Please try again.');
     }
@@ -304,6 +314,16 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess }) => {
               <p className="text-sm text-red-600 flex items-center">
                 <AlertCircle className="h-4 w-4 mr-2" />
                 {submitError}
+              </p>
+            </div>
+          )}
+
+          {/* Success Message */}
+          {successMessage && (
+            <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+              <p className="text-sm text-green-600 flex items-center">
+                <CheckCircle className="h-4 w-4 mr-2" />
+                {successMessage}
               </p>
             </div>
           )}

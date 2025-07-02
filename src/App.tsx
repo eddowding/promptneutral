@@ -8,6 +8,8 @@ import { DashboardPage } from './pages/DashboardPage';
 import { PricingPage } from './pages/PricingPage';
 import { AuthPage } from './pages/AuthPage';
 import { OnboardingPage } from './pages/OnboardingPage';
+import { EmailVerification } from './components/EmailVerification';
+import { PasswordReset } from './components/PasswordReset';
 
 function App() {
   return (
@@ -33,6 +35,8 @@ function App() {
                 <PricingPage />
               </>
             } />
+            <Route path="/verify-email" element={<EmailVerification />} />
+            <Route path="/reset-password" element={<PasswordReset />} />
             <Route path="/onboarding" element={<OnboardingPage />} />
             <Route 
               path="/dashboard" 
