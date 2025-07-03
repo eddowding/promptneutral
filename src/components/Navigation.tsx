@@ -1,11 +1,13 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Leaf, BarChart3, User, LogOut } from 'lucide-react';
+import { Leaf, BarChart3, User, LogOut, Settings, MessageSquare } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { ADMIN_EMAILS } from '../services/config';
 
 export const Navigation: React.FC = () => {
   const location = useLocation();
   const { user, logout, isAuthenticated } = useAuth();
+  const isAdmin = user?.email && ADMIN_EMAILS.includes(user.email);
 
   return (
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
@@ -58,6 +60,34 @@ export const Navigation: React.FC = () => {
               <BarChart3 className="w-4 h-4" />
               <span>Dashboard</span>
             </Link>
+            {isAuthenticated && (
+              <>
+                <Link 
+                  to="/settings" 
+                  className={`flex items-center space-x-1 text-sm font-medium transition-colors ${
+                    location.pathname === '/settings' 
+                      ? 'text-green-600' 
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <Settings className="w-4 h-4" />
+                  <span>Settings</span>
+                </Link>
+                {isAdmin && (
+                  <Link 
+                    to="/admin/feedback" 
+                    className={`flex items-center space-x-1 text-sm font-medium transition-colors ${
+                      location.pathname === '/admin/feedback' 
+                        ? 'text-green-600' 
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                    <span>Feedback</span>
+                  </Link>
+                )}
+              </>
+            )}
           </div>
 
           {/* CTA Buttons */}

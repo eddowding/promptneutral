@@ -1,7 +1,6 @@
 import { DatabaseService } from '../services/databaseService';
 import { OpenAIApiService } from '../services/openaiApi';
 import { SyncService } from '../services/syncService';
-import { sampleUsageData } from '../data/sampleData';
 import { UsageReport } from '../types/usage';
 
 export interface MigrationStatus {
@@ -62,14 +61,7 @@ export class DataMigrationService {
         return;
       }
 
-      // Step 2: Migrate sample data as baseline (optional, for demo purposes)
-      updateProgress({
-        step: 'migrating_sample',
-        progress: 20,
-        message: 'Setting up baseline data from samples...'
-      });
-
-      await this.migrateSampleData(userId);
+      // Skip sample data migration - go directly to real data sync
 
       // Step 3: Attempt to sync real data from OpenAI API
       updateProgress({
@@ -97,18 +89,16 @@ export class DataMigrationService {
         });
 
       } catch (syncError) {
-        // If real data sync fails, that's okay - user can use sample data
+        // If real data sync fails, inform the user
         console.warn('Real data sync failed during migration:', syncError);
         
         updateProgress({
-          step: 'completed',
-          progress: 100,
-          message: 'Migration completed with sample data. Connect your OpenAI API key to enable real data sync.',
-          details: { 
-            syncError: syncError instanceof Error ? syncError.message : 'Unknown sync error',
-            hasBaseline: true 
-          }
+          step: 'error',
+          progress: 0,
+          message: 'Failed to sync data. Please connect your OpenAI API key to enable data sync.',
+          error: syncError instanceof Error ? syncError.message : 'Unknown sync error'
         });
+        throw syncError;
       }
 
     } catch (error) {
@@ -142,29 +132,6 @@ export class DataMigrationService {
     }
   }
 
-  /**
-   * Migrate sample data to user's database (as baseline)
-   */
-  async migrateSampleData(userId: string): Promise<void> {
-    try {
-      console.log('📦 Migrating sample data as baseline...');
-
-      // Adjust sample data dates to be recent
-      const adjustedSampleData = this.adjustSampleDataDates(sampleUsageData);
-
-      // Store sample data in database
-      for (const [date, dayData] of Object.entries(adjustedSampleData)) {
-        if ('error' in dayData) continue;
-        
-        await this.databaseService.storeUsageData(userId, date, dayData);
-      }
-
-      console.log('✅ Sample data migration completed');
-    } catch (error) {
-      console.error('Error migrating sample data:', error);
-      throw new Error(`Failed to migrate sample data: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
-  }
 
   /**
    * Sync real data from OpenAI API
@@ -206,25 +173,6 @@ export class DataMigrationService {
     }
   }
 
-  /**
-   * Adjust sample data dates to be recent
-   */
-  private adjustSampleDataDates(sampleData: UsageReport): UsageReport {
-    const adjustedData: UsageReport = {};
-    const dates = Object.keys(sampleData).sort();
-    const today = new Date();
-    
-    dates.forEach((originalDate, index) => {
-      // Make dates recent (last 7 days)
-      const adjustedDate = new Date(today);
-      adjustedDate.setDate(today.getDate() - (dates.length - 1 - index));
-      const newDateString = adjustedDate.toISOString().split('T')[0];
-      
-      adjustedData[newDateString] = sampleData[originalDate];
-    });
-    
-    return adjustedData;
-  }
 
   /**
    * Check migration status for a user
@@ -246,7 +194,7 @@ export class DataMigrationService {
       return {
         hasMigrated: hasData,
         hasRealData: lastSyncTime !== null,
-        hasSampleData: hasData && lastSyncTime === null,
+        hasSampleData: false,
         autoSyncEnabled: syncStatus.nextScheduledSync !== null,
         lastSyncTime,
       };

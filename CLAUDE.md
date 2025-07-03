@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a single-file Python utility that fetches OpenAI API usage data for the last 7 days, broken down by model. The codebase consists of one main script: `notzero.py`.
+This is a TypeScript/React dashboard application that displays OpenAI API usage data. The project includes both a web dashboard for visualizing usage metrics and a Python script for fetching raw usage data.
 
 ## Usage Commands
 
@@ -33,15 +33,15 @@ npm run lint       # Run ESLint
 ## Code Architecture
 
 ### Python Script (`notzero.py`)
-The original codebase is minimal with a single Python file containing:
+A utility script for fetching raw OpenAI usage data containing:
 
 - **Configuration**: OpenAI API key setup at the top
 - **Data Fetching**: `fetch_usage_for_date()` function that makes API calls to OpenAI's usage endpoint
 - **Data Processing**: `summarise_by_model()` function that aggregates usage data by model/snapshot_id
 - **Main Logic**: Iterates through the last 7 days and generates a JSON report
 
-### TypeScript Dashboard
-The dashboard is built with React, TypeScript, and Vite:
+### TypeScript Dashboard (Main Application)
+The main application is a web dashboard built with React, TypeScript, and Vite:
 
 - **`src/types/usage.ts`**: TypeScript interfaces for usage data structures
 - **`src/data/sampleData.ts`**: Sample data for testing the dashboard

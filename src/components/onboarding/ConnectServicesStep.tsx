@@ -21,12 +21,12 @@ interface ServiceConfig {
 
 const services: ServiceConfig[] = [
   {
-    id: 'openai',
-    name: 'OpenAI',
-    description: 'GPT-4, GPT-3.5, DALL-E, and other OpenAI models',
-    logo: '🤖',
+    id: 'openai_admin',
+    name: 'OpenAI Admin',
+    description: 'Admin key with Usage permissions for complete usage tracking',
+    logo: '🔐',
     docsUrl: 'https://platform.openai.com/api-keys',
-    placeholder: 'sk-...',
+    placeholder: 'sk-admin-...',
   },
   {
     id: 'anthropic',
@@ -370,10 +370,8 @@ export const ConnectServicesStep: React.FC<ConnectServicesStepProps> = ({
                       <div>
                         <p className="text-sm text-green-700 font-medium">API Key Validated</p>
                         <div className="text-xs text-green-600 mt-1">
-                          {service.id === 'openai' && validationResult.details.modelCount && (
-                            <p>Access to {validationResult.details.modelCount} models{
-                              validationResult.details.hasGPT4 ? ' (including GPT-4)' : ''
-                            }</p>
+                          {service.id === 'openai_admin' && validationResult.details.canAccessUsage && (
+                            <p>Admin access with Usage permissions enabled</p>
                           )}
                           {service.id === 'google' && validationResult.details.modelCount && (
                             <p>Access to {validationResult.details.modelCount} models{

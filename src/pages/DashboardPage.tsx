@@ -11,7 +11,6 @@ import { OptimizationRecommendations } from '../components/OptimizationRecommend
 import { ComplianceReport } from '../components/ComplianceReport';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ErrorMessage } from '../components/ErrorMessage';
-import { DataSourceToggle } from '../components/DataSourceToggle';
 import { ExportButton } from '../components/ExportButton';
 import { SyncStatus } from '../components/SyncStatus';
 import { useUsageData } from '../hooks/useUsageData';
@@ -19,8 +18,7 @@ import { getDailySummaries, getModelTotals } from '../utils/dataProcessing';
 import { calculateEnvironmentalImpact, prepareStackedChartData } from '../utils/environmentalCalculations';
 
 export const DashboardPage: React.FC = () => {
-  const [useLiveData, setUseLiveData] = useState(true);
-  const { data, data30Days, loading, error, refetch, usingSampleData, syncData, lastSyncTime } = useUsageData(useLiveData);
+  const { data, data30Days, loading, error, refetch, syncData, lastSyncTime } = useUsageData(true);
 
   if (loading) {
     return <LoadingSpinner />;
@@ -58,25 +56,18 @@ export const DashboardPage: React.FC = () => {
             <p className="text-gray-600">Monitor your AI usage and environmental impact in real-time</p>
           </div>
           <div className="flex items-center space-x-4">
-            <DataSourceToggle 
-              useLiveData={useLiveData}
-              onToggle={setUseLiveData}
-              usingSampleData={usingSampleData}
-            />
             <ExportButton data={data} data30Days={data30Days} />
           </div>
         </div>
 
         {/* Real-time sync status */}
-        {useLiveData && (
-          <div className="mb-6">
-            <SyncStatus 
-              lastSyncTime={lastSyncTime}
-              onSync={syncData}
-              className="max-w-sm"
-            />
-          </div>
-        )}
+        <div className="mb-6">
+          <SyncStatus 
+            lastSyncTime={lastSyncTime}
+            onSync={syncData}
+            className="max-w-sm"
+          />
+        </div>
 
         <CarbonNeutralStatus impact={environmentalImpact} />
         

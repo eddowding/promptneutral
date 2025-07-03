@@ -40,20 +40,110 @@ export class OpenAIApiService {
     return response.json();
   }
 
+  async fetchUsageForDateRange(startDate: string, endDate: string): Promise<any> {
+    const apiKey = await this.configService.getApiKey();
+    
+    const url = new URL('https://api.openai.com/v1/usage');
+    url.searchParams.append('start_date', startDate);
+    url.searchParams.append('end_date', endDate);
+    
+    const response = await fetch(url.toString(), {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`OpenAI API error: ${response.status} ${response.statusText}`);
+    }
+
+    return response.json();
+  }
+
   private summariseByModel(raw: any): Record<string, any> {
     const agg: Record<string, { requests: number; context_tokens: number; generated_tokens: number }> = {};
     
-    for (const entry of raw.data || []) {
-      const model = entry.snapshot_id || 'unknown';
-      if (!agg[model]) {
-        agg[model] = { requests: 0, context_tokens: 0, generated_tokens: 0 };
+    // Handle new OpenAI Usage API v2 format with buckets
+    if (raw.data && Array.isArray(raw.data)) {
+      for (const bucket of raw.data) {
+        if (bucket.object === 'bucket' && bucket.results) {
+          for (const result of bucket.results) {
+            const model = result.model || 'unknown';
+            if (!agg[model]) {
+              agg[model] = { requests: 0, context_tokens: 0, generated_tokens: 0 };
+            }
+            agg[model].requests += result.num_model_requests || 0;
+            agg[model].context_tokens += result.input_tokens || 0;
+            agg[model].generated_tokens += result.output_tokens || 0;
+          }
+        }
       }
-      agg[model].requests += entry.n_requests || 0;
-      agg[model].context_tokens += entry.n_context_tokens_total || 0;
-      agg[model].generated_tokens += entry.n_generated_tokens_total || 0;
+    } else {
+      // Fallback: Handle old API format
+      for (const entry of raw.data || []) {
+        const model = entry.snapshot_id || 'unknown';
+        if (!agg[model]) {
+          agg[model] = { requests: 0, context_tokens: 0, generated_tokens: 0 };
+        }
+        agg[model].requests += entry.n_requests || 0;
+        agg[model].context_tokens += entry.n_context_tokens_total || 0;
+        agg[model].generated_tokens += entry.n_generated_tokens_total || 0;
+      }
     }
     
     return agg;
+  }
+
+  private groupByDate(raw: any): UsageReport {
+    const report: UsageReport = {};
+    
+    // Handle new OpenAI Usage API v2 format with buckets
+    if (raw.data && Array.isArray(raw.data)) {
+      for (const bucket of raw.data) {
+        if (bucket.object === 'bucket' && bucket.results) {
+          // Convert Unix timestamp to date string
+          const date = new Date(bucket.start_time * 1000).toISOString().split('T')[0];
+          
+          if (!report[date]) {
+            report[date] = {};
+          }
+          
+          for (const result of bucket.results) {
+            const model = result.model || 'unknown';
+            if (!report[date][model]) {
+              report[date][model] = { requests: 0, context_tokens: 0, generated_tokens: 0 };
+            }
+            
+            // Map new field names to our format
+            report[date][model].requests += result.num_model_requests || 0;
+            report[date][model].context_tokens += result.input_tokens || 0;
+            report[date][model].generated_tokens += result.output_tokens || 0;
+          }
+        }
+      }
+    } else {
+      // Fallback: Handle old API format (if still used)
+      for (const entry of raw.data || []) {
+        const date = entry.aggregation_timestamp?.split('T')[0] || 'unknown';
+        
+        if (!report[date]) {
+          report[date] = {};
+        }
+        
+        const model = entry.snapshot_id || 'unknown';
+        if (!report[date][model]) {
+          report[date][model] = { requests: 0, context_tokens: 0, generated_tokens: 0 };
+        }
+        
+        report[date][model].requests += entry.n_requests || 0;
+        report[date][model].context_tokens += entry.n_context_tokens_total || 0;
+        report[date][model].generated_tokens += entry.n_generated_tokens_total || 0;
+      }
+    }
+    
+    return report;
   }
 
   async fetchLast7DaysUsage(userId?: string): Promise<UsageReport> {
@@ -158,9 +248,6 @@ export class OpenAIApiService {
       };
       localStorage.setItem(cacheKey, JSON.stringify(cacheData));
       console.log(`💾 Saved ${Object.keys(data).length} days to cache: ${cacheKey}`);
-      
-      // Also save as downloadable JSON file
-      this.saveAsJsonFile(data, days);
     } catch (error) {
       console.error('Failed to save to cache:', error);
     }
@@ -236,15 +323,59 @@ export class OpenAIApiService {
     }
 
     const today = new Date();
+    console.log(`🔄 Fetching ${days} days of data from API using date range. Today is: ${today.toISOString().split('T')[0]}`);
+
+    // OpenAI usage API typically has a 1-2 day delay, so start from 2 days ago
+    const endDate = new Date(today);
+    endDate.setDate(today.getDate() - 2);
+    const endDateString = endDate.toISOString().split('T')[0];
+
+    const startDate = new Date(endDate);
+    startDate.setDate(endDate.getDate() - (days - 1));
+    const startDateString = startDate.toISOString().split('T')[0];
+
+    console.log(`📅 Fetching date range: ${startDateString} to ${endDateString}`);
+
+    try {
+      // Single API call for the entire date range!
+      const raw = await this.fetchUsageForDateRange(startDateString, endDateString);
+      
+      if (raw.data && raw.data.length > 0) {
+        console.log(`✓ Successfully fetched ${raw.data.length} entries for ${days} days`);
+        
+        // Group the data by date
+        const report = this.groupByDate(raw);
+        
+        console.log(`📊 Processed data for ${Object.keys(report).length} days`);
+        
+        // Save to cache
+        this.saveToCache(report, days);
+        
+        return report;
+      } else {
+        console.log(`○ No usage data found for the requested period`);
+        return {};
+      }
+    } catch (error) {
+      console.error(`✗ Error fetching usage data: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      
+      // Fallback to single-date method if range method fails
+      console.log(`🔄 Falling back to single-date method...`);
+      return this.fetchUsageForDaysLegacy(days);
+    }
+  }
+
+  private async fetchUsageForDaysLegacy(days: number): Promise<UsageReport> {
+    const today = new Date();
     const report: UsageReport = {};
 
-    console.log(`🔄 Fetching ${days} days of data from API. Today is: ${today.toISOString().split('T')[0]}`);
+    console.log(`🔄 Using legacy single-date method for ${days} days`);
 
     // OpenAI usage API typically has a 1-2 day delay, so start from 2 days ago
     const startDate = new Date(today);
-    startDate.setDate(today.getDate() - 2); // Start from 2 days ago
+    startDate.setDate(today.getDate() - 2);
 
-    // Generate all dates first
+    // Generate all dates
     const dates = [];
     for (let daysBack = days - 1; daysBack >= 0; daysBack--) {
       const date = new Date(startDate);
@@ -254,40 +385,33 @@ export class OpenAIApiService {
 
     console.log(`Will fetch data for dates: ${dates[0]} to ${dates[dates.length - 1]}`);
 
-    // Fetch data with rate limiting (batch of 5 requests per second)
-    const batchSize = 5;
-    for (let i = 0; i < dates.length; i += batchSize) {
-      const batch = dates.slice(i, i + batchSize);
-      console.log(`Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(dates.length / batchSize)}: ${batch[0]} to ${batch[batch.length - 1]}`);
+    // Process one date at a time with delays
+    for (let i = 0; i < dates.length; i++) {
+      const dateString = dates[i];
+      console.log(`Processing ${i + 1}/${dates.length}: ${dateString}`);
 
-      // Process batch in parallel
-      const batchPromises = batch.map(async (dateString) => {
-        try {
-          const raw = await this.fetchUsageForDate(dateString);
-          if (raw.data && raw.data.length > 0) {
-            report[dateString] = this.summariseByModel(raw);
-            console.log(`✓ ${dateString}: ${raw.data.length} entries`);
-          } else {
-            console.log(`○ ${dateString}: no data`);
-          }
-        } catch (error) {
-          console.error(`✗ ${dateString}: ${error instanceof Error ? error.message : 'Unknown error'}`);
-          // Don't add errors to report for now, just skip
+      try {
+        const raw = await this.fetchUsageForDate(dateString);
+        if (raw.data && raw.data.length > 0) {
+          report[dateString] = this.summariseByModel(raw);
+          console.log(`✓ ${dateString}: ${raw.data.length} entries`);
+        } else {
+          console.log(`○ ${dateString}: no data`);
         }
-      });
+      } catch (error) {
+        console.error(`✗ ${dateString}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
 
-      await Promise.all(batchPromises);
-
-      // Wait between batches to avoid rate limiting
-      if (i + batchSize < dates.length) {
-        console.log('Waiting 1 second before next batch...');
-        await this.sleep(1000);
+      // Wait between requests (except for last request)
+      if (i < dates.length - 1) {
+        console.log(`Waiting 2 seconds before next request...`);
+        await this.sleep(2000);
       }
     }
 
     console.log(`Final report contains ${Object.keys(report).length} days of data`);
     
-    // Save to cache and download JSON file
+    // Save to cache
     if (Object.keys(report).length > 0) {
       this.saveToCache(report, days);
     }

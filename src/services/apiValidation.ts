@@ -40,6 +40,54 @@ export class ApiValidationService {
     }
   }
 
+  // Validate OpenAI Admin API key (tests against usage endpoint)
+  static async validateOpenAIAdmin(apiKey: string): Promise<ValidationResult> {
+    try {
+      // Admin keys with "Usage" permissions can access the organization usage endpoint
+      const now = Math.floor(Date.now() / 1000);
+      const yesterday = now - (24 * 3600);
+      
+      const response = await fetch(`https://api.openai.com/v1/organization/usage/completions?start_time=${yesterday}&end_time=${now}&limit=1`, {
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return {
+          isValid: true,
+          details: {
+            hasUsageAccess: true,
+            endpoint: 'completions',
+            canAccessUsage: true,
+          },
+        };
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        
+        // If 404, it might mean the feature isn't enabled, but the key is valid
+        if (response.status === 404) {
+          return {
+            isValid: false,
+            error: 'Usage API not available for this organization. The admin key may be valid but usage tracking is not enabled.',
+          };
+        }
+        
+        return {
+          isValid: false,
+          error: errorData.error?.message || `HTTP ${response.status}: ${response.statusText}`,
+        };
+      }
+    } catch (error) {
+      return {
+        isValid: false,
+        error: error instanceof Error ? error.message : 'Network error occurred',
+      };
+    }
+  }
+
   // Validate Anthropic API key
   static async validateAnthropic(apiKey: string): Promise<ValidationResult> {
     try {
@@ -129,8 +177,8 @@ export class ApiValidationService {
     }
 
     switch (service.toLowerCase()) {
-      case 'openai':
-        return this.validateOpenAI(apiKey);
+      case 'openai_admin':
+        return this.validateOpenAIAdmin(apiKey);
       case 'anthropic':
         return this.validateAnthropic(apiKey);
       case 'google':
@@ -193,8 +241,8 @@ export class ApiValidationService {
     }
 
     switch (service.toLowerCase()) {
-      case 'openai':
-        return 'Make sure you have a valid OpenAI API key from https://platform.openai.com/api-keys';
+      case 'openai_admin':
+        return 'Make sure you have a valid OpenAI Admin key with "Usage" permissions from Settings → Organization → API Keys';
       case 'anthropic':
         return 'Make sure you have a valid Anthropic API key from https://console.anthropic.com/settings/keys';
       case 'google':

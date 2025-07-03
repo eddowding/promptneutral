@@ -21,7 +21,7 @@ export interface OnboardingData {
     teamSize: 'individual' | 'small' | 'medium' | 'large' | 'enterprise';
   };
   services: {
-    openai?: { apiKey: string; enabled: boolean; validated: boolean };
+    openai_admin?: { apiKey: string; enabled: boolean; validated: boolean };
     anthropic?: { apiKey: string; enabled: boolean; validated: boolean };
     google?: { apiKey: string; enabled: boolean; validated: boolean };
   };
@@ -267,128 +267,128 @@ export const OnboardingWizard: React.FC = () => {
     <ErrorBoundary>
       <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
         <div className="max-w-4xl mx-auto px-6 py-8">
-        {/* Error Notification */}
-        {error && (
-          <ErrorNotification
-            error={error}
-            onDismiss={dismissError}
-            onRetry={error.includes('save') ? retryAutoSave : undefined}
-            type={error.includes('load') ? 'warning' : 'error'}
-          />
-        )}
+          {/* Error Notification */}
+          {error && (
+            <ErrorNotification
+              error={error}
+              onDismiss={dismissError}
+              onRetry={error.includes('save') ? retryAutoSave : undefined}
+              type={error.includes('load') ? 'warning' : 'error'}
+            />
+          )}
 
-        {/* Progress Indicator */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Setup PromptNeutral
-            </h2>
-            <div className="flex items-center space-x-3">
-              {saving && (
-                <div className="flex items-center space-x-2 text-green-600">
-                  <Save className="w-4 h-4" />
-                  <span className="text-sm">Saving...</span>
-                </div>
-              )}
-              {lastSaved && !saving && (
-                <span className="text-xs text-gray-500">
-                  Saved {lastSaved.toLocaleTimeString()}
+          {/* Progress Indicator */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">
+                Setup PromptNeutral
+              </h2>
+              <div className="flex items-center space-x-3">
+                {saving && (
+                  <div className="flex items-center space-x-2 text-green-600">
+                    <Save className="w-4 h-4" />
+                    <span className="text-sm">Saving...</span>
+                  </div>
+                )}
+                {lastSaved && !saving && (
+                  <span className="text-xs text-gray-500">
+                    Saved {lastSaved.toLocaleTimeString()}
+                  </span>
+                )}
+                <span className="text-sm text-gray-600">
+                  Step {currentStep + 1} of {steps.length}
                 </span>
-              )}
-              <span className="text-sm text-gray-600">
-                Step {currentStep + 1} of {steps.length}
-              </span>
+              </div>
+            </div>
+          
+            <div className="flex items-center space-x-2">
+              {steps.map((step, index) => (
+                <React.Fragment key={step.id}>
+                  <div className="flex items-center">
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
+                        data.progress.completedSteps.includes(step.id)
+                          ? 'bg-green-600 text-white'
+                          : index === currentStep
+                          ? 'bg-green-100 text-green-600 border-2 border-green-600'
+                          : 'bg-gray-100 text-gray-400'
+                      }`}
+                    >
+                      {data.progress.completedSteps.includes(step.id) ? (
+                        <Check className="w-4 h-4" />
+                      ) : (
+                        index + 1
+                      )}
+                    </div>
+                    <span
+                      className={`ml-2 text-sm font-medium ${
+                        index <= currentStep ? 'text-gray-900' : 'text-gray-400'
+                      }`}
+                    >
+                      {step.title}
+                    </span>
+                  </div>
+                  {index < steps.length - 1 && (
+                    <div
+                      className={`flex-1 h-1 mx-4 rounded ${
+                        index < currentStep ? 'bg-green-600' : 'bg-gray-200'
+                      }`}
+                    />
+                  )}
+                </React.Fragment>
+              ))}
             </div>
           </div>
-          
-          <div className="flex items-center space-x-2">
-            {steps.map((step, index) => (
-              <React.Fragment key={step.id}>
-                <div className="flex items-center">
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
-                      data.progress.completedSteps.includes(step.id)
-                        ? 'bg-green-600 text-white'
-                        : index === currentStep
-                        ? 'bg-green-100 text-green-600 border-2 border-green-600'
-                        : 'bg-gray-100 text-gray-400'
-                    }`}
-                  >
-                    {data.progress.completedSteps.includes(step.id) ? (
-                      <Check className="w-4 h-4" />
-                    ) : (
-                      index + 1
-                    )}
-                  </div>
-                  <span
-                    className={`ml-2 text-sm font-medium ${
-                      index <= currentStep ? 'text-gray-900' : 'text-gray-400'
-                    }`}
-                  >
-                    {step.title}
-                  </span>
-                </div>
-                {index < steps.length - 1 && (
-                  <div
-                    className={`flex-1 h-1 mx-4 rounded ${
-                      index < currentStep ? 'bg-green-600' : 'bg-gray-200'
-                    }`}
-                  />
-                )}
-              </React.Fragment>
-            ))}
+
+          {/* Step Content */}
+          <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+            <div className="p-8 transition-opacity duration-300">
+              <StepComponent
+                data={data}
+                updateData={updateData}
+                onNext={nextStep}
+                onPrev={prevStep}
+              />
+            </div>
           </div>
-        </div>
 
-        {/* Step Content */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
-          <div className="p-8 transition-opacity duration-300">
-            <StepComponent
-              data={data}
-              updateData={updateData}
-              onNext={nextStep}
-              onPrev={prevStep}
-            />
+          {/* Navigation */}
+          <div className="flex justify-between items-center mt-8">
+            <button
+              onClick={prevStep}
+              disabled={isFirstStep}
+              className={`flex items-center px-6 py-3 rounded-lg text-sm font-medium transition-colors ${
+                isFirstStep
+                  ? 'text-gray-400 cursor-not-allowed'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              }`}
+            >
+              <ChevronLeft className="w-4 h-4 mr-2" />
+              Previous
+            </button>
+
+            <button
+              onClick={isLastStep ? completeOnboarding : nextStep}
+              disabled={saving}
+              className={`flex items-center px-6 py-3 rounded-lg text-sm font-medium transition-colors ${
+                saving
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  : 'bg-green-600 text-white hover:bg-green-700'
+              }`}
+            >
+              {saving ? (
+                <>
+                  <div className="w-4 h-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                  {isLastStep ? 'Completing...' : 'Saving...'}
+                </>
+              ) : (
+                <>
+                  {isLastStep ? 'Complete Setup' : 'Next'}
+                  {!isLastStep && <ChevronRight className="w-4 h-4 ml-2" />}
+                </>
+              )}
+            </button>
           </div>
-        </div>
-
-        {/* Navigation */}
-        <div className="flex justify-between items-center mt-8">
-          <button
-            onClick={prevStep}
-            disabled={isFirstStep}
-            className={`flex items-center px-6 py-3 rounded-lg text-sm font-medium transition-colors ${
-              isFirstStep
-                ? 'text-gray-400 cursor-not-allowed'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-            }`}
-          >
-            <ChevronLeft className="w-4 h-4 mr-2" />
-            Previous
-          </button>
-
-          <button
-            onClick={isLastStep ? completeOnboarding : nextStep}
-            disabled={saving}
-            className={`flex items-center px-6 py-3 rounded-lg text-sm font-medium transition-colors ${
-              saving
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'bg-green-600 text-white hover:bg-green-700'
-            }`}
-          >
-            {saving ? (
-              <>
-                <div className="w-4 h-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                {isLastStep ? 'Completing...' : 'Saving...'}
-              </>
-            ) : (
-              <>
-                {isLastStep ? 'Complete Setup' : 'Next'}
-                {!isLastStep && <ChevronRight className="w-4 h-4 ml-2" />}
-              </>
-            )}
-          </button>
-        </div>
         </div>
       </div>
     </ErrorBoundary>

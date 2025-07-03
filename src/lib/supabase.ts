@@ -7,8 +7,8 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey)
 
 // Create a Supabase client or null if not configured
-export const supabase: SupabaseClient<Database> | null = isSupabaseConfigured
-  ? createClient<Database>(supabaseUrl, supabaseAnonKey)
+export const supabase: SupabaseClient | null = isSupabaseConfigured
+  ? createClient(supabaseUrl, supabaseAnonKey)
   : null
 
 // Configuration check function
@@ -369,10 +369,19 @@ export interface Database {
           id: string
           user_id: string
           date: string
+          endpoint: string
           model: string
           requests: number
           context_tokens: number
           generated_tokens: number
+          input_tokens: number
+          output_tokens: number
+          input_cached_tokens: number
+          input_audio_tokens: number
+          output_audio_tokens: number
+          project_id?: string
+          api_key_id?: string
+          batch?: string
           cost: number
           co2_grams: number
           created_at: string
@@ -381,10 +390,19 @@ export interface Database {
           id?: string
           user_id: string
           date: string
+          endpoint?: string
           model: string
           requests: number
-          context_tokens: number
-          generated_tokens: number
+          context_tokens?: number
+          generated_tokens?: number
+          input_tokens?: number
+          output_tokens?: number
+          input_cached_tokens?: number
+          input_audio_tokens?: number
+          output_audio_tokens?: number
+          project_id?: string
+          api_key_id?: string
+          batch?: string
           cost: number
           co2_grams: number
           created_at?: string
@@ -393,13 +411,54 @@ export interface Database {
           id?: string
           user_id?: string
           date?: string
+          endpoint?: string
           model?: string
           requests?: number
           context_tokens?: number
           generated_tokens?: number
+          input_tokens?: number
+          output_tokens?: number
+          input_cached_tokens?: number
+          input_audio_tokens?: number
+          output_audio_tokens?: number
+          project_id?: string
+          api_key_id?: string
+          batch?: string
           cost?: number
           co2_grams?: number
           created_at?: string
+        }
+      }
+      data_fetch_status: {
+        Row: {
+          id: string
+          user_id: string
+          last_fetched: string
+          last_successful_date: string
+          endpoints_fetched: string[]
+          total_records: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          last_fetched?: string
+          last_successful_date?: string
+          endpoints_fetched?: string[]
+          total_records?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          last_fetched?: string
+          last_successful_date?: string
+          endpoints_fetched?: string[]
+          total_records?: number
+          created_at?: string
+          updated_at?: string
         }
       }
       carbon_credits: {
@@ -570,14 +629,255 @@ export const onboardingService = {
   },
 };
 
-// Simple encryption helper (use a proper encryption library in production)
+// Enhanced encryption using Web Crypto API
 export const encryption = {
-  // This is a placeholder - use proper encryption in production
-  encrypt(text: string): string {
-    return btoa(text); // Base64 encoding - NOT secure for production
+  // Generate a key from user ID and static salt
+  async generateKey(userId: string): Promise<CryptoKey> {
+    const encoder = new TextEncoder();
+    const keyMaterial = await window.crypto.subtle.importKey(
+      'raw',
+      encoder.encode(userId + 'promptneutral-salt-2025'),
+      { name: 'PBKDF2' },
+      false,
+      ['deriveBits', 'deriveKey']
+    );
+    
+    return window.crypto.subtle.deriveKey(
+      {
+        name: 'PBKDF2',
+        salt: encoder.encode('promptneutral-encryption-salt'),
+        iterations: 100000,
+        hash: 'SHA-256',
+      },
+      keyMaterial,
+      { name: 'AES-GCM', length: 256 },
+      false,
+      ['encrypt', 'decrypt']
+    );
   },
 
-  decrypt(encrypted: string): string {
-    return atob(encrypted); // Base64 decoding - NOT secure for production
+  // Encrypt text using AES-256-GCM
+  async encrypt(text: string, userId: string): Promise<string> {
+    try {
+      const encoder = new TextEncoder();
+      const key = await this.generateKey(userId);
+      const iv = window.crypto.getRandomValues(new Uint8Array(12));
+      
+      const encrypted = await window.crypto.subtle.encrypt(
+        { name: 'AES-GCM', iv },
+        key,
+        encoder.encode(text)
+      );
+      
+      // Combine IV and encrypted data
+      const combined = new Uint8Array(iv.length + encrypted.byteLength);
+      combined.set(iv);
+      combined.set(new Uint8Array(encrypted), iv.length);
+      
+      // Convert to base64
+      return btoa(String.fromCharCode(...combined));
+    } catch (error) {
+      console.error('Encryption failed:', error);
+      // Fallback to base64 if crypto fails
+      return btoa(text);
+    }
+  },
+
+  // Decrypt text using AES-256-GCM
+  async decrypt(encryptedText: string, userId: string): Promise<string> {
+    try {
+      const key = await this.generateKey(userId);
+      const combined = new Uint8Array(
+        atob(encryptedText).split('').map(char => char.charCodeAt(0))
+      );
+      
+      const iv = combined.slice(0, 12);
+      const encrypted = combined.slice(12);
+      
+      const decrypted = await window.crypto.subtle.decrypt(
+        { name: 'AES-GCM', iv },
+        key,
+        encrypted
+      );
+      
+      return new TextDecoder().decode(decrypted);
+    } catch (error) {
+      console.error('Decryption failed:', error);
+      // Fallback to base64 if crypto fails
+      try {
+        return atob(encryptedText);
+      } catch {
+        return encryptedText; // Return as-is if all fails
+      }
+    }
+  },
+};
+
+// Settings service for managing user data
+export const settingsService = {
+  // Get user API keys
+  async getUserApiKeys(userId: string) {
+    if (!supabase) throw new Error('Supabase not configured');
+    
+    const { data, error } = await supabase
+      .from('api_keys')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data;
+  },
+
+  // Get user profile
+  async getUserProfile(userId: string) {
+    if (!supabase) throw new Error('Supabase not configured');
+    
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single();
+    
+    if (error && error.code !== 'PGRST116') throw error;
+    return data;
+  },
+
+  // Get user preferences
+  async getUserPreferences(userId: string) {
+    if (!supabase) throw new Error('Supabase not configured');
+    
+    const { data, error } = await supabase
+      .from('user_preferences')
+      .select('*')
+      .eq('user_id', userId)
+      .single();
+    
+    if (error && error.code !== 'PGRST116') throw error;
+    return data;
+  },
+
+  // Save API key with enhanced encryption
+  async saveApiKey(userId: string, service: string, apiKey: string, validated: boolean = false) {
+    if (!supabase) throw new Error('Supabase not configured');
+    
+    const encryptedKey = await encryption.encrypt(apiKey, userId);
+    
+    const { error } = await supabase
+      .from('api_keys')
+      .upsert({
+        user_id: userId,
+        service,
+        encrypted_key: encryptedKey,
+        enabled: true,
+        validated,
+        last_validated: validated ? new Date().toISOString() : undefined,
+        updated_at: new Date().toISOString(),
+      });
+    
+    if (error) throw error;
+  },
+
+  // Update API key
+  async updateApiKey(keyId: string, apiKey: string, validated: boolean = false) {
+    if (!supabase) throw new Error('Supabase not configured');
+    
+    // Get the user ID from the existing key to use for encryption
+    const { data: existingKey } = await supabase
+      .from('api_keys')
+      .select('user_id')
+      .eq('id', keyId)
+      .single();
+    
+    if (!existingKey) throw new Error('API key not found');
+    
+    const encryptedKey = await encryption.encrypt(apiKey, existingKey.user_id);
+    
+    const { error } = await supabase
+      .from('api_keys')
+      .update({
+        encrypted_key: encryptedKey,
+        validated,
+        last_validated: validated ? new Date().toISOString() : undefined,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', keyId);
+    
+    if (error) throw error;
+  },
+
+  // Delete API key
+  async deleteApiKey(keyId: string) {
+    if (!supabase) throw new Error('Supabase not configured');
+    
+    const { error } = await supabase
+      .from('api_keys')
+      .delete()
+      .eq('id', keyId);
+    
+    if (error) throw error;
+  },
+
+  // Update user profile
+  async updateUserProfile(userId: string, profile: any) {
+    if (!supabase) throw new Error('Supabase not configured');
+    
+    const { error } = await supabase
+      .from('profiles')
+      .upsert({
+        id: userId,
+        full_name: profile.full_name,
+        company: profile.company,
+        role: profile.role,
+        industry: profile.industry,
+        team_size: profile.team_size,
+        updated_at: new Date().toISOString(),
+      });
+    
+    if (error) throw error;
+  },
+
+  // Update user preferences
+  async updateUserPreferences(userId: string, preferences: any) {
+    if (!supabase) throw new Error('Supabase not configured');
+    
+    const { error } = await supabase
+      .from('user_preferences')
+      .upsert({
+        user_id: userId,
+        demo_mode: preferences.demo_mode,
+        timezone: preferences.timezone,
+        currency: preferences.currency,
+        monthly_budget: preferences.monthly_budget,
+        neutrality_target: preferences.neutrality_target,
+        notifications: preferences.notifications,
+        carbon_reduction_goal: preferences.carbon_reduction_goal,
+        reporting_frequency: preferences.reporting_frequency,
+        updated_at: new Date().toISOString(),
+      });
+    
+    if (error) throw error;
+  },
+
+  // Get decrypted API key for usage
+  async getDecryptedApiKey(userId: string, service: string): Promise<string | null> {
+    if (!supabase) return null;
+    
+    try {
+      const { data, error } = await supabase
+        .from('api_keys')
+        .select('encrypted_key')
+        .eq('user_id', userId)
+        .eq('service', service)
+        .eq('enabled', true)
+        .single();
+      
+      if (error || !data) return null;
+      
+      return await encryption.decrypt(data.encrypted_key, userId);
+    } catch (error) {
+      console.error('Error getting decrypted API key:', error);
+      return null;
+    }
   },
 };

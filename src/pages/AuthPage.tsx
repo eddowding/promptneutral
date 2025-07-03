@@ -114,54 +114,6 @@ export const AuthPage: React.FC = () => {
         <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-200 to-transparent"></div>
       </div>
 
-      {/* Feature Highlights */}
-      <div className="hidden lg:block absolute top-1/2 left-8 transform -translate-y-1/2">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 max-w-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Why PromptNeutral?</h3>
-          <ul className="space-y-3 text-sm text-gray-600">
-            <li className="flex items-start">
-              <div className="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-              Track your AI usage carbon footprint in real-time
-            </li>
-            <li className="flex items-start">
-              <div className="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-              Get actionable insights to reduce environmental impact
-            </li>
-            <li className="flex items-start">
-              <div className="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-              Generate compliance reports for sustainability goals
-            </li>
-            <li className="flex items-start">
-              <div className="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-              Support carbon-neutral AI initiatives
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <div className="hidden lg:block absolute top-1/2 right-8 transform -translate-y-1/2">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 max-w-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Security & Privacy</h3>
-          <ul className="space-y-3 text-sm text-gray-600">
-            <li className="flex items-start">
-              <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-              End-to-end encryption for all data
-            </li>
-            <li className="flex items-start">
-              <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-              GDPR compliant data handling
-            </li>
-            <li className="flex items-start">
-              <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-              No data sharing with third parties
-            </li>
-            <li className="flex items-start">
-              <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-              SOC 2 Type II certified infrastructure
-            </li>
-          </ul>
-        </div>
-      </div>
     </div>
   );
 };

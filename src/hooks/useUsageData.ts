@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { UsageReport } from '../types/usage';
+import { UsageReport, ChartDataPoint, DailySummary } from '../types/usage';
 import { OpenAIApiService } from '../services/openaiApi';
 import { DatabaseService } from '../services/databaseService';
-import { sampleUsageData } from '../data/sampleData';
+import { UsageDataService } from '../services/usageDataService';
 import { useAuth } from '../contexts/AuthContext';
 
 interface UseUsageDataReturn {
@@ -11,7 +11,6 @@ interface UseUsageDataReturn {
   loading: boolean;
   error: string | null;
   refetch: () => Promise<void>;
-  usingSampleData: boolean;
   syncData: () => Promise<void>;
   lastSyncTime: Date | null;
 }
@@ -21,10 +20,9 @@ export const useUsageData = (useLiveData: boolean = true): UseUsageDataReturn =>
   const [data30Days, setData30Days] = useState<UsageReport | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [usingSampleData, setUsingSampleData] = useState(false);
   const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
 
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const apiService = OpenAIApiService.getInstance();
   const databaseService = DatabaseService.getInstance();
 
@@ -36,53 +34,83 @@ export const useUsageData = (useLiveData: boolean = true): UseUsageDataReturn =>
       if (useLiveData && user) {
         console.log('Attempting to fetch real data from database...');
         
-        // Try to fetch data from database first
         try {
-          const [dbData7, dbData30] = await Promise.all([
-            apiService.fetchUsageFromDatabase(user.id, 7),
-            apiService.fetchUsageFromDatabase(user.id, 30),
+          // Use the new UsageDataService to get data
+          const [chartData7, chartData30] = await Promise.all([
+            UsageDataService.getChartData(user.id, 7),
+            UsageDataService.getChartData(user.id, 30),
           ]);
 
-          // Check if we have sufficient data in database
+          // Convert chart data to the expected UsageReport format
+          const formatAsUsageReport = (chartData: ChartDataPoint[]): UsageReport => {
+            const report: UsageReport = {};
+            
+            chartData.forEach(item => {
+              if (!report[item.date]) {
+                report[item.date] = {};
+              }
+              
+              if (!report[item.date][item.model]) {
+                report[item.date][item.model] = {
+                  requests: 0,
+                  context_tokens: 0,
+                  generated_tokens: 0
+                };
+              }
+              
+              report[item.date][item.model].requests += item.requests;
+              report[item.date][item.model].context_tokens += item.context_tokens;
+              report[item.date][item.model].generated_tokens += item.generated_tokens;
+            });
+            
+            return report;
+          };
+
+          const dbData7 = formatAsUsageReport(chartData7);
+          const dbData30 = formatAsUsageReport(chartData30);
+
+          // Check if we have sufficient data
           const hasRecentData = Object.keys(dbData7).length > 0;
           
           if (hasRecentData) {
             console.log('✓ Using data from database');
             setData(dbData7);
             setData30Days(dbData30);
-            setUsingSampleData(false);
             
             // Update last sync time
-            const syncTime = await databaseService.getLastSyncTime(user.id);
-            setLastSyncTime(syncTime);
+            const fetchStatus = await UsageDataService.getLastFetchStatus(user.id);
+            setLastSyncTime(fetchStatus ? new Date(fetchStatus.last_fetched) : null);
           } else {
-            // No data in database, try to sync from OpenAI API
-            console.log('No data in database, attempting to sync from OpenAI API...');
-            await syncFromApi();
+            // No data in database, suggest using admin API
+            console.log('No data in database. Please configure admin API key and fetch data.');
+            setError('No usage data found. Please add your OpenAI admin key in Settings and fetch your usage data.');
+            setData(null);
+            setData30Days(null);
           }
         } catch (dbError) {
-          console.warn('Database fetch failed, trying OpenAI API directly:', dbError);
-          await fetchFromApi();
+          console.warn('Database fetch failed:', dbError);
+          setError('Failed to load usage data. Please check your admin API key configuration.');
+          setData(null);
+          setData30Days(null);
         }
       } else if (useLiveData && !user) {
-        console.log('No user authenticated, trying OpenAI API directly...');
-        await fetchFromApi();
+        console.log('No user authenticated');
+        setError('Please sign in to view usage data');
+        setData(null);
+        setData30Days(null);
       } else {
-        console.log('Using sample data');
-        setData(sampleUsageData);
-        setData30Days(sampleUsageData);
-        setUsingSampleData(true);
+        setData(null);
+        setData30Days(null);
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
       console.error('Error fetching data:', errorMessage);
       setError(errorMessage);
       
-      // Fallback to sample data if everything fails
-      console.warn('All data sources failed, falling back to sample data:', errorMessage);
-      setData(sampleUsageData);
-      setData30Days(sampleUsageData);
-      setUsingSampleData(true);
+      // Clear data on error
+      console.warn('All data sources failed:', errorMessage);
+      setData(null);
+      setData30Days(null);
     } finally {
       setLoading(false);
     }
@@ -105,7 +133,6 @@ export const useUsageData = (useLiveData: boolean = true): UseUsageDataReturn =>
     console.log('Live data fetched from API (30 days):', liveData30);
     setData(liveData7);
     setData30Days(liveData30);
-    setUsingSampleData(false);
   };
 
   const syncFromApi = async () => {
@@ -126,7 +153,6 @@ export const useUsageData = (useLiveData: boolean = true): UseUsageDataReturn =>
     
     setData(dbData7);
     setData30Days(dbData30);
-    setUsingSampleData(false);
     
     // Update last sync time
     const syncTime = await databaseService.getLastSyncTime(user.id);
@@ -143,7 +169,19 @@ export const useUsageData = (useLiveData: boolean = true): UseUsageDataReturn =>
 
     try {
       setError(null);
-      await syncFromApi();
+      // Import the fetch function from adminApiService
+      const { fetchAndStoreUsageData } = await import('../services/adminApiService');
+      
+      console.log('🔄 Syncing data using admin API...');
+      const result = await fetchAndStoreUsageData(user.id, true);
+      
+      if (result.success) {
+        console.log('✅ Data sync completed successfully');
+        // Refresh the data
+        await fetchData();
+      } else {
+        throw new Error(result.message);
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
       console.error('Error syncing data:', errorMessage);
@@ -152,8 +190,15 @@ export const useUsageData = (useLiveData: boolean = true): UseUsageDataReturn =>
   };
 
   useEffect(() => {
+    // Don't fetch data while auth is still loading
+    if (authLoading) {
+      console.log('useUsageData: Waiting for auth to complete...');
+      return;
+    }
+    
+    console.log('useUsageData: Auth complete, fetching data. User:', user?.id);
     fetchData();
-  }, [useLiveData, user?.id]);
+  }, [useLiveData, user?.id, authLoading]);
 
   // Set up real-time subscription when user is authenticated and using live data
   useEffect(() => {
@@ -181,7 +226,6 @@ export const useUsageData = (useLiveData: boolean = true): UseUsageDataReturn =>
     loading,
     error,
     refetch: fetchData,
-    usingSampleData,
     syncData,
     lastSyncTime,
   };

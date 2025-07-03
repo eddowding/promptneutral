@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { supabase } from '../lib/supabase';
-import { User as SupabaseUser, Session } from '@supabase/supabase-js';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { User as SupabaseUser, Session as SupabaseSession } from '@supabase/supabase-js';
+import { ConfigService } from '../services/config';
 
 // Types
 export interface User {
@@ -12,16 +13,19 @@ export interface User {
 
 export interface AuthContextType {
   user: User | null;
+  session: SupabaseSession | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   signup: (email: string, password: string, name: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
+  resetPassword: (email: string) => Promise<{ success: boolean; error?: string }>;
   isAuthenticated: boolean;
   isSupabaseAvailable: boolean;
 }
 
 // Create context
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
 
 // Provider component
 interface AuthProviderProps {
@@ -30,6 +34,7 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<SupabaseSession | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Convert Supabase user to our User type
@@ -62,18 +67,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Initialize auth state
   useEffect(() => {
     const initializeAuth = async () => {
-      if (!isSupabaseConfigured || !supabase) {
-        // Fall back to localStorage for demo mode
-        try {
-          const storedUser = localStorage.getItem('promptneutral_user');
-          if (storedUser) {
-            const userData = JSON.parse(storedUser);
-            setUser(userData);
-          }
-        } catch (error) {
-          console.error('Error parsing stored user data:', error);
-          localStorage.removeItem('promptneutral_user');
+      // Always check localStorage first, regardless of Supabase configuration
+      try {
+        const storedUser = localStorage.getItem('promptneutral_user');
+        console.log('AuthContext: Checking localStorage for user:', storedUser ? 'Found' : 'Not found');
+        if (storedUser) {
+          const userData = JSON.parse(storedUser);
+          console.log('AuthContext: Restoring user from localStorage:', userData);
+          setUser(userData);
+          // Set user ID in config service for API key retrieval
+          console.log('AuthContext: Setting ConfigService user ID:', userData.id);
+          ConfigService.getInstance().setUserId(userData.id);
+          console.log('AuthContext: ConfigService user ID set successfully');
+          setIsLoading(false);
+          return; // Exit early if we have a stored user
         }
+      } catch (error) {
+        console.error('Error parsing stored user data:', error);
+        localStorage.removeItem('promptneutral_user');
+      }
+
+      // Only proceed with Supabase if no localStorage user was found
+      if (!isSupabaseConfigured || !supabase) {
         setIsLoading(false);
         return;
       }
@@ -87,6 +102,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         } else if (session?.user) {
           const userData = await convertSupabaseUser(session.user);
           setUser(userData);
+          setSession(session);
+          // Set user ID in config service for API key retrieval
+          ConfigService.getInstance().setUserId(userData.id);
         }
 
         // Listen for auth changes
@@ -94,14 +112,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           async (event, session) => {
             console.log('Auth state changed:', event);
             
+            // Don't interfere if we have a localStorage user
+            const storedUser = localStorage.getItem('promptneutral_user');
+            if (storedUser) {
+              console.log('AuthContext: Ignoring Supabase auth change due to localStorage user');
+              return;
+            }
+            
             if (session?.user) {
               const userData = await convertSupabaseUser(session.user);
               setUser(userData);
+              setSession(session);
+              // Set user ID in config service for API key retrieval
+              ConfigService.getInstance().setUserId(userData.id);
             } else {
               setUser(null);
+              setSession(null);
+              ConfigService.getInstance().setUserId('');
             }
-            
-            setIsLoading(false);
           }
         );
 
@@ -136,6 +164,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return { success: false, error: 'Password must be at least 6 characters' };
       }
 
+      // Check for demo credentials first
+      if (email === 'demo@promptneutral.com' && password === 'demo123') {
+        const userData: User = {
+          id: '123e4567-e89b-12d3-a456-426614174000',
+          email: 'demo@promptneutral.com',
+          name: 'Demo User',
+          createdAt: new Date().toISOString()
+        };
+
+        setUser(userData);
+        localStorage.setItem('promptneutral_user', JSON.stringify(userData));
+        return { success: true };
+      }
+
       // Use Supabase if available, otherwise fall back to mock authentication
       if (isSupabaseConfigured && supabase) {
         const { data, error } = await supabase.auth.signInWithPassword({
@@ -150,6 +192,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (data.user) {
           const userData = await convertSupabaseUser(data.user);
           setUser(userData);
+          // Set user ID in config service for API key retrieval
+          ConfigService.getInstance().setUserId(userData.id);
           return { success: true };
         }
 
@@ -244,6 +288,29 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
     
     setUser(null);
+    setSession(null);
+  };
+
+  // Reset password function
+  const resetPassword = async (email: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      if (!isSupabaseConfigured || !supabase) {
+        return { success: false, error: 'Password reset is not available in demo mode' };
+      }
+
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('Reset password error:', error);
+      return { success: false, error: 'An unexpected error occurred. Please try again.' };
+    }
   };
 
   // Mock authentication functions (fallback when Supabase is not configured)
@@ -265,12 +332,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       setUser(userData);
       localStorage.setItem('promptneutral_user', JSON.stringify(userData));
+      // Set user ID in config service for API key retrieval
+      ConfigService.getInstance().setUserId(userData.id);
       return { success: true };
     } else {
       // For demo purposes, accept demo@promptneutral.com with password "demo123"
       if (email === 'demo@promptneutral.com' && password === 'demo123') {
         const userData: User = {
-          id: 'demo-user-1',
+          id: '123e4567-e89b-12d3-a456-426614174000',
           email: 'demo@promptneutral.com',
           name: 'Demo User',
           createdAt: new Date().toISOString()
@@ -318,9 +387,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const value: AuthContextType = {
     user,
+    session,
     isLoading,
     login,
     signup,
+    resetPassword,
     logout,
     isAuthenticated: !!user,
     isSupabaseAvailable: isSupabaseConfigured

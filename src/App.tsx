@@ -8,14 +8,18 @@ import { DashboardPage } from './pages/DashboardPage';
 import { PricingPage } from './pages/PricingPage';
 import { AuthPage } from './pages/AuthPage';
 import { OnboardingPage } from './pages/OnboardingPage';
+import { SettingsPage } from './pages/SettingsPage';
 import { EmailVerification } from './components/EmailVerification';
 import { PasswordReset } from './components/PasswordReset';
+import FeedbackTab from './components/FeedbackTab';
+import FeedbackPage from './pages/admin/FeedbackPage';
 
 function App() {
   return (
     <AuthProvider>
       <Router>
         <div className="min-h-screen bg-white">
+          <FeedbackTab />
           <Routes>
             <Route path="/" element={
               <>
@@ -44,6 +48,23 @@ function App() {
                 <ProtectedRoute>
                   <Navigation />
                   <DashboardPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/settings" 
+              element={
+                <ProtectedRoute>
+                  <Navigation />
+                  <SettingsPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/feedback" 
+              element={
+                <ProtectedRoute>
+                  <FeedbackPage />
                 </ProtectedRoute>
               } 
             />

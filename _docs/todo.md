@@ -35,29 +35,73 @@
 ### Current Status
 - ✅ **MVP Complete**: Homepage, dashboard, carbon calculations, compliance features
 - ✅ **Infrastructure**: Supabase setup, database schema, GitHub repository
-- 🔄 **Next Phase**: Real authentication, live data integration, onboarding flow
+- ✅ **Authentication**: Supabase auth implementation with demo mode fallback
+- ✅ **Onboarding Flow**: Complete step-by-step user onboarding with API validation
+- 🔄 **Next Phase**: Real-time data integration, WebSocket connections
 
 ---
 
 ## High Priority Tasks
 
 ### 🔐 Authentication & Database
-- [ ] **Setup Supabase project** - Configure Supabase project with auth and database
-- [ ] **Implement Supabase authentication** - Replace mock auth with real Supabase auth flows
-- [ ] **Design database schema** - Create tables for usage data, carbon credits, and user settings
+- [x] **Setup Supabase project** - Configure Supabase project with auth and database
+- [x] **Implement Supabase authentication** - Replace mock auth with real Supabase auth flows
+- [x] **Design database schema** - Create tables for usage data, carbon credits, and user settings
 
 ### 🚀 Core Features
-- [ ] **Build step-by-step onboarding** - Guide new users through connecting AI services
-- [ ] **Real-time WebSocket connections** - Implement live carbon tracking updates
-- [ ] **Integration marketplace** - Support for AI services beyond OpenAI (Anthropic, Google, etc.)
+- [x] **Build step-by-step onboarding** - Guide new users through connecting AI services
+- [ ] Support for AI services beyond OpenAI (Anthropic, Google, etc.)
+
+### purchasing offsets
+- [ ] get the maths right and cite sources. 
 - [ ] **Carbon offset portfolio** - Project selection and portfolio management features
-<!-- - [ ] **Create GitHub repository** - Setup version control and deployment -->
+<!-- - [x] **Create GitHub repository** - Setup version control and deployment -->
 
-## Medium Priority Tasks
+### Superadmin Functionality To-Do
 
-### 🎨 User Experience
-- [ ] **Homepage animations** - Add smooth scroll animations and micro-interactions
-<!-- - [ ] **Enhanced data export** - Add PDF, CSV, Excel export with custom date ranges -->
+- [ ] Define superadmin role in database schema (e.g. add `is_superadmin` flag to user profiles)
+- [ ] Implement Row Level Security (RLS) policies for superadmin access
+- [ ] Add superadmin checks to backend API endpoints
+- [ ] Create superadmin management UI (user list, promote/demote users)
+- [ ] Restrict critical actions (e.g. deleting organisations, managing all data) to superadmins
+- [ ] Add tests for superadmin permissions and flows
+- [ ] Enable superadmin to view all organisations and users (complete visibility across the platform)
+- [ ] Allow superadmin to suspend/activate accounts (handle policy violations or billing issues)
+- [ ] Allow superadmin to access user dashboards (view any user's carbon tracking and usage data for support)
+- [ ] Provide backup oversight (monitor data backup status and recovery procedures)
+- [ ] Monitor integration health (Supabase, OpenAI API, carbon marketplace connections)
+- [ ] Enable data export/deletion (handle GDPR requests, data portability)
+
+#### Platform Analytics & Monitoring (Admin)
+- [ ] Display global platform metrics (total users, API usage, carbon, energy use across all accounts)
+- [ ] Implement performance monitoring (database health, API rate limiting, sync service status)
+- [ ] Provide usage trend analysis (platform growth, popular AI models, carbon impact trends)
+- [ ] Show revenue analytics (subscription metrics, carbon credit sales volumes)
+- [ ] Set up system alerts (failed API syncs, unusual usage patterns, compliance violations)
+
+#### Security & Compliance (Admin)
+- [ ] Provide audit trail access (view all user actions, data changes, API key usage)
+- [ ] Enable data export/deletion (handle GDPR requests, data portability)
+
+#### Carbon Credit & Environmental Management (Admin)
+- [ ] Manage carbon offset projects (add/remove/update available offset project types)
+- [ ] Verify credit retirement (audit carbon credit purchases and retirement certificates)
+- [ ] Update environmental calculations (modify CO2/kWh ratios as research evolves)
+- [ ] Approve large offset purchases (review enterprise-level carbon credit transactions)
+- [ ] Oversee environmental compliance (monitor EU Green Claims Directive adherence)
+
+#### Business Intelligence (Admin)
+- [ ] Track customer success metrics (user engagement, feature adoption, churn analysis)
+- [ ] Provide carbon impact reporting (platform-wide environmental impact statistics)
+- [ ] Conduct market analysis (carbon credit pricing trends, competitor monitoring)
+- [ ] Optimise revenue (identify opportunities for pricing or feature improvements)
+
+
+
+- [ ] imporve homepage content. 
+- [ ] set up analytics 
+- [ ] create feedback system - review and tweak @feedback.md before starting. 
+- [ ] **Homepage animations** - Add smooth scroll animations and micro-interactions 
 - [ ] **API documentation page** - Interactive docs with code examples
 
 ### 📊 Analytics & Management
@@ -68,8 +112,7 @@
 
 ## Low Priority Tasks
 
-### 🌙 Nice-to-Have Features
-- [ ] **Dark mode toggle** - Implement dark theme throughout the application
+### 🌙 Nice-to-Have Features 
 - [ ] **Mobile responsive optimization** - Ensure all components work well on mobile/tablet
 
 ## Completed Tasks
@@ -85,30 +128,48 @@
 - [x] **GitHub repository** - Created public repo at https://github.com/eddowding/promptneutral
 - [x] **Supabase setup** - Added Supabase client configuration and dependencies
 - [x] **Database schema** - Designed complete schema with RLS policies for profiles, usage_data, carbon_credits
+- [x] **Authentication system** - Full Supabase auth with demo mode fallback (localStorage)
+- [x] **Onboarding wizard** - 6-step user onboarding with profile, API validation, goals, and progress saving
+- [x] **API key validation** - Real-time validation for OpenAI, Anthropic, and Google AI APIs
+- [x] **Error handling** - Comprehensive error boundaries and user-friendly error notifications
+- [x] **JSX syntax fixes** - Resolved compilation errors in OnboardingWizard component
 
 ## Technical Notes
 
-### Dependencies to Add
-- `@supabase/supabase-js` - Supabase client library
-- `@supabase/auth-ui-react` - Pre-built auth components
+### Dependencies Added
+- ✅ `@supabase/supabase-js` - Supabase client library
+- ✅ `@supabase/auth-ui-react` - Pre-built auth components
+- ✅ `lucide-react` - Icon library for UI components
+
+### Dependencies to Consider
 - `framer-motion` - For smooth animations (optional)
+- `react-hot-toast` - Better notification system
+- `react-hook-form` - Enhanced form handling
 
-### Database Schema (Planned)
-```sql
--- Users table (handled by Supabase Auth)
--- usage_data table for storing API usage
--- carbon_credits table for offset tracking
--- integrations table for AI service connections
--- notifications table for alerts
-```
+### Database Schema (Implemented)
+✅ Complete schema available in `_docs/supabase-onboarding-schema.sql`
+- `profiles` - Extended user profiles with role, industry, team size
+- `user_preferences` - Demo mode, timezone, currency, carbon goals
+- `api_keys` - Encrypted storage for AI service API keys
+- `onboarding_progress` - Step-by-step progress with auto-save
+- `selected_projects` - Carbon offset project selections
+- `usage_data` - AI usage tracking (existing)
+- `carbon_credits` - Offset tracking (existing)
 
-### Environment Variables Needed
+### Environment Variables Setup
+✅ `.env.local` file created with template
 ```
 VITE_SUPABASE_URL=your_supabase_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
+### Demo Mode Access
+🎯 **Ready to test immediately:**
+- URL: http://localhost:3000
+- Demo login: demo@promptneutral.com / demo123
+- Full functionality without Supabase setup required
+
 ---
 
 **Last Updated:** July 2025  
-**Priority:** Focus on Supabase integration and core functionality first
+**Priority:** ✅ Core authentication and onboarding complete. Next: Real-time WebSocket integration
