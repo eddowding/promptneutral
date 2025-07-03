@@ -39,7 +39,8 @@ demo*.py
 
 # Old migrations and SQL files
 old-migrations/
-*.sql
+# *.sql
+demo2.sql
 
 # Data dumps
 *.jsonl
