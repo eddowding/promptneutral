@@ -257,77 +257,33 @@ export class OpenAIApiService {
     const hasHistoricalData = await this.databaseService.hasHistoricalDataFlag(userId);
     if (hasHistoricalData) {
       console.log('✅ Historical data already fetched, skipping background sync');
+      if (onComplete) onComplete();
       return;
     }
     
-    // Start fetching from 31 days ago (since we already have 30 days)
-    const today = new Date();
-    const startFromDate = new Date(today);
-    startFromDate.setDate(today.getDate() - 33); // Start from day 31
-    
-    let chunkEndDate = new Date(startFromDate);
-    let consecutiveEmptyChunks = 0;
-    const maxEmptyChunks = 3;
-    const chunkSize = 30;
-    let totalFound = 0;
-    
-    while (consecutiveEmptyChunks < maxEmptyChunks) {
-      const chunkStartDate = new Date(chunkEndDate);
-      chunkStartDate.setDate(chunkEndDate.getDate() - (chunkSize - 1));
+    try {
+      // Import and use the admin API service for historical data
+      const { fetchAndStoreUsageData } = await import('./adminApiService');
       
-      const startStr = chunkStartDate.toISOString().split('T')[0];
-      const endStr = chunkEndDate.toISOString().split('T')[0];
+      console.log('🔄 Background: Using admin API to fetch historical data...');
       
-      console.log(`🔄 Background: Fetching ${startStr} to ${endStr}`);
+      // Fetch up to 90 days of historical data
+      const result = await fetchAndStoreUsageData(userId, false, 90);
       
-      try {
-        const raw = await this.fetchUsageForDateRange(startStr, endStr);
+      if (result.success) {
+        // Mark historical data as fetched
+        await this.databaseService.setHistoricalDataFlag(userId, true);
+        console.log(`✅ Background sync complete: Historical data saved`);
         
-        if (raw.data && raw.data.length > 0) {
-          consecutiveEmptyChunks = 0;
-          const chunkData = this.groupByDate(raw);
-          const daysInChunk = Object.keys(chunkData).length;
-          totalFound += daysInChunk;
-          
-          // Save each day to database
-          for (const [date, dayData] of Object.entries(chunkData)) {
-            if (!('error' in dayData)) {
-              await this.databaseService.storeUsageData(userId, date, dayData);
-            }
-          }
-          
-          console.log(`✓ Background: Saved ${daysInChunk} days`);
-          
-          // Emit progress event
-          window.dispatchEvent(new CustomEvent('historicalDataProgress', {
-            detail: { found: daysInChunk, total: totalFound }
-          }));
-          
-          await this.sleep(1000); // Longer delay for background
-        } else {
-          consecutiveEmptyChunks++;
-        }
-      } catch (error) {
-        console.error('Background fetch error:', error);
-        consecutiveEmptyChunks++;
+        // Emit completion event
+        window.dispatchEvent(new CustomEvent('historicalDataProgress', {
+          detail: { found: 90, total: 90 }
+        }));
+      } else {
+        console.error('Background fetch failed:', result.message);
       }
-      
-      // Move to next chunk
-      chunkEndDate = new Date(chunkStartDate);
-      chunkEndDate.setDate(chunkStartDate.getDate() - 1);
-      
-      // Safety check: don't go back more than 2 years
-      const twoYearsAgo = new Date(today);
-      twoYearsAgo.setFullYear(today.getFullYear() - 2);
-      if (chunkEndDate < twoYearsAgo) {
-        break;
-      }
-    }
-    
-    // Mark historical data as fetched
-    if (totalFound > 0) {
-      await this.databaseService.setHistoricalDataFlag(userId, true);
-      console.log(`✅ Background sync complete: ${totalFound} historical days saved`);
+    } catch (error) {
+      console.error('Background fetch error:', error);
     }
     
     if (onComplete) {
