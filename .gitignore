@@ -29,3 +29,31 @@ dist-ssr
 .env.development.local
 .env.test.local
 .env.production.local
+
+# API Keys and sensitive data
+*.key
+*.pem
+debug-*.js
+demo*.py
+*-api-key*
+
+# Old migrations and SQL files
+old-migrations/
+*.sql
+
+# Data dumps
+*.jsonl
+*.dump
+*.backup
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+env/
+venv/
+.venv
+
+# Supabase
+.supabase/

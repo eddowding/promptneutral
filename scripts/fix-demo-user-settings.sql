@@ -1,19 +1,26 @@
 -- Fix row-level security for demo user to access user_settings table
 -- The demo user has a hardcoded ID that needs special handling
 
--- First, check if demo user exists in auth.users
+-- First, ensure demo user exists with correct ID
 DO $$
 BEGIN
-  -- Insert demo user into auth.users if not exists
-  INSERT INTO auth.users (id, email, raw_user_meta_data, created_at, updated_at)
-  VALUES (
-    '123e4567-e89b-12d3-a456-426614174000'::uuid,
-    'demo@promptneutral.com',
-    '{"name": "Demo User"}'::jsonb,
-    NOW(),
-    NOW()
-  )
-  ON CONFLICT (id) DO NOTHING;
+  -- Check if user with this email exists but different ID
+  IF EXISTS (SELECT 1 FROM auth.users WHERE email = 'demo@promptneutral.com' AND id != '123e4567-e89b-12d3-a456-426614174000'::uuid) THEN
+    -- Update the existing user's ID to match our hardcoded one
+    UPDATE auth.users 
+    SET id = '123e4567-e89b-12d3-a456-426614174000'::uuid
+    WHERE email = 'demo@promptneutral.com';
+  ELSIF NOT EXISTS (SELECT 1 FROM auth.users WHERE id = '123e4567-e89b-12d3-a456-426614174000'::uuid) THEN
+    -- Insert only if the user doesn't exist at all
+    INSERT INTO auth.users (id, email, raw_user_meta_data, created_at, updated_at)
+    VALUES (
+      '123e4567-e89b-12d3-a456-426614174000'::uuid,
+      'demo@promptneutral.com',
+      '{"name": "Demo User"}'::jsonb,
+      NOW(),
+      NOW()
+    );
+  END IF;
 END $$;
 
 -- Update the RLS policies to handle demo user
