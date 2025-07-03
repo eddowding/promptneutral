@@ -57,7 +57,7 @@ export class DatabaseService {
         // Calculate environmental impact for this model usage
         const tempReport: UsageReport = { [date]: { [model]: usage } };
         const impact = calculateEnvironmentalImpact(tempReport);
-        const co2ForModel = impact.totalCO2 || 0;
+        const co2ForModel = impact.totalCO2g || 0;
         
         // Estimate cost based on model and tokens (simplified calculation)
         const cost = this.estimateCost(model, usage);
@@ -126,7 +126,10 @@ export class DatabaseService {
             report[row.date] = {};
           }
           
-          report[row.date][row.model] = {
+          const dayUsage = report[row.date];
+          if ('error' in dayUsage) continue; // Skip if it's an error object
+          
+          dayUsage[row.model] = {
             requests: row.requests,
             context_tokens: row.context_tokens,
             generated_tokens: row.generated_tokens,

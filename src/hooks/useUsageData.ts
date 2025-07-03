@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { UsageReport, ChartDataPoint, DailySummary } from '../types/usage';
 import { OpenAIApiService } from '../services/openaiApi';
 import { DatabaseService } from '../services/databaseService';
@@ -51,17 +51,20 @@ export const useUsageData = (useLiveData: boolean = true): UseUsageDataReturn =>
                 report[item.date] = {};
               }
               
-              if (!report[item.date][item.model]) {
-                report[item.date][item.model] = {
+              const dayUsage = report[item.date];
+              if ('error' in dayUsage) return; // Skip if it's an error object
+              
+              if (!dayUsage[item.model]) {
+                dayUsage[item.model] = {
                   requests: 0,
                   context_tokens: 0,
                   generated_tokens: 0
                 };
               }
               
-              report[item.date][item.model].requests += item.requests;
-              report[item.date][item.model].context_tokens += item.context_tokens;
-              report[item.date][item.model].generated_tokens += item.generated_tokens;
+              dayUsage[item.model].requests += item.requests;
+              dayUsage[item.model].context_tokens += item.context_tokens;
+              dayUsage[item.model].generated_tokens += item.generated_tokens;
             });
             
             return report;
@@ -190,7 +193,7 @@ export const useUsageData = (useLiveData: boolean = true): UseUsageDataReturn =>
     }
   };
 
-  const fetchCustomRange = async (range: '7d' | '30d' | '90d' | 'all'): Promise<UsageReport | null> => {
+  const fetchCustomRange = useCallback(async (range: '7d' | '30d' | '90d' | 'all'): Promise<UsageReport | null> => {
     if (!user) {
       console.warn('Cannot fetch custom range: user not authenticated');
       return null;
@@ -226,7 +229,7 @@ export const useUsageData = (useLiveData: boolean = true): UseUsageDataReturn =>
       setError(errorMessage);
       return null;
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     // Don't fetch data while auth is still loading

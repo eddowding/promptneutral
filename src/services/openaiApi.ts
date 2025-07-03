@@ -110,16 +110,19 @@ export class OpenAIApiService {
             report[date] = {};
           }
           
+          const dayUsage = report[date];
+          if ('error' in dayUsage) continue; // Skip if it's an error object
+          
           for (const result of bucket.results) {
             const model = result.model || 'unknown';
-            if (!report[date][model]) {
-              report[date][model] = { requests: 0, context_tokens: 0, generated_tokens: 0 };
+            if (!dayUsage[model]) {
+              dayUsage[model] = { requests: 0, context_tokens: 0, generated_tokens: 0 };
             }
             
             // Map new field names to our format
-            report[date][model].requests += result.num_model_requests || 0;
-            report[date][model].context_tokens += result.input_tokens || 0;
-            report[date][model].generated_tokens += result.output_tokens || 0;
+            dayUsage[model].requests += result.num_model_requests || 0;
+            dayUsage[model].context_tokens += result.input_tokens || 0;
+            dayUsage[model].generated_tokens += result.output_tokens || 0;
           }
         }
       }
@@ -132,14 +135,17 @@ export class OpenAIApiService {
           report[date] = {};
         }
         
+        const dayUsage = report[date];
+        if ('error' in dayUsage) continue; // Skip if it's an error object
+        
         const model = entry.snapshot_id || 'unknown';
-        if (!report[date][model]) {
-          report[date][model] = { requests: 0, context_tokens: 0, generated_tokens: 0 };
+        if (!dayUsage[model]) {
+          dayUsage[model] = { requests: 0, context_tokens: 0, generated_tokens: 0 };
         }
         
-        report[date][model].requests += entry.n_requests || 0;
-        report[date][model].context_tokens += entry.n_context_tokens_total || 0;
-        report[date][model].generated_tokens += entry.n_generated_tokens_total || 0;
+        dayUsage[model].requests += entry.n_requests || 0;
+        dayUsage[model].context_tokens += entry.n_context_tokens_total || 0;
+        dayUsage[model].generated_tokens += entry.n_generated_tokens_total || 0;
       }
     }
     

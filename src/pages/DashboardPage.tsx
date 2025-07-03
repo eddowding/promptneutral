@@ -47,7 +47,7 @@ export const DashboardPage: React.FC = () => {
     };
 
     handleTimeRangeChange();
-  }, [chartTimeRange, fetchCustomRange]);
+  }, [chartTimeRange]); // Remove fetchCustomRange from dependencies
 
   if (loading) {
     return <LoadingSpinner />;
