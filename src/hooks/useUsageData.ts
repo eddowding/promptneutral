@@ -259,6 +259,30 @@ export const useUsageData = (useLiveData: boolean = true): UseUsageDataReturn =>
     };
   }, [user?.id, useLiveData]);
 
+  // Trigger background historical data fetch on first load
+  useEffect(() => {
+    if (!user || !useLiveData || loading) return;
+
+    // Start background fetch after initial data is loaded
+    const startBackgroundFetch = async () => {
+      console.log('🚀 Initiating background historical data fetch...');
+      try {
+        await apiService.fetchHistoricalDataInBackground(user.id, () => {
+          console.log('✅ Background historical data fetch completed');
+          // Optionally refresh data to show new historical data
+          // fetchData();
+        });
+      } catch (error) {
+        console.error('Error in background fetch:', error);
+      }
+    };
+
+    // Delay background fetch to not interfere with initial load
+    const timer = setTimeout(startBackgroundFetch, 5000);
+    
+    return () => clearTimeout(timer);
+  }, [user?.id, useLiveData, loading]);
+
   return {
     data,
     data30Days,

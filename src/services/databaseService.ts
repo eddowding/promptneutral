@@ -322,4 +322,91 @@ export class DatabaseService {
       throw error;
     }
   }
+
+  /**
+   * Check if historical data has been fetched for a user
+   */
+  async hasHistoricalDataFlag(userId: string): Promise<boolean> {
+    try {
+      // Check in-memory cache first
+      if (DatabaseService.instance.historicalDataFlags?.has(userId)) {
+        return DatabaseService.instance.historicalDataFlags.get(userId) || false;
+      }
+
+      // Check in database user_settings
+      const { data, error } = await supabase
+        .from('user_settings')
+        .select('metadata')
+        .eq('user_id', userId)
+        .single();
+
+      if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows found"
+        throw error;
+      }
+
+      const hasHistorical = data?.metadata?.historicalDataFetched === true;
+      
+      // Cache the result
+      if (DatabaseService.instance.historicalDataFlags) {
+        DatabaseService.instance.historicalDataFlags.set(userId, hasHistorical);
+      }
+      
+      return hasHistorical;
+    } catch (error) {
+      console.error('Error checking historical data flag:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Set the historical data fetched flag for a user
+   */
+  async setHistoricalDataFlag(userId: string, fetched: boolean): Promise<void> {
+    try {
+      // Update in-memory cache
+      if (DatabaseService.instance.historicalDataFlags) {
+        DatabaseService.instance.historicalDataFlags.set(userId, fetched);
+      }
+
+      // Check if user_settings record exists
+      const { data: existing } = await supabase
+        .from('user_settings')
+        .select('id, metadata')
+        .eq('user_id', userId)
+        .single();
+
+      const metadata = {
+        ...(existing?.metadata || {}),
+        historicalDataFetched: fetched,
+        historicalDataFetchedAt: new Date().toISOString()
+      };
+
+      if (existing) {
+        // Update existing record
+        const { error } = await supabase
+          .from('user_settings')
+          .update({ metadata })
+          .eq('user_id', userId);
+
+        if (error) throw error;
+      } else {
+        // Create new record
+        const { error } = await supabase
+          .from('user_settings')
+          .insert({
+            user_id: userId,
+            metadata
+          });
+
+        if (error) throw error;
+      }
+
+      console.log(`✓ Historical data flag set to ${fetched} for user ${userId}`);
+    } catch (error) {
+      console.error('Error setting historical data flag:', error);
+      throw error;
+    }
+  }
+
+  private historicalDataFlags = new Map<string, boolean>();
 }

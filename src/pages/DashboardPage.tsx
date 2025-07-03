@@ -13,6 +13,7 @@ import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { ExportButton } from '../components/ExportButton';
 import { SyncStatus } from '../components/SyncStatus';
+import { HistoricalDataSync } from '../components/HistoricalDataSync';
 import { useUsageData } from '../hooks/useUsageData';
 import { getDailySummaries, getModelTotals } from '../utils/dataProcessing';
 import { calculateEnvironmentalImpact, prepareStackedChartData } from '../utils/environmentalCalculations';
@@ -22,6 +23,7 @@ export const DashboardPage: React.FC = () => {
   const [chartTimeRange, setChartTimeRange] = useState<'7d' | '30d' | '90d' | 'all'>('30d');
   const [customRangeData, setCustomRangeData] = useState<UsageReport | null>(null);
   const [isLoadingCustomRange, setIsLoadingCustomRange] = useState(false);
+  const [isBackgroundSyncing, setIsBackgroundSyncing] = useState(true);
   const { data, data30Days, loading, error, refetch, syncData, lastSyncTime, fetchCustomRange } = useUsageData(true);
 
   // Handle time range changes
@@ -207,6 +209,12 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
       </main>
+      
+      {/* Background historical data sync indicator */}
+      <HistoricalDataSync 
+        isActive={isBackgroundSyncing} 
+        onComplete={() => setIsBackgroundSyncing(false)}
+      />
     </div>
   );
 };

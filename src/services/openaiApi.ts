@@ -160,7 +160,7 @@ export class OpenAIApiService {
     return this.fetchUsageForDays(30);
   }
 
-  async fetchMaximumHistoricalData(userId?: string): Promise<UsageReport> {
+  async fetchMaximumHistoricalData(userId?: string, onProgress?: (progress: { chunk: number, found: number, total: number }) => void): Promise<UsageReport> {
     console.log('🔍 Fetching maximum historical data from OpenAI...');
     
     const today = new Date();
@@ -200,6 +200,11 @@ export class OpenAIApiService {
           totalDaysFound += daysInChunk;
           
           console.log(`✓ Found ${daysInChunk} days of data in chunk ${chunkNumber}`);
+          
+          // Report progress
+          if (onProgress) {
+            onProgress({ chunk: chunkNumber, found: daysInChunk, total: totalDaysFound });
+          }
           
           // Add a small delay to avoid rate limiting
           await this.sleep(500);
@@ -243,6 +248,91 @@ export class OpenAIApiService {
     }
     
     return allData;
+  }
+
+  async fetchHistoricalDataInBackground(userId: string, onComplete?: () => void): Promise<void> {
+    console.log('🚀 Starting background historical data fetch...');
+    
+    // Check if we've already fetched historical data
+    const hasHistoricalData = await this.databaseService.hasHistoricalDataFlag(userId);
+    if (hasHistoricalData) {
+      console.log('✅ Historical data already fetched, skipping background sync');
+      return;
+    }
+    
+    // Start fetching from 31 days ago (since we already have 30 days)
+    const today = new Date();
+    const startFromDate = new Date(today);
+    startFromDate.setDate(today.getDate() - 33); // Start from day 31
+    
+    let chunkEndDate = new Date(startFromDate);
+    let consecutiveEmptyChunks = 0;
+    const maxEmptyChunks = 3;
+    const chunkSize = 30;
+    let totalFound = 0;
+    
+    while (consecutiveEmptyChunks < maxEmptyChunks) {
+      const chunkStartDate = new Date(chunkEndDate);
+      chunkStartDate.setDate(chunkEndDate.getDate() - (chunkSize - 1));
+      
+      const startStr = chunkStartDate.toISOString().split('T')[0];
+      const endStr = chunkEndDate.toISOString().split('T')[0];
+      
+      console.log(`🔄 Background: Fetching ${startStr} to ${endStr}`);
+      
+      try {
+        const raw = await this.fetchUsageForDateRange(startStr, endStr);
+        
+        if (raw.data && raw.data.length > 0) {
+          consecutiveEmptyChunks = 0;
+          const chunkData = this.groupByDate(raw);
+          const daysInChunk = Object.keys(chunkData).length;
+          totalFound += daysInChunk;
+          
+          // Save each day to database
+          for (const [date, dayData] of Object.entries(chunkData)) {
+            if (!('error' in dayData)) {
+              await this.databaseService.storeUsageData(userId, date, dayData);
+            }
+          }
+          
+          console.log(`✓ Background: Saved ${daysInChunk} days`);
+          
+          // Emit progress event
+          window.dispatchEvent(new CustomEvent('historicalDataProgress', {
+            detail: { found: daysInChunk, total: totalFound }
+          }));
+          
+          await this.sleep(1000); // Longer delay for background
+        } else {
+          consecutiveEmptyChunks++;
+        }
+      } catch (error) {
+        console.error('Background fetch error:', error);
+        consecutiveEmptyChunks++;
+      }
+      
+      // Move to next chunk
+      chunkEndDate = new Date(chunkStartDate);
+      chunkEndDate.setDate(chunkStartDate.getDate() - 1);
+      
+      // Safety check: don't go back more than 2 years
+      const twoYearsAgo = new Date(today);
+      twoYearsAgo.setFullYear(today.getFullYear() - 2);
+      if (chunkEndDate < twoYearsAgo) {
+        break;
+      }
+    }
+    
+    // Mark historical data as fetched
+    if (totalFound > 0) {
+      await this.databaseService.setHistoricalDataFlag(userId, true);
+      console.log(`✅ Background sync complete: ${totalFound} historical days saved`);
+    }
+    
+    if (onComplete) {
+      onComplete();
+    }
   }
 
   /**
