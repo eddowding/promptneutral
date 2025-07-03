@@ -160,6 +160,91 @@ export class OpenAIApiService {
     return this.fetchUsageForDays(30);
   }
 
+  async fetchMaximumHistoricalData(userId?: string): Promise<UsageReport> {
+    console.log('🔍 Fetching maximum historical data from OpenAI...');
+    
+    const today = new Date();
+    const endDate = new Date(today);
+    endDate.setDate(today.getDate() - 2); // Account for API delay
+    
+    const allData: UsageReport = {};
+    let consecutiveEmptyChunks = 0;
+    const maxEmptyChunks = 3; // Stop after 3 consecutive empty chunks
+    const chunkSize = 30; // Days per chunk
+    let totalDaysFound = 0;
+    
+    // Start from the most recent data and work backwards
+    let chunkEndDate = new Date(endDate);
+    let chunkNumber = 0;
+    
+    while (consecutiveEmptyChunks < maxEmptyChunks) {
+      chunkNumber++;
+      const chunkStartDate = new Date(chunkEndDate);
+      chunkStartDate.setDate(chunkEndDate.getDate() - (chunkSize - 1));
+      
+      const startStr = chunkStartDate.toISOString().split('T')[0];
+      const endStr = chunkEndDate.toISOString().split('T')[0];
+      
+      console.log(`📅 Chunk ${chunkNumber}: Fetching ${startStr} to ${endStr}`);
+      
+      try {
+        const raw = await this.fetchUsageForDateRange(startStr, endStr);
+        
+        if (raw.data && raw.data.length > 0) {
+          consecutiveEmptyChunks = 0; // Reset counter
+          const chunkData = this.groupByDate(raw);
+          const daysInChunk = Object.keys(chunkData).length;
+          
+          // Merge with existing data
+          Object.assign(allData, chunkData);
+          totalDaysFound += daysInChunk;
+          
+          console.log(`✓ Found ${daysInChunk} days of data in chunk ${chunkNumber}`);
+          
+          // Add a small delay to avoid rate limiting
+          await this.sleep(500);
+        } else {
+          consecutiveEmptyChunks++;
+          console.log(`○ No data found in chunk ${chunkNumber} (empty chunks: ${consecutiveEmptyChunks}/${maxEmptyChunks})`);
+        }
+      } catch (error) {
+        console.error(`✗ Error fetching chunk ${chunkNumber}:`, error);
+        consecutiveEmptyChunks++;
+      }
+      
+      // Move to the next chunk (further back in time)
+      chunkEndDate = new Date(chunkStartDate);
+      chunkEndDate.setDate(chunkStartDate.getDate() - 1);
+      
+      // Safety check: don't go back more than 2 years
+      const twoYearsAgo = new Date(today);
+      twoYearsAgo.setFullYear(today.getFullYear() - 2);
+      if (chunkEndDate < twoYearsAgo) {
+        console.log('📛 Reached 2-year limit, stopping search');
+        break;
+      }
+    }
+    
+    console.log(`📊 Total historical data found: ${totalDaysFound} days across ${Object.keys(allData).length} unique dates`);
+    
+    // Save to cache if we have data
+    if (Object.keys(allData).length > 0) {
+      this.saveToCache(allData, totalDaysFound);
+      
+      // Also save to database if userId is provided
+      if (userId) {
+        console.log('💾 Saving historical data to database...');
+        for (const [date, dayData] of Object.entries(allData)) {
+          if (!('error' in dayData)) {
+            await this.databaseService.storeUsageData(userId, date, dayData);
+          }
+        }
+      }
+    }
+    
+    return allData;
+  }
+
   /**
    * Fetch usage data from Supabase database
    */
