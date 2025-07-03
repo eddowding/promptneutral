@@ -13,6 +13,7 @@ interface UseUsageDataReturn {
   refetch: () => Promise<void>;
   syncData: () => Promise<void>;
   lastSyncTime: Date | null;
+  fetchCustomRange: (range: '7d' | '30d' | '90d' | 'all') => Promise<UsageReport | null>;
 }
 
 export const useUsageData = (useLiveData: boolean = true): UseUsageDataReturn => {
@@ -189,6 +190,44 @@ export const useUsageData = (useLiveData: boolean = true): UseUsageDataReturn =>
     }
   };
 
+  const fetchCustomRange = async (range: '7d' | '30d' | '90d' | 'all'): Promise<UsageReport | null> => {
+    if (!user) {
+      console.warn('Cannot fetch custom range: user not authenticated');
+      return null;
+    }
+
+    try {
+      let days: number;
+      switch (range) {
+        case '7d':
+          days = 7;
+          break;
+        case '30d':
+          days = 30;
+          break;
+        case '90d':
+          days = 90;
+          break;
+        case 'all':
+          // Fetch maximum historical data
+          console.log('📊 Fetching all historical data...');
+          const allData = await apiService.fetchMaximumHistoricalData(user.id);
+          return allData;
+        default:
+          days = 30;
+      }
+
+      console.log(`📊 Fetching ${days} days of data...`);
+      const rangeData = await apiService.fetchUsageFromDatabase(user.id, days);
+      return rangeData;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+      console.error('Error fetching custom range:', errorMessage);
+      setError(errorMessage);
+      return null;
+    }
+  };
+
   useEffect(() => {
     // Don't fetch data while auth is still loading
     if (authLoading) {
@@ -228,5 +267,6 @@ export const useUsageData = (useLiveData: boolean = true): UseUsageDataReturn =>
     refetch: fetchData,
     syncData,
     lastSyncTime,
+    fetchCustomRange,
   };
 };

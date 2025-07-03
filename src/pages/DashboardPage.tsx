@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Activity, MessageSquare, Zap, TrendingUp } from 'lucide-react';
 import { MetricCard } from '../components/MetricCard';
 import { UsageChart } from '../components/UsageChart';
@@ -16,9 +16,36 @@ import { SyncStatus } from '../components/SyncStatus';
 import { useUsageData } from '../hooks/useUsageData';
 import { getDailySummaries, getModelTotals } from '../utils/dataProcessing';
 import { calculateEnvironmentalImpact, prepareStackedChartData } from '../utils/environmentalCalculations';
+import { UsageReport } from '../types/usage';
 
 export const DashboardPage: React.FC = () => {
-  const { data, data30Days, loading, error, refetch, syncData, lastSyncTime } = useUsageData(true);
+  const [chartTimeRange, setChartTimeRange] = useState<'7d' | '30d' | '90d' | 'all'>('30d');
+  const [customRangeData, setCustomRangeData] = useState<UsageReport | null>(null);
+  const [isLoadingCustomRange, setIsLoadingCustomRange] = useState(false);
+  const { data, data30Days, loading, error, refetch, syncData, lastSyncTime, fetchCustomRange } = useUsageData(true);
+
+  // Handle time range changes
+  useEffect(() => {
+    const handleTimeRangeChange = async () => {
+      if (chartTimeRange === '30d') {
+        // Use existing 30-day data
+        setCustomRangeData(null);
+        return;
+      }
+
+      setIsLoadingCustomRange(true);
+      try {
+        const rangeData = await fetchCustomRange(chartTimeRange);
+        setCustomRangeData(rangeData);
+      } catch (err) {
+        console.error('Error fetching custom range:', err);
+      } finally {
+        setIsLoadingCustomRange(false);
+      }
+    };
+
+    handleTimeRangeChange();
+  }, [chartTimeRange, fetchCustomRange]);
 
   if (loading) {
     return <LoadingSpinner />;
@@ -35,9 +62,12 @@ export const DashboardPage: React.FC = () => {
   const dailySummaries = getDailySummaries(data);
   const modelTotals = getModelTotals(data);
   
+  // Use custom range data if available, otherwise use default 30-day data
+  const chartData = customRangeData || data30Days;
+  
   // Calculate environmental impact and prepare charts
   const environmentalImpact = calculateEnvironmentalImpact(data30Days);
-  const stackedChartData = prepareStackedChartData(data30Days);
+  const stackedChartData = prepareStackedChartData(chartData);
   
   const totalRequests = dailySummaries.reduce((sum, day) => sum + day.total_requests, 0);
   const totalTokens = dailySummaries.reduce((sum, day) => sum + day.total_tokens, 0);
@@ -128,10 +158,20 @@ export const DashboardPage: React.FC = () => {
         <ModelBreakdown modelTotals={modelTotals} />
 
         <div className="mt-8">
-          <StackedUsageChart 
-            data={stackedChartData} 
-            title="30-Day Token Usage by Model (Stacked)" 
-          />
+          {isLoadingCustomRange ? (
+            <div className="chart-container">
+              <div className="flex items-center justify-center h-64">
+                <LoadingSpinner />
+              </div>
+            </div>
+          ) : (
+            <StackedUsageChart 
+              data={stackedChartData} 
+              title="Token Usage by Model (Stacked)" 
+              onTimeRangeChange={setChartTimeRange}
+              currentRange={chartTimeRange}
+            />
+          )}
         </div>
 
         <div className="mt-8">

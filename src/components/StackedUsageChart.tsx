@@ -9,12 +9,15 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
+import { Calendar } from 'lucide-react';
 import { StackedChartData } from '../types/environmental';
 import { formatDate, formatNumber } from '../utils/dataProcessing';
 
 interface StackedUsageChartProps {
   data: StackedChartData[];
   title: string;
+  onTimeRangeChange?: (range: '7d' | '30d' | '90d' | 'all') => void;
+  currentRange?: '7d' | '30d' | '90d' | 'all';
 }
 
 const COLORS = [
@@ -33,6 +36,8 @@ const COLORS = [
 export const StackedUsageChart: React.FC<StackedUsageChartProps> = ({
   data,
   title,
+  onTimeRangeChange,
+  currentRange = '30d',
 }) => {
   if (!data || data.length === 0) {
     return (
@@ -59,9 +64,34 @@ export const StackedUsageChart: React.FC<StackedUsageChartProps> = ({
     date: formatDate(item.date as string),
   }));
 
+  const timeRangeOptions = [
+    { value: '7d', label: 'Last 7 days' },
+    { value: '30d', label: 'Last 30 days' },
+    { value: '90d', label: 'Last 90 days' },
+    { value: 'all', label: 'All time' },
+  ];
+
   return (
     <div className="chart-container">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+        {onTimeRangeChange && (
+          <div className="flex items-center space-x-2">
+            <Calendar className="w-4 h-4 text-gray-500" />
+            <select
+              value={currentRange}
+              onChange={(e) => onTimeRangeChange(e.target.value as any)}
+              className="text-sm border border-gray-300 rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            >
+              {timeRangeOptions.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+      </div>
       <ResponsiveContainer width="100%" height={400}>
         <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
