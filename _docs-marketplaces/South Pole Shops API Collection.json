@@ -1,0 +1,1084 @@
+{
+	"info": {
+		"_postman_id": "18f12b3a-74a2-42a8-808e-53e389a058b2",
+		"name": "South pole Updated Collection M",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33745568",
+		"_collection_link": "https://magebytesmb.postman.co/workspace/New-Team-Workspace~c6c0151c-d8a1-49b3-aeb4-556e6f79714c/collection/33745568-18f12b3a-74a2-42a8-808e-53e389a058b2?action=share&source=collection_link&creator=33745568"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"request": {
+				"auth": {
+					"type": "oauth1",
+					"oauth1": [
+						{
+							"key": "addParamsToHeader",
+							"value": true,
+							"type": "boolean"
+						},
+						{
+							"key": "signatureMethod",
+							"value": "HMAC-SHA256",
+							"type": "string"
+						},
+						{
+							"key": "tokenSecret",
+							"value": "8rajklnq4jn2d9ekrna1wb1g44yafym3",
+							"type": "string"
+						},
+						{
+							"key": "token",
+							"value": "hdrz2lg9hkdbolq2avu108ebitaxsfkf",
+							"type": "string"
+						},
+						{
+							"key": "consumerSecret",
+							"value": "uitl8wzk08vhvr7y9kygszm5wvr819r1",
+							"type": "string"
+						},
+						{
+							"key": "consumerKey",
+							"value": "m61vecjfn02iouffq4kleccejayycdll",
+							"type": "string"
+						},
+						{
+							"key": "version",
+							"value": "1.0",
+							"type": "string"
+						},
+						{
+							"key": "addEmptyParamsToSign",
+							"value": false,
+							"type": "boolean"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"username\": \"saurav.v@magebytes.com\",\n  \"password\": \"admin@1234\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}rest/V1/integration/customer/token",
+					"host": [
+						"{{base_url}}rest"
+					],
+					"path": [
+						"V1",
+						"integration",
+						"customer",
+						"token"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Login",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"saurav.v@magebytes.com\",\n  \"password\": \"admin@1234\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}rest/V1/integration/customer/token",
+							"host": [
+								"{{base_url}}rest"
+							],
+							"path": [
+								"V1",
+								"integration",
+								"customer",
+								"token"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Wed, 11 Sep 2024 11:04:04 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "Apache/2.4.52 (Ubuntu)"
+						},
+						{
+							"key": "Expires",
+							"value": "Thu, 19 Nov 1981 08:52:00 GMT"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-store"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "PHPSESSID=1of0q5dt7r06lo8vtshv67cptr; expires=Fri, 08 Feb 2036 03:04:04 GMT; Max-Age=360000000; path=/; domain=southpolelatest.local; HttpOnly; SameSite=Lax"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "persistent_shopping_cart=deleted; expires=Thu, 01 Jan 1970 00:00:01 GMT; Max-Age=0; path=/; HttpOnly; SameSite=Lax"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "form_key=deleted; expires=Thu, 01 Jan 1970 00:00:01 GMT; Max-Age=0; path=/; domain=southpolelatest.local; SameSite=Lax"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "CROSS-ORIGIN"
+						},
+						{
+							"key": "Content-Length",
+							"value": "157"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5, max=100"
+						},
+						{
+							"key": "Connection",
+							"value": "Keep-Alive"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						}
+					],
+					"cookie": [],
+					"body": "\"eyJraWQiOiIxIiwiYWxnIjoiSFMyNTYifQ.eyJ1aWQiOjQ3OTIsInV0eXBpZCI6MywiaWF0IjoxNzI2MDUyNjQ0LCJleHAiOjE3MjYwNTYyNDR9.XL188pgBSFfv-f6__zWyk-3-snLcN85uLhjdBnhCLnc\""
+				}
+			]
+		},
+		{
+			"name": "Create Quote",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}rest/V1/carts/mine",
+					"host": [
+						"{{base_url}}rest"
+					],
+					"path": [
+						"V1",
+						"carts",
+						"mine"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Product Detail",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}rest/V1/products/303431",
+					"host": [
+						"{{base_url}}rest"
+					],
+					"path": [
+						"V1",
+						"products",
+						"303431"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Credits",
+			"request": {
+				"auth": {
+					"type": "oauth1",
+					"oauth1": [
+						{
+							"key": "tokenSecret",
+							"value": "ajomvooz76ql02fxflm5g1ehga1esozo",
+							"type": "string"
+						},
+						{
+							"key": "token",
+							"value": "wahgj8p2ptca4i5ujs9z6v0jki813d8l",
+							"type": "string"
+						},
+						{
+							"key": "consumerSecret",
+							"value": "dwhf0qws925eqw2son3q5c1i230z5ptg",
+							"type": "string"
+						},
+						{
+							"key": "consumerKey",
+							"value": "jepmhrmppm4ox99yo8ec0clvrsu52u3n",
+							"type": "string"
+						},
+						{
+							"key": "addParamsToHeader",
+							"value": true,
+							"type": "boolean"
+						},
+						{
+							"key": "signatureMethod",
+							"value": "HMAC-SHA256",
+							"type": "string"
+						},
+						{
+							"key": "version",
+							"value": "1.0",
+							"type": "string"
+						},
+						{
+							"key": "addEmptyParamsToSign",
+							"value": false,
+							"type": "boolean"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}rest/V1/stockItems/303693-2020",
+					"host": [
+						"{{base_url}}rest"
+					],
+					"path": [
+						"V1",
+						"stockItems",
+						"303693-2020"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Checkout URL",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}rest/V1/products/303431",
+					"host": [
+						"{{base_url}}rest"
+					],
+					"path": [
+						"V1",
+						"products",
+						"303431"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Product Detail",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}rest/V1/products/303431",
+					"host": [
+						"{{base_url}}rest"
+					],
+					"path": [
+						"V1",
+						"products",
+						"303431"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Product Collection",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}rest/main_EUR/V1/products?searchCriteria[pageSize]=10&searchCriteria[currentPage]=2",
+					"host": [
+						"{{base_url}}rest"
+					],
+					"path": [
+						"main_EUR",
+						"V1",
+						"products"
+					],
+					"query": [
+						{
+							"key": "searchCriteria[filter_groups][0][filters][0][field]",
+							"value": "category_id",
+							"disabled": true
+						},
+						{
+							"key": "searchCriteria[filter_groups][0][filters][0][value]",
+							"value": "8",
+							"disabled": true
+						},
+						{
+							"key": "searchCriteria[pageSize]",
+							"value": "10"
+						},
+						{
+							"key": "searchCriteria[currentPage]",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add items to cart",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"cartItem\": {\n    \"sku\": \"303431\",\n    \"qty\": 1000,\n    \"quote_id\": \"71\",\n    \"product_option\": {\n      \"extension_attributes\": {\n        \"configurable_item_options\": [\n          {\n            \"option_id\": \"202\",\n            \"option_value\": 143\n          }\n        ]\n      }\n    },\n    \"extension_attributes\": {}\n  }\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}rest/V1/carts/mine/items",
+					"host": [
+						"{{base_url}}rest"
+					],
+					"path": [
+						"V1",
+						"carts",
+						"mine",
+						"items"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Shipping Info",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"addressInformation\": {\n    \"shipping_address\": {\n      \"region\": \"Uttar Pradesh\",\n      \"region_id\": 518,\n      \"country_id\": \"NL\",\n      \"street\": [\n        \"123 Oak Ave\"\n      ],\n      \"postcode\": \"212601\",\n      \"city\": \"Fatehpur\",\n      \"firstname\": \"Jane\",\n      \"lastname\": \"Doe\",\n      \"email\": \"saurav.v@magebytes.com\",\n      \"telephone\": \"8840508638\"\n    },\n    \"billing_address\": {\n      \"region\": \"Uttar Pradesh\",\n      \"region_id\": 518,\n      \"country_id\": \"NL\",\n      \"street\": [\n        \"123 Oak Ave\"\n      ],\n      \"postcode\": \"212601\",\n      \"city\": \"Fatehpur\",\n      \"firstname\": \"Jane\",\n      \"lastname\": \"Doe\",\n      \"email\": \"saurav.v@magebytes.com\",\n      \"telephone\": \"8840508638\"\n    }\n  }\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}rest/V1/carts/mine/shipping-information",
+					"host": [
+						"{{base_url}}rest"
+					],
+					"path": [
+						"V1",
+						"carts",
+						"mine",
+						"shipping-information"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "All Payment Method",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}rest/V1/carts/mine/payment-information",
+					"host": [
+						"{{base_url}}rest"
+					],
+					"path": [
+						"V1",
+						"carts",
+						"mine",
+						"payment-information"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Payment Info",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"paymentMethod\": {\n    \"method\": \"purchaseorder\",\n    \"extension_attributes\": {\"agreement_ids\": [\"1\"]}\n  },\n  \"billing_address\": {\n    \"email\": \"saurav.v@magebytes.com\",\n    \"region\": \"Uttar Pradesh\",\n    \"region_id\": 518,\n    \"region_code\": \"UP\",\n    \"country_id\": \"NL\",\n    \"street\": [\n      \"123 Oak Ave\"\n    ],\n    \"postcode\": \"212601\",\n    \"city\": \"Fatehpur\",\n    \"telephone\": \"8840508638\",\n    \"firstname\": \"Jane\",\n    \"lastname\": \"Doe\"\n  }\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}rest/V1/carts/mine/payment-information",
+					"host": [
+						"{{base_url}}rest"
+					],
+					"path": [
+						"V1",
+						"carts",
+						"mine",
+						"payment-information"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove Cart Items",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}rest/V1/carts/mine/items/1261",
+					"host": [
+						"{{base_url}}rest"
+					],
+					"path": [
+						"V1",
+						"carts",
+						"mine",
+						"items",
+						"1261"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Cart Total",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}rest/V1/carts/mine/totals",
+					"host": [
+						"{{base_url}}rest"
+					],
+					"path": [
+						"V1",
+						"carts",
+						"mine",
+						"totals"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "configurable product",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "/V1/configurable-products/:sku/children",
+					"path": [
+						"V1",
+						"configurable-products",
+						":sku",
+						"children"
+					],
+					"variable": [
+						{
+							"key": "sku",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Set Certificate Name",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"cartId\": 1363,\n    \"certificateName\":\"test\",\n    \"specialInstructions\":\"test hello there how are you.\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}rest/V1/certificate/set",
+					"host": [
+						"{{base_url}}rest"
+					],
+					"path": [
+						"V1",
+						"certificate",
+						"set"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Cart for Guest",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/rest/V1/guest-carts",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"rest",
+						"V1",
+						"guest-carts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Guest Cart",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}rest/V1/guest-carts/UE5pswWaM5rTglm0qjBAAefgF1qEYPIi",
+					"host": [
+						"{{base_url}}rest"
+					],
+					"path": [
+						"V1",
+						"guest-carts",
+						"UE5pswWaM5rTglm0qjBAAefgF1qEYPIi"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add items to cart for Guest",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"cartItem\": {\n    \"sku\": \"303431\",\n    \"qty\": 22,\n    \"quote_id\": \"1466\",\n    \"product_option\": {\n      \"extension_attributes\": {\n        \"configurable_item_options\": [\n          {\n            \"option_id\": \"202\",\n            \"option_value\": 143\n          }\n        ]\n      }\n    },\n    \"extension_attributes\": {}\n  }\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}rest/V1/guest-carts/UE5pswWaM5rTglm0qjBAAefgF1qEYPIi/items",
+					"host": [
+						"{{base_url}}rest"
+					],
+					"path": [
+						"V1",
+						"guest-carts",
+						"UE5pswWaM5rTglm0qjBAAefgF1qEYPIi",
+						"items"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Fetch Estimate Sipping methods Guest",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"address\": {\n    \"region\": \"Uttar Pradesh\",\n    \"country_id\": \"NL\",\n    \"street\": [\n      \"123 Oak Ave\"\n    ],\n    \"postcode\": \"212601\",\n    \"city\": \"212601\",\n    \"firstname\": \"Saurav\",\n    \"lastname\": \"verma\",\n    \"customer_id\": null,\n    \"email\": \"saurav.v@magebytes.com\",\n    \"telephone\": \"8840508638\",\n    \"same_as_billing\": 1\n  }\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}rest/V1/guest-carts/UE5pswWaM5rTglm0qjBAAefgF1qEYPIi/estimate-shipping-methods",
+					"host": [
+						"{{base_url}}rest"
+					],
+					"path": [
+						"V1",
+						"guest-carts",
+						"UE5pswWaM5rTglm0qjBAAefgF1qEYPIi",
+						"estimate-shipping-methods"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Available Payment Method Guest",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"addressInformation\": {\n    \"shipping_address\": {\n      \"region\": \"Uttar Pradesh\",\n      \"region_id\": 518,\n      \"country_id\": \"NL\",\n      \"street\": [\n        \"123 Oak Ave\"\n      ],\n      \"postcode\": \"212601\",\n      \"city\": \"Fatehpur\",\n      \"firstname\": \"Jane\",\n      \"lastname\": \"Doe\",\n      \"email\": \"saurav.v@magebytes.com\",\n      \"telephone\": \"8840508638\"\n    },\n    \"billing_address\": {\n      \"region\": \"Uttar Pradesh\",\n      \"region_id\": 518,\n      \"country_id\": \"NL\",\n      \"street\": [\n        \"123 Oak Ave\"\n      ],\n      \"postcode\": \"212601\",\n      \"city\": \"Fatehpur\",\n      \"firstname\": \"Jane\",\n      \"lastname\": \"Doe\",\n      \"email\": \"saurav.v@magebytes.com\",\n      \"telephone\": \"8840508638\"\n    }\n  }\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}rest/V1/guest-carts/UE5pswWaM5rTglm0qjBAAefgF1qEYPIi/shipping-information",
+					"host": [
+						"{{base_url}}rest"
+					],
+					"path": [
+						"V1",
+						"guest-carts",
+						"UE5pswWaM5rTglm0qjBAAefgF1qEYPIi",
+						"shipping-information"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Place an Order for the Guest customer",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"saurav.v@magebytes.com\",\n  \"paymentMethod\": {\n    \"method\": \"purchaseorder\",\n    \"extension_attributes\": {\"agreement_ids\": [\"1\"]}\n  },\n  \"billing_address\": {\n    \"email\": \"saurav.v@magebytes.com\",\n    \"region\": \"Uttar Pradesh\",\n    \"region_id\": 518,\n    \"region_code\": \"UP\",\n    \"country_id\": \"NL\",\n    \"street\": [\n      \"123 Oak Ave\"\n    ],\n    \"postcode\": \"212601\",\n    \"city\": \"Fatehpur\",\n    \"telephone\": \"8840508638\",\n    \"firstname\": \"Jane\",\n    \"lastname\": \"Doe\"\n  }\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}rest/V1/guest-carts/UE5pswWaM5rTglm0qjBAAefgF1qEYPIi/payment-information",
+					"host": [
+						"{{base_url}}rest"
+					],
+					"path": [
+						"V1",
+						"guest-carts",
+						"UE5pswWaM5rTglm0qjBAAefgF1qEYPIi",
+						"payment-information"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Certificate to Guest",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"cartId\":\"UE5pswWaM5rTglm0qjBAAefgF1qEYPIi\",\n    \"certificateName\":\"TEst\",\n    \"specialInstructions\":\"jsadasghdvasgdvagu\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}rest/V1/certificate/guest/set",
+					"host": [
+						"{{base_url}}rest"
+					],
+					"path": [
+						"V1",
+						"certificate",
+						"guest",
+						"set"
+					],
+					"query": [
+						{
+							"key": "cartId",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Customer Orders",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}rest/V1/customers/orders?customerId=4792&page=1&pageSize=10",
+					"host": [
+						"{{base_url}}rest"
+					],
+					"path": [
+						"V1",
+						"customers",
+						"orders"
+					],
+					"query": [
+						{
+							"key": "customerId",
+							"value": "4792"
+						},
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "pageSize",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "New Request",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}rest/V1/customers/orders?customerId=4792&page=1&pageSize=10",
+							"host": [
+								"{{base_url}}rest"
+							],
+							"path": [
+								"V1",
+								"customers",
+								"orders"
+							],
+							"query": [
+								{
+									"key": "customerId",
+									"value": "4792"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "html",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Tue, 24 Sep 2024 10:21:15 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "Apache/2.4.58 (Ubuntu)"
+						},
+						{
+							"key": "Expires",
+							"value": "Thu, 19 Nov 1981 08:52:00 GMT"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "no-store, no-cache, must-revalidate"
+						},
+						{
+							"key": "Pragma",
+							"value": "no-cache"
+						},
+						{
+							"key": "Set-Cookie",
+							"value": "PHPSESSID=1of0q5dt7r06lo8vtshv67cptr; expires=Thu, 21 Feb 2036 02:21:15 GMT; Max-Age=360000000; path=/; domain=southpolelatest.local; HttpOnly; SameSite=Lax"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept-Encoding"
+						},
+						{
+							"key": "Content-Encoding",
+							"value": "gzip"
+						},
+						{
+							"key": "Content-Length",
+							"value": "546"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=5, max=100"
+						},
+						{
+							"key": "Connection",
+							"value": "Keep-Alive"
+						},
+						{
+							"key": "Content-Type",
+							"value": "text/html; charset=UTF-8"
+						}
+					],
+					"cookie": [],
+					"body": "{\"status\":true,\"message\":\"Order History\",\"current_page\":1,\"last_page\":5,\"per_page\":10,\"total_records\":50,\"data\":[{\"order_id\":1885,\"increment_id\":20628,\"order_status\":\"pending_payment\",\"ordered_items\":[{\"sku\":\"302356-2020\",\"product_name\":\"4b653518\",\"qty_ordered\":\"123.0000\",\"price\":\"1\"},{\"sku\":\"302356-2020\",\"product_name\":\"2020\",\"qty_ordered\":\"123.0000\",\"price\":\"0\"}],\"order_created_at\":\"2024-09-23 08:48:57\",\"order_updated_at\":\"2024-09-23 08:49:10\",\"order_total\":\"123.0000\"},{\"order_id\":1884,\"increment_id\":20627,\"order_status\":\"pending_payment\",\"ordered_items\":[{\"sku\":\"304125-2021\",\"product_name\":\"fb6d3932\",\"qty_ordered\":\"22.0000\",\"price\":\"1\"},{\"sku\":\"304125-2021\",\"product_name\":\"2021\",\"qty_ordered\":\"22.0000\",\"price\":\"0\"}],\"order_created_at\":\"2024-09-23 08:43:18\",\"order_updated_at\":\"2024-09-23 08:43:24\",\"order_total\":\"22.0000\"},{\"order_id\":1883,\"increment_id\":20626,\"order_status\":\"pending_payment\",\"ordered_items\":[{\"sku\":\"302356-2020\",\"product_name\":\"4b653518\",\"qty_ordered\":\"22.0000\",\"price\":\"1\"},{\"sku\":\"302356-2020\",\"product_name\":\"2020\",\"qty_ordered\":\"22.0000\",\"price\":\"0\"}],\"order_created_at\":\"2024-09-23 08:39:04\",\"order_updated_at\":\"2024-09-23 08:39:11\",\"order_total\":\"22.0000\"},{\"order_id\":1882,\"increment_id\":20625,\"order_status\":\"pending_payment\",\"ordered_items\":[{\"sku\":\"302356-2020\",\"product_name\":\"4b653518\",\"qty_ordered\":\"750.0000\",\"price\":\"1\"},{\"sku\":\"302356-2020\",\"product_name\":\"2020\",\"qty_ordered\":\"750.0000\",\"price\":\"0\"}],\"order_created_at\":\"2024-09-23 08:18:35\",\"order_updated_at\":\"2024-09-23 08:18:41\",\"order_total\":\"750.0000\"},{\"order_id\":1881,\"increment_id\":20624,\"order_status\":\"pending_payment\",\"ordered_items\":[{\"sku\":\"302356-2020\",\"product_name\":\"4b653518\",\"qty_ordered\":\"22.0000\",\"price\":\"1\"},{\"sku\":\"302356-2020\",\"product_name\":\"2020\",\"qty_ordered\":\"22.0000\",\"price\":\"0\"}],\"order_created_at\":\"2024-09-23 07:52:27\",\"order_updated_at\":\"2024-09-23 07:52:35\",\"order_total\":\"22.0000\"},{\"order_id\":1880,\"increment_id\":20623,\"order_status\":\"complete\",\"ordered_items\":[{\"sku\":\"302356-2020\",\"product_name\":\"4b653518\",\"qty_ordered\":\"44.0000\",\"price\":\"1\"},{\"sku\":\"302356-2020\",\"product_name\":\"2020\",\"qty_ordered\":\"44.0000\",\"price\":\"0\"}],\"order_created_at\":\"2024-09-20 15:46:52\",\"order_updated_at\":\"2024-09-20 13:47:05\",\"order_total\":\"44.0000\"},{\"order_id\":1879,\"increment_id\":20622,\"order_status\":\"complete\",\"ordered_items\":[{\"sku\":\"302356-2020\",\"product_name\":\"4b653518\",\"qty_ordered\":\"66.0000\",\"price\":\"1\"},{\"sku\":\"302356-2020\",\"product_name\":\"2020\",\"qty_ordered\":\"66.0000\",\"price\":\"0\"}],\"order_created_at\":\"2024-09-20 15:42:52\",\"order_updated_at\":\"2024-09-20 13:43:05\",\"order_total\":\"66.0000\"},{\"order_id\":1876,\"increment_id\":20619,\"order_status\":\"complete\",\"ordered_items\":[{\"sku\":\"302356-2020\",\"product_name\":\"4b653518\",\"qty_ordered\":\"20.0000\",\"price\":\"1\"},{\"sku\":\"302356-2020\",\"product_name\":\"2020\",\"qty_ordered\":\"20.0000\",\"price\":\"0\"}],\"order_created_at\":\"2024-09-20 14:44:19\",\"order_updated_at\":\"2024-09-20 12:44:31\",\"order_total\":\"20.0000\"},{\"order_id\":1873,\"increment_id\":20616,\"order_status\":\"complete\",\"ordered_items\":[{\"sku\":\"302356-2020\",\"product_name\":\"4b653518\",\"qty_ordered\":\"20.0000\",\"price\":\"1\"},{\"sku\":\"302356-2020\",\"product_name\":\"2020\",\"qty_ordered\":\"20.0000\",\"price\":\"0\"}],\"order_created_at\":\"2024-09-20 14:16:21\",\"order_updated_at\":\"2024-09-20 12:16:33\",\"order_total\":\"20.0000\"},{\"order_id\":1872,\"increment_id\":20615,\"order_status\":\"complete\",\"ordered_items\":[{\"sku\":\"302356-2020\",\"product_name\":\"4b653518\",\"qty_ordered\":\"42.0000\",\"price\":\"1\"},{\"sku\":\"302356-2020\",\"product_name\":\"2020\",\"qty_ordered\":\"42.0000\",\"price\":\"0\"}],\"order_created_at\":\"2024-09-20 14:05:24\",\"order_updated_at\":\"2024-09-20 12:05:38\",\"order_total\":\"42.0000\"}]}"
+				}
+			]
+		},
+		{
+			"name": "Customer Order Details",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJraWQiOiIxIiwiYWxnIjoiSFMyNTYifQ.eyJ1aWQiOjQ3OTIsInV0eXBpZCI6MywiaWF0IjoxNzI3MTczMzYzLCJleHAiOjE3MjcxNzY5NjN9.u3rDcd_KTiwYCB16ZfsA-bXIazLujeVuFPxJGSaQSs4",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}rest/V1/customer/order/detail?orderId=1885",
+					"host": [
+						"{{base_url}}rest"
+					],
+					"path": [
+						"V1",
+						"customer",
+						"order",
+						"detail"
+					],
+					"query": [
+						{
+							"key": "orderId",
+							"value": "1885"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Order Cancel",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"orderId\" : 1885\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}rest/V1/order/cancel",
+					"host": [
+						"{{base_url}}rest"
+					],
+					"path": [
+						"V1",
+						"order",
+						"cancel"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Countries",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"orderId\" : 1885\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}rest/V1/directory/countries",
+					"host": [
+						"{{base_url}}rest"
+					],
+					"path": [
+						"V1",
+						"directory",
+						"countries"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Countries By Id",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"orderId\" : 1885\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}rest/V1/directory/countries/IN",
+					"host": [
+						"{{base_url}}rest"
+					],
+					"path": [
+						"V1",
+						"directory",
+						"countries",
+						"IN"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
