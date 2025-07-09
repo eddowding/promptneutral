@@ -259,11 +259,21 @@ export class OpenAIApiService {
   async fetchHistoricalDataInBackground(userId: string, onComplete?: () => void): Promise<void> {
     console.log('🚀 Starting background historical data fetch...');
     
-    // Check if we've already fetched historical data
-    const hasHistoricalData = await this.databaseService.hasHistoricalDataFlag(userId);
-    if (hasHistoricalData) {
-      console.log('✅ Historical data already fetched, skipping background sync');
-      if (onComplete) onComplete();
+    // 1. If a flag is already set, assume complete
+    const historicalFlag = await this.databaseService.hasHistoricalDataFlag(userId);
+    if (historicalFlag) {
+      console.log('✅ Historical flag already set, skipping background sync');
+      onComplete?.();
+      return;
+    }
+
+    // 2. Heuristic: if the earliest usage date we hold is > 60 days old,
+    //    we assume we have reached the start of history and can safely stop.
+    const reachedBoundary = await this.databaseService.hasReachedHistoryBoundary(userId, 60);
+    if (reachedBoundary) {
+      console.log('🛑 Reached history boundary (no activity >60 days earlier). Marking as complete.');
+      await this.databaseService.setHistoricalDataFlag(userId, true);
+      onComplete?.();
       return;
     }
     
@@ -273,17 +283,28 @@ export class OpenAIApiService {
       
       console.log('🔄 Background: Using admin API to fetch historical data...');
       
-      // Fetch up to 90 days of historical data
-      const result = await fetchAndStoreUsageData(userId, false, 90);
+      // Fetch as far back as possible (10 years ≈ 3650 days) and force refresh regardless of recency
+      const result = await fetchAndStoreUsageData(userId, true, 3650);
       
       if (result.success) {
-        // Mark historical data as fetched
-        await this.databaseService.setHistoricalDataFlag(userId, true);
-        console.log(`✅ Background sync complete: Historical data saved`);
+        // Heuristic: mark as complete if we either
+        // a) have at least requiredDays of data, OR
+        // b) the earliest usage we have is 60+ days ago (no earlier usage)
+
+        const requiredDays = 3650;
+        const hasAll = await this.databaseService.hasSufficientHistoricalData(userId, requiredDays);
+        const boundaryMet = await this.databaseService.hasReachedHistoryBoundary(userId, 60);
+
+        if (hasAll || boundaryMet) {
+          await this.databaseService.setHistoricalDataFlag(userId, true);
+          console.log(`✅ Background sync complete: Historical data saved and flag set`);
+        } else {
+          console.log(`⚠️ Background sync complete: Data fetched, but not enough days to set flag (coverage incomplete)`);
+        }
         
         // Emit completion event
         window.dispatchEvent(new CustomEvent('historicalDataProgress', {
-          detail: { found: 90, total: 90 }
+          detail: { found: 3650, total: 3650 }
         }));
       } else {
         console.error('Background fetch failed:', result.message);

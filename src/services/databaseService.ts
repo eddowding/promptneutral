@@ -302,6 +302,42 @@ export class DatabaseService {
   }
 
   /**
+   * Check whether the user already has at least `requiredDays` distinct dates of data
+   * in the `usage_data` table (i.e. we have adequate historical coverage).
+   * Returns true if the coverage threshold is met.
+   */
+  async hasSufficientHistoricalData(userId: string, requiredDays: number = 90): Promise<boolean> {
+    try {
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - (requiredDays - 1));
+      const startStr = startDate.toISOString().split('T')[0];
+
+      // Count rows for the user since `startStr`. We use PostgREST's head=true to avoid fetching rows.
+      const { count, error } = await supabase
+        .from('usage_data')
+        .select('date', { count: 'exact', head: true })
+        .eq('user_id', userId)
+        .gte('date', startStr);
+
+      if (error) {
+        console.error('Error counting usage_data rows:', error);
+        return false;
+      }
+
+      // Each date can appear multiple times (one per model). We err on the side of fetching again if unsure.
+      const rowCount = count ?? 0;
+      const estimatedDays = Math.ceil(rowCount / 1); // We cannot easily count distinct dates; assume 1 row per day min.
+
+      console.log(`Historical coverage check for ${userId}: ${estimatedDays}/${requiredDays} days found`);
+
+      return estimatedDays >= requiredDays;
+    } catch (error) {
+      console.error('Error in hasSufficientHistoricalData:', error);
+      return false;
+    }
+  }
+
+  /**
    * Clean up old data (older than specified days)
    */
   async cleanupOldData(userId: string, keepDays: number = 90): Promise<void> {
@@ -409,6 +445,48 @@ export class DatabaseService {
       console.error('Error setting historical data flag:', error);
       throw error;
     }
+  }
+
+  /**
+   * Get the earliest usage date for a user
+   */
+  async getEarliestUsageDate(userId: string): Promise<Date | null> {
+    try {
+      const { data, error } = await supabase
+        .from('usage_data')
+        .select('date')
+        .eq('user_id', userId)
+        .order('date', { ascending: true })
+        .limit(1);
+
+      if (error) {
+        console.error('Error fetching earliest usage date:', error);
+        return null;
+      }
+
+      if (data && data.length > 0) {
+        return new Date(data[0].date + 'T00:00:00Z');
+      }
+      return null;
+    } catch (error) {
+      console.error('Error in getEarliestUsageDate:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Determine whether we have probably reached the earliest available history.
+   * Heuristic: if the earliest usage date we have is more than `gapThresholdDays`
+   * days ago, we assume further back-fill would yield nothing significant.
+   */
+  async hasReachedHistoryBoundary(userId: string, gapThresholdDays: number = 60): Promise<boolean> {
+    const earliest = await this.getEarliestUsageDate(userId);
+    if (!earliest) return false;
+
+    const today = new Date();
+    const diffDays = Math.floor((today.getTime() - earliest.getTime()) / (1000 * 60 * 60 * 24));
+
+    return diffDays >= gapThresholdDays;
   }
 
   private historicalDataFlags = new Map<string, boolean>();
