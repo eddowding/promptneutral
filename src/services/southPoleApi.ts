@@ -64,7 +64,7 @@ export class SouthPoleApi {
       );
       
       this.token = response.data.replace(/"/g, ''); // Remove quotes from token
-      return this.token;
+      return this.token!; // We know it's not null here after assignment
     } catch (error) {
       console.error('Authentication failed:', error);
       throw new Error('Failed to authenticate with South Pole API');
@@ -145,7 +145,7 @@ export class SouthPoleApi {
       );
 
       this.cartId = response.data;
-      return this.cartId;
+      return this.cartId!; // We know it's not null here after assignment
     } catch (error) {
       console.error('Failed to create cart:', error);
       throw new Error('Failed to create cart');

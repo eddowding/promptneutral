@@ -32,6 +32,12 @@ export function CheckoutPage() {
 
     try {
       // Save to database
+      if (!supabase) {
+        console.error('Supabase not configured');
+        setShowThankYou(true);
+        return;
+      }
+      
       const { error } = await supabase
         .from('carbon_offset_orders')
         .insert({
