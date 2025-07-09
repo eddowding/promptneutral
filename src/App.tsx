@@ -4,7 +4,10 @@ import { AuthProvider } from './contexts/AuthContext';
 import { Navigation } from './components/Navigation';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { HomePage } from './pages/HomePage';
+import { HomePageV2 } from './pages/HomePageV2';
 import { DashboardPage } from './pages/DashboardPage';
+import { OffsetOrderPage } from './pages/OffsetOrderPage';
+import { CheckoutPage } from './pages/CheckoutPage';
 import { PricingPage } from './pages/PricingPage';
 import { AuthPage } from './pages/AuthPage';
 import { OnboardingPage } from './pages/OnboardingPage';
@@ -13,6 +16,7 @@ import { EmailVerification } from './components/EmailVerification';
 import { PasswordReset } from './components/PasswordReset';
 import FeedbackTab from './components/FeedbackTab';
 import FeedbackPage from './pages/admin/FeedbackPage';
+import SouthPoleTest from './components/SouthPoleTest';
 
 function App() {
   return (
@@ -24,7 +28,7 @@ function App() {
             <Route path="/" element={
               <>
                 <Navigation />
-                <HomePage />
+                <HomePageV2 />
               </>
             } />
             <Route path="/auth" element={
@@ -68,6 +72,17 @@ function App() {
                 </ProtectedRoute>
               } 
             />
+            <Route 
+              path="/southpole-test" 
+              element={<SouthPoleTest />} 
+            />
+            <Route path="/offset-order" element={
+              <>
+                <Navigation />
+                <OffsetOrderPage />
+              </>
+            } />
+            <Route path="/checkout" element={<CheckoutPage />} />
           </Routes>
         </div>
       </Router>
