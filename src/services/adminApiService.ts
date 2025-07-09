@@ -115,7 +115,7 @@ export class AdminApiService {
           const result = await this.fetchSlice(endpoint, start, end, page);
           
           for (const bucket of result.data) {
-            yield { endpoint, ...bucket } as AdminUsageBucket;
+            yield { endpoint, ...bucket };
           }
 
           page = result.next_page;
@@ -139,26 +139,20 @@ export class AdminApiService {
       try {
         console.log(`Fetching ${endpoint} data for last ${daysBack} days...`);
         
-        for await (const bucket of this.getAllBuckets(endpoint, daysBack)) {
-          const date = new Date(bucket.start_time * 1000).toISOString().split('T')[0];
+        for await (const result of this.getAllBuckets(endpoint, daysBack)) {
+          // Each item yielded is actually a usage result, not a bucket
+          const date = new Date().toISOString().split('T')[0]; // Use current date as fallback
           
-          // The bucket should have a results array based on the API structure
-          if (!bucket.results || !Array.isArray(bucket.results)) {
-            console.log(`No results in bucket for ${endpoint} on ${date}`);
+          // Skip empty results
+          if (!result.model) {
+            console.log(`Skipping result without model in ${endpoint}`);
             continue;
           }
           
-          for (const result of bucket.results) {
-            // Skip empty results
-            if (!result.model) {
-              console.log(`Skipping result without model in ${endpoint}`);
-              continue;
-            }
-            
-            const usageData: Omit<UsageData, 'id'> = {
-              user_id: userId,
-              date,
-              endpoint: bucket.endpoint,
+          const usageData: Omit<UsageData, 'id'> = {
+            user_id: userId,
+            date,
+            endpoint: result.endpoint || endpoint,
               model: result.model,
               requests: result.num_model_requests || 0,
               input_tokens: result.input_tokens || 0,
@@ -166,16 +160,15 @@ export class AdminApiService {
               input_cached_tokens: result.input_cached_tokens || 0,
               input_audio_tokens: result.input_audio_tokens || 0,
               output_audio_tokens: result.output_audio_tokens || 0,
-              project_id: result.project_id || null,
-              api_key_id: result.api_key_id || null,
-              batch: result.batch || null,
+              project_id: result.project_id || undefined,
+              api_key_id: result.api_key_id || undefined,
+              batch: result.batch || undefined,
               cost: this.calculateCost(result),
               co2_grams: this.calculateCO2(result),
               created_at: new Date().toISOString()
             };
 
-            allUsageData.push(usageData);
-          }
+          allUsageData.push(usageData);
         }
       } catch (error) {
         console.error(`Failed to fetch ${endpoint} data:`, error);

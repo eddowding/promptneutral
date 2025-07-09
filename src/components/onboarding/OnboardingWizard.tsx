@@ -61,7 +61,8 @@ const steps = [
 ];
 
 export const OnboardingWizard: React.FC = () => {
-  const { user } = useContext(AuthContext);
+  const authContext = useContext(AuthContext);
+  const user = authContext?.user;
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(true);

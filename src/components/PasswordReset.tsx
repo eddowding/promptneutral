@@ -31,6 +31,11 @@ export const PasswordReset: React.FC = () => {
     // Set the session with the tokens
     const setSessionFromUrl = async () => {
       try {
+        if (!supabase) {
+          console.error('Supabase is not configured');
+          setIsValidToken(false);
+          return;
+        }
         const { data, error } = await supabase.auth.setSession({
           access_token: accessToken,
           refresh_token: refreshToken
@@ -95,6 +100,9 @@ export const PasswordReset: React.FC = () => {
     setIsLoading(true);
 
     try {
+      if (!supabase) {
+        throw new Error('Supabase is not configured');
+      }
       const { error } = await supabase.auth.updateUser({
         password: formData.password
       });

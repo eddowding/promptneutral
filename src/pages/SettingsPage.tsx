@@ -209,7 +209,7 @@ export const SettingsPage: React.FC = () => {
       setSuccess(`${service} API key added successfully`);
     } catch (error) {
       console.error(`Error adding ${service} API key:`, error);
-      setError(`Failed to add API key: ${error.message || 'Unknown error'}`);
+      setError(`Failed to add API key: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setSaving(false);
       setValidating(prev => ({ ...prev, [service]: false }));

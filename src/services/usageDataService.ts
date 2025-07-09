@@ -88,7 +88,7 @@ export class UsageDataService {
     // Create summaries
     return Object.entries(dailyGroups).map(([date, items]) => {
       const uniqueModels = new Set(items.map(item => item.model));
-      const endpointsUsed = new Set(items.map(item => item.endpoint));
+      const endpointsUsed = new Set(items.map(item => item.endpoint).filter((endpoint): endpoint is string => endpoint !== undefined));
       
       return {
         date,

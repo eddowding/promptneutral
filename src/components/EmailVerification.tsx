@@ -21,6 +21,11 @@ export const EmailVerification: React.FC = () => {
       }
 
       try {
+        if (!supabase) {
+          setStatus('error');
+          setMessage('Supabase is not configured');
+          return;
+        }
         const { data, error } = await supabase.auth.verifyOtp({
           token_hash: token,
           type: 'signup'

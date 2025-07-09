@@ -81,6 +81,9 @@ export class DatabaseService {
 
       // Upsert the data with retry logic
       await withRetry(async () => {
+        if (!supabase) {
+          throw new Error('Supabase is not configured');
+        }
         const { error } = await supabase
           .from('usage_data')
           .upsert(rows, { 
@@ -105,6 +108,10 @@ export class DatabaseService {
    */
   async fetchUsageData(userId: string, startDate: string, endDate: string): Promise<UsageReport> {
     try {
+      if (!supabase) {
+        console.error('Supabase is not configured');
+        return {};
+      }
       const { data, error } = await supabase
         .from('usage_data')
         .select('*')
@@ -158,6 +165,17 @@ export class DatabaseService {
       const endDate = new Date().toISOString().split('T')[0];
       const startDate = new Date(Date.now() - (days - 1) * 24 * 60 * 60 * 1000)
         .toISOString().split('T')[0];
+
+      if (!supabase) {
+        console.error('Supabase is not configured');
+        return {
+          totalRequests: 0,
+          totalTokens: 0,
+          totalCost: 0,
+          totalCO2: 0,
+          modelBreakdown: {}
+        };
+      }
 
       const { data, error } = await supabase
         .from('usage_data')
@@ -215,6 +233,10 @@ export class DatabaseService {
    */
   async getLastSyncTime(userId: string): Promise<Date | null> {
     try {
+      if (!supabase) {
+        console.error('Supabase is not configured');
+        return null;
+      }
       const { data, error } = await supabase
         .from('usage_data')
         .select('created_at')
@@ -238,6 +260,10 @@ export class DatabaseService {
    */
   async hasDataForRange(userId: string, startDate: string, endDate: string): Promise<boolean> {
     try {
+      if (!supabase) {
+        console.error('Supabase is not configured');
+        return false;
+      }
       const { data, error } = await supabase
         .from('usage_data')
         .select('id')
@@ -261,6 +287,10 @@ export class DatabaseService {
    * Subscribe to real-time changes for a user's usage data
    */
   subscribeToUsageUpdates(userId: string, callback: (payload: any) => void) {
+    if (!supabase) {
+      console.error('Supabase is not configured');
+      return null;
+    }
     return supabase
       .channel('usage_data_changes')
       .on(
@@ -312,6 +342,11 @@ export class DatabaseService {
       startDate.setDate(startDate.getDate() - (requiredDays - 1));
       const startStr = startDate.toISOString().split('T')[0];
 
+      if (!supabase) {
+        console.error('Supabase is not configured');
+        return false;
+      }
+
       // Count rows for the user since `startStr`. We use PostgREST's head=true to avoid fetching rows.
       const { count, error } = await supabase
         .from('usage_data')
@@ -345,6 +380,11 @@ export class DatabaseService {
       const cutoffDate = new Date(Date.now() - keepDays * 24 * 60 * 60 * 1000)
         .toISOString().split('T')[0];
 
+      if (!supabase) {
+        console.error('Supabase is not configured');
+        return;
+      }
+
       const { error } = await supabase
         .from('usage_data')
         .delete()
@@ -370,6 +410,11 @@ export class DatabaseService {
       // Check in-memory cache first
       if (DatabaseService.instance.historicalDataFlags?.has(userId)) {
         return DatabaseService.instance.historicalDataFlags.get(userId) || false;
+      }
+
+      if (!supabase) {
+        console.error('Supabase is not configured');
+        return false;
       }
 
       // Check in database user_settings
@@ -405,6 +450,11 @@ export class DatabaseService {
       // Update in-memory cache
       if (DatabaseService.instance.historicalDataFlags) {
         DatabaseService.instance.historicalDataFlags.set(userId, fetched);
+      }
+
+      if (!supabase) {
+        console.error('Supabase is not configured');
+        return;
       }
 
       // Check if user_settings record exists
@@ -452,6 +502,10 @@ export class DatabaseService {
    */
   async getEarliestUsageDate(userId: string): Promise<Date | null> {
     try {
+      if (!supabase) {
+        console.error('Supabase is not configured');
+        return null;
+      }
       const { data, error } = await supabase
         .from('usage_data')
         .select('date')

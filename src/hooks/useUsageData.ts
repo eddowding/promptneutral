@@ -258,7 +258,9 @@ export const useUsageData = (useLiveData: boolean = true): UseUsageDataReturn =>
     // Cleanup subscription on unmount
     return () => {
       console.log('🔴 Cleaning up real-time subscription');
-      subscription.unsubscribe();
+      if (subscription) {
+        subscription.unsubscribe();
+      }
     };
   }, [user?.id, useLiveData]);
 

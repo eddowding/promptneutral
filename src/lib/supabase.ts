@@ -501,6 +501,7 @@ export interface Database {
 export const onboardingService = {
   // Save onboarding progress
   async saveProgress(userId: string, data: any) {
+    if (!supabase) throw new Error('Supabase not configured');
     const { error } = await supabase
       .from('onboarding_progress')
       .upsert({
@@ -517,6 +518,7 @@ export const onboardingService = {
 
   // Load onboarding progress
   async loadProgress(userId: string) {
+    if (!supabase) throw new Error('Supabase not configured');
     const { data, error } = await supabase
       .from('onboarding_progress')
       .select('*')
@@ -529,6 +531,7 @@ export const onboardingService = {
 
   // Save user profile
   async saveProfile(userId: string, profile: any) {
+    if (!supabase) throw new Error('Supabase not configured');
     const { error } = await supabase
       .from('profiles')
       .upsert({
@@ -546,6 +549,7 @@ export const onboardingService = {
 
   // Save user preferences
   async savePreferences(userId: string, preferences: any, goals: any) {
+    if (!supabase) throw new Error('Supabase not configured');
     const { error } = await supabase
       .from('user_preferences')
       .upsert({
@@ -567,6 +571,7 @@ export const onboardingService = {
 
   // Save API keys (encrypted)
   async saveApiKey(userId: string, service: string, encryptedKey: string, validated: boolean = false) {
+    if (!supabase) throw new Error('Supabase not configured');
     const { error } = await supabase
       .from('api_keys')
       .upsert({
@@ -584,6 +589,7 @@ export const onboardingService = {
 
   // Save selected project
   async saveSelectedProject(userId: string, project: any) {
+    if (!supabase) throw new Error('Supabase not configured');
     // First, deactivate all existing projects
     await supabase
       .from('selected_projects')
@@ -617,9 +623,11 @@ export const onboardingService = {
 
       // Save API keys if provided
       for (const [service, config] of Object.entries(data.services)) {
-        if (config && config.apiKey) {
+        if (config && typeof config === 'object' && 'apiKey' in config) {
           // In a real implementation, you would encrypt the API key before storing
-          await this.saveApiKey(userId, service, config.apiKey, config.validated);
+          const apiKey = (config as any).apiKey;
+          const validated = (config as any).validated || false;
+          await this.saveApiKey(userId, service, apiKey, validated);
         }
       }
     } catch (error) {
