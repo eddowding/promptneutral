@@ -7,8 +7,15 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Load environment variables
-const supabaseUrl = 'https://qzrdtwvgnlmlrpqrvyel.supabase.co';
-const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6cmR0d3ZnbmxtbHJwcXJ2eWVsIiwicm9sZSI6InNlcnZpY2Ufcm9sZSIsImlhdCI6MTc1MTQ0MzkzNiwiZXhwIjoyMDY3MDE5OTM2fQ.u0SCqWSi52ArlyCoTANyGU_QM-3t7bRBazW3S73hlkM';
+require('dotenv').config();
+
+const supabaseUrl = process.env.VITE_SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseUrl || !supabaseServiceKey) {
+  console.error('Missing required environment variables');
+  process.exit(1);
+}
 
 // Create Supabase client with service role key for admin operations
 const supabase = createClient(supabaseUrl, supabaseServiceKey);

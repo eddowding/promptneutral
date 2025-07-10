@@ -7,13 +7,18 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Supabase configuration
-const supabaseUrl = 'https://qzrdtwvgnlmlrpqrvyel.supabase.co';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6cmR0d3ZnbmxtbHJwcXJ2eWVsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTQ0MzkzNiwiZXhwIjoyMDY3MDE5OTM2fQ.u0SCqWSi52ArlyCoTANyGU_QM-3t7bRBazW3S73hlkM';
+const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+
+if (!supabaseUrl || !supabaseServiceKey) {
+  console.error('Missing required environment variables: VITE_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY');
+  process.exit(1);
+}
 
 console.log('⚠️  WARNING: This script requires manual execution in Supabase Dashboard');
 console.log('\nThe Supabase JavaScript client cannot execute raw ALTER TABLE statements.');
 console.log('\nTo run the migration:');
-console.log('1. Go to: https://supabase.com/dashboard/project/qzrdtwvgnlmlrpqrvyel/sql/new');
+console.log(`1. Go to your Supabase dashboard SQL editor`);
 console.log('2. Copy and paste the following SQL:');
 console.log('\n' + '='.repeat(60) + '\n');
 

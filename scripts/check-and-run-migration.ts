@@ -1,8 +1,13 @@
 // Simple script to check if migration is needed and provide instructions
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = 'https://qzrdtwvgnlmlrpqrvyel.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6cmR0d3ZnbmxtbHJwcXJ2eWVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE0NDM5MzYsImV4cCI6MjA2NzAxOTkzNn0.oJ1UBRF-iIqYApb1_bLlSSgvZXZWVFIsO4aeJDHlGzI';
+const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
+const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY || '';
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('Missing required environment variables');
+  process.exit(1);
+}
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
