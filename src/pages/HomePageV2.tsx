@@ -453,10 +453,24 @@ export function HomePageV2() {
                       </div>
                       
                       {(heroAmount !== '' ? heroAmount : userGuess) && (
-                        <p className="text-sm text-gray-600 mb-4">
-                          That's <span className="font-semibold text-yellow-700">{(convertToEUR(parseFloat(heroAmount !== '' ? heroAmount : userGuess)) / results.offsetCost).toFixed(1)}x</span> the needed offset
-                          {convertToEUR(parseFloat(heroAmount !== '' ? heroAmount : userGuess)) >= results.offsetCost * 4.3 && <span> - true climate leadership!</span>}
-                        </p>
+                        <div className="space-y-2 mb-4">
+                          <p className="text-sm text-gray-600">
+                            That's <span className="font-semibold text-yellow-700">{(convertToEUR(parseFloat(heroAmount !== '' ? heroAmount : userGuess)) / results.offsetCost).toFixed(1)}x</span> the needed offset
+                            {convertToEUR(parseFloat(heroAmount !== '' ? heroAmount : userGuess)) >= results.offsetCost * 4.3 && <span> - true climate leadership!</span>}
+                          </p>
+                          {(() => {
+                            const totalAISpending = Object.values(spending).reduce((sum, amount) => sum + amount, 0);
+                            if (totalAISpending > 0) {
+                              const offsetPercentage = (parseFloat(heroAmount !== '' ? heroAmount : userGuess) / totalAISpending * 100).toFixed(1);
+                              return (
+                                <p className="text-sm text-gray-600">
+                                  Your offset cost is <span className="font-semibold text-green-700">{offsetPercentage}%</span> of your ${totalAISpending.toLocaleString()} AI spending
+                                </p>
+                              );
+                            }
+                            return null;
+                          })()}
+                        </div>
                       )}
                       
                       <button
