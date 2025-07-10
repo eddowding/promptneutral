@@ -212,7 +212,7 @@ export function OffsetOrderPage() {
                 />
                 {selectedProjectData && (
                   <div className="text-sm text-gray-600 mt-2 space-y-1">
-                    <p>{quantity.toFixed(3)} tonnes × {formatCurrencyFromEUR(selectedProjectData.pricePerTonne)} = {formatCurrencyFromEUR(offsetCost)}</p>
+                    <p>{parseFloat(quantity.toFixed(3))} tonnes × {formatCurrencyFromEUR(selectedProjectData.pricePerTonne)} = {formatCurrencyFromEUR(offsetCost)}</p>
                     <p>Processing fee: {formatCurrencyFromEUR(processingFee)}</p>
                     <p className="font-medium">Total: {formatCurrencyFromEUR(parseFloat(totalCost))}</p>
                     {heroAmount && parseFloat(totalCost) > convertToEUR(heroAmount) && (
@@ -353,7 +353,7 @@ export function OffsetOrderPage() {
                 <div>
                   <p className="font-semibold text-gray-900">{selectedProjectData?.name}</p>
                   <p className="text-sm text-gray-600">
-                    {quantity.toFixed(3)} tonne{quantity !== 1 ? 's' : ''} × {formatCurrencyFromEUR(selectedProjectData?.pricePerTonne || 0)} + {formatCurrencyFromEUR(0.30)} fee
+                    {parseFloat(quantity.toFixed(3))} tonne{quantity !== 1 ? 's' : ''} × {formatCurrencyFromEUR(selectedProjectData?.pricePerTonne || 0)} + {formatCurrencyFromEUR(0.30)} fee
                   </p>
                 </div>
               </div>

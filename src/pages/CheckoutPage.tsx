@@ -120,7 +120,7 @@ export function CheckoutPage() {
                 <div className="bg-blue-50 rounded-lg p-4 mt-6">
                   <p className="text-sm">
                     <strong>Your impact preview:</strong> You selected{' '}
-                    <span className="font-medium">{checkoutData.quantity} tonnes</span> of carbon offsets 
+                    <span className="font-medium">{parseFloat(checkoutData.quantity.toFixed(3))} tonnes</span> of carbon offsets 
                     through the <span className="font-medium">{checkoutData.projectName}</span> project. 
                     That's amazing! 
                   </p>
@@ -180,7 +180,7 @@ export function CheckoutPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Quantity:</span>
-                  <span className="font-medium">{checkoutData.quantity.toFixed(3)} tonnes CO₂</span>
+                  <span className="font-medium">{parseFloat(checkoutData.quantity.toFixed(3))} tonnes CO₂</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Price per tonne:</span>
@@ -254,7 +254,7 @@ export function CheckoutPage() {
                       Make this a monthly contribution
                     </p>
                     <p className="text-sm text-gray-600 mt-1">
-                      Automatically offset {checkoutData.quantity.toFixed(3)} tonnes every month to maintain your carbon neutrality
+                      Automatically offset {parseFloat(checkoutData.quantity.toFixed(3))} tonnes every month to maintain your carbon neutrality
                     </p>
                   </div>
                 </label>
