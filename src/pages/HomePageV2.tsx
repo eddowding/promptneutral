@@ -478,17 +478,17 @@ export function HomePageV2() {
                         </button>
                       </div>
                       
-                      <div className="flex flex-col items-center mb-4">
-                        <div className="flex items-center justify-center gap-3 mb-2">
+                      <div className="flex flex-col items-center mb-6">
+                        <div className="flex items-center justify-center gap-3 mb-3">
                           <span className="text-lg font-semibold">Or offset for</span>
-                          <div className="relative">
-                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-bold">{currency.symbol}</span>
+                          <div className="relative bg-white border-2 border-yellow-300 rounded-lg p-3">
+                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-bold text-xl">{currency.symbol}</span>
                             <input
                               type="text"
                               value={heroAmount !== '' ? heroAmount : userGuess}
                               onChange={(e) => setHeroAmount(e.target.value.replace(/[$,]/g, ''))}
                               onKeyDown={handleNumberInput}
-                              className="w-32 pl-8 pr-4 py-2 text-lg border-2 border-yellow-400 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent text-center font-bold"
+                              className="w-36 pl-8 pr-4 text-2xl font-bold text-center bg-transparent focus:outline-none"
                               inputMode="decimal"
                             />
                           </div>
@@ -501,10 +501,10 @@ export function HomePageV2() {
                           const percentage = totalAISpending > 0 ? (amount / totalAISpending * 100).toFixed(1) : null;
                           
                           return (
-                            <div className="text-center">
-                              <div className="text-2xl font-bold text-yellow-700">{multiplier}x</div>
+                            <div className="text-center mt-2">
+                              <div className="text-3xl font-bold text-yellow-700">{multiplier}x</div>
                               {percentage && (
-                                <div className="text-xs text-gray-500">{percentage}% of AI spend</div>
+                                <div className="text-sm text-gray-600 mt-1">{percentage}% of AI spend</div>
                               )}
                             </div>
                           );
