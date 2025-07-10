@@ -205,23 +205,30 @@ export function OffsetOrderPage() {
             {/* Default project selection */}
             {selectedProject ? (
               <div className="mb-6 p-6 bg-green-50 rounded-lg border-2 border-green-200">
-                <h3 className="font-semibold text-lg mb-3 text-gray-900">Your selected project</h3>
+                <h3 className="font-semibold text-lg mb-3 text-gray-900">Recommended project</h3>
                 {selectedProjectData && (
                   <div className="flex items-start gap-3">
                     <div className="flex-shrink-0 pt-1">
                       {selectedProjectData.icon}
                     </div>
                     <div className="flex-1">
-                      <h4 className="font-semibold text-gray-900">{selectedProjectData.name}</h4>
-                      <p className="text-sm text-gray-600 mt-0.5">{selectedProjectData.description}</p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Globe className="h-3 w-3 text-gray-500" />
-                        <span className="text-xs text-gray-700">{selectedProjectData.location}</span>
-                        <span className="text-xs text-gray-500">• {selectedProjectData.type}</span>
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-gray-900">{selectedProjectData.name}</h4>
+                          <p className="text-sm text-gray-600 mt-0.5">{selectedProjectData.description}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <Globe className="h-3 w-3 text-gray-500" />
+                            <span className="text-xs text-gray-700">{selectedProjectData.location}</span>
+                            <span className="text-xs text-gray-500">• {selectedProjectData.type}</span>
+                          </div>
+                        </div>
+                        <div className="text-right ml-3">
+                          <p className="text-xl font-bold text-gray-900">
+                            {formatCurrencyFromEUR(selectedProjectData.pricePerTonne)}
+                          </p>
+                          <p className="text-xs text-gray-600">per tonne</p>
+                        </div>
                       </div>
-                      <p className="text-lg font-bold text-gray-900 mt-2">
-                        {formatCurrencyFromEUR(selectedProjectData.pricePerTonne)} per tonne
-                      </p>
                     </div>
                   </div>
                 )}
