@@ -32,6 +32,7 @@ export function ResearchPage() {
             <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-8">
               <div className="bg-gradient-to-r from-green-600 to-blue-600 text-white p-4">
                 <h2 className="text-xl font-semibold">Snapshot — July 2025</h2>
+                <p className="text-sm mt-1 opacity-90">⚠️ ±1 order-of-magnitude uncertainty exists. See assumptions below.</p>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full">
@@ -40,8 +41,9 @@ export function ResearchPage() {
                       <th className="px-4 py-3 font-medium">Model</th>
                       <th className="px-4 py-3 font-medium">Provider</th>
                       <th className="px-4 py-3 font-medium">Thinking?</th>
-                      <th className="px-4 py-3 font-medium">Energy/short chat (Wh)</th>
-                      <th className="px-4 py-3 font-medium">Energy/10k tokens (Wh)</th>
+                      <th className="px-4 py-3 font-medium">Energy/query (Wh)</th>
+                      <th className="px-4 py-3 font-medium">Energy/1k tokens (Wh)</th>
+                      <th className="px-4 py-3 font-medium">Confidence</th>
                       <th className="px-4 py-3 font-medium">Notes</th>
                     </tr>
                   </thead>
@@ -50,80 +52,96 @@ export function ResearchPage() {
                       <td className="px-4 py-3 font-medium">Gemini 2.5 Flash</td>
                       <td className="px-4 py-3">Google</td>
                       <td className="px-4 py-3">Direct Response</td>
-                      <td className="px-4 py-3">≈ 0.22 †</td>
-                      <td className="px-4 py-3">n/d</td>
-                      <td className="px-4 py-3">25% leaner than 2.0 Flash</td>
+                      <td className="px-4 py-3">0.022-0.24</td>
+                      <td className="px-4 py-3">—</td>
+                      <td className="px-4 py-3">★★☆</td>
+                      <td className="px-4 py-3">Third-party measurements</td>
                     </tr>
                     <tr>
                       <td className="px-4 py-3 font-medium">GPT-4.1 nano</td>
                       <td className="px-4 py-3">OpenAI</td>
                       <td className="px-4 py-3">Direct Response</td>
                       <td className="px-4 py-3">—</td>
-                      <td className="px-4 py-3">0.45</td>
-                      <td className="px-4 py-3">Ultra-efficient</td>
+                      <td className="px-4 py-3">0.04-0.08*</td>
+                      <td className="px-4 py-3">★☆☆</td>
+                      <td className="px-4 py-3">*Speculative, no public data</td>
                     </tr>
                     <tr>
                       <td className="px-4 py-3 font-medium">Claude 4 Sonnet</td>
                       <td className="px-4 py-3">Anthropic</td>
                       <td className="px-4 py-3">Hybrid</td>
-                      <td className="px-4 py-3">≈ 0.28 †</td>
-                      <td className="px-4 py-3">≈ 14 †</td>
-                      <td className="px-4 py-3">Drop-in efficient variant</td>
+                      <td className="px-4 py-3">0.20-0.30</td>
+                      <td className="px-4 py-3">—</td>
+                      <td className="px-4 py-3">★★☆</td>
+                      <td className="px-4 py-3">~30% below GPT-4o</td>
                     </tr>
                     <tr>
                       <td className="px-4 py-3 font-medium">GPT-4o</td>
                       <td className="px-4 py-3">OpenAI</td>
                       <td className="px-4 py-3">Thinking</td>
-                      <td className="px-4 py-3">0.30 – 0.43</td>
+                      <td className="px-4 py-3">0.22-0.35</td>
                       <td className="px-4 py-3">—</td>
-                      <td className="px-4 py-3">New baseline</td>
+                      <td className="px-4 py-3">★★★</td>
+                      <td className="px-4 py-3">Epoch AI measured</td>
                     </tr>
                     <tr>
                       <td className="px-4 py-3 font-medium">Claude 4 Opus</td>
                       <td className="px-4 py-3">Anthropic</td>
                       <td className="px-4 py-3">Thinking</td>
-                      <td className="px-4 py-3">≈ 0.32 †</td>
-                      <td className="px-4 py-3">≈ 15 †</td>
-                      <td className="px-4 py-3">~8% less power than Claude 3.7</td>
+                      <td className="px-4 py-3">~0.40*</td>
+                      <td className="px-4 py-3">—</td>
+                      <td className="px-4 py-3">★☆☆</td>
+                      <td className="px-4 py-3">*Vendor guidance only</td>
                     </tr>
                     <tr>
                       <td className="px-4 py-3 font-medium">Gemini 2.5 Pro</td>
                       <td className="px-4 py-3">Google</td>
                       <td className="px-4 py-3">Thinking</td>
-                      <td className="px-4 py-3">≈ 0.40 †</td>
-                      <td className="px-4 py-3">n/d</td>
-                      <td className="px-4 py-3">Claims parity with GPT-4o</td>
+                      <td className="px-4 py-3">~0.40*</td>
+                      <td className="px-4 py-3">—</td>
+                      <td className="px-4 py-3">★★☆</td>
+                      <td className="px-4 py-3">*Estimated from GPT-4o</td>
                     </tr>
                     <tr>
                       <td className="px-4 py-3 font-medium">Claude 3.7 Sonnet</td>
                       <td className="px-4 py-3">Anthropic</td>
                       <td className="px-4 py-3">Hybrid</td>
                       <td className="px-4 py-3">—</td>
-                      <td className="px-4 py-3">≈ 17</td>
-                      <td className="px-4 py-3">Top eco-efficiency 2024</td>
+                      <td className="px-4 py-3">~1.7</td>
+                      <td className="px-4 py-3">★★☆</td>
+                      <td className="px-4 py-3">2024 benchmark</td>
                     </tr>
                     <tr>
                       <td className="px-4 py-3 font-medium">DeepSeek R1</td>
                       <td className="px-4 py-3">DeepSeek</td>
                       <td className="px-4 py-3">Thinking</td>
                       <td className="px-4 py-3">—</td>
-                      <td className="px-4 py-3">≥ 33</td>
-                      <td className="px-4 py-3">Energy-heavy</td>
+                      <td className="px-4 py-3">33-40</td>
+                      <td className="px-4 py-3">★★☆</td>
+                      <td className="px-4 py-3">Extended reasoning mode</td>
                     </tr>
                     <tr>
                       <td className="px-4 py-3 font-medium">o3</td>
                       <td className="px-4 py-3">OpenAI</td>
                       <td className="px-4 py-3">Thinking</td>
                       <td className="px-4 py-3">—</td>
-                      <td className="px-4 py-3">≥ 33</td>
-                      <td className="px-4 py-3">Worst-in-class (×70 GPT-4.1 nano)</td>
+                      <td className="px-4 py-3">~39</td>
+                      <td className="px-4 py-3">★★☆</td>
+                      <td className="px-4 py-3">Chain-of-thought heavy</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
               <div className="p-4 bg-gray-50 text-xs text-gray-600">
-                <p>**Wh = watt-hours for inference only (training excluded).</p>
-                <p>†Estimated from provider efficiency statements or scaling laws; no audited figure published.</p>
+                <p><strong>Key Assumptions:</strong></p>
+                <ul className="list-disc list-inside mt-1 space-y-1">
+                  <li>Energy values for inference only (training excluded)</li>
+                  <li>"Short chat" = ~2k input + 0.5k output tokens</li>
+                  <li>Grid carbon: 0.475 kg CO₂/kWh (global avg 2024)</li>
+                  <li>Water usage: 0.25 L/kWh (typical US datacenter)</li>
+                  <li>Confidence: ★★★ = measured, ★★☆ = estimated, ★☆☆ = speculative</li>
+                </ul>
+                <p className="mt-2 text-yellow-700">* Values vary ×50-100 based on GPU type, batch size, and reasoning mode</p>
               </div>
             </div>
 
@@ -190,8 +208,9 @@ export function ResearchPage() {
                       Pre-industrial levels were around 280ppm, meaning we've increased atmospheric CO₂ by over 50%.
                     </p>
                     <p>
-                      <strong>The 430x Movement</strong>: To truly counteract AI's carbon footprint at our current atmospheric reality, 
-                      we recommend offsetting by 430% - not just neutralizing, but actively removing 4.3x more carbon than you emit.
+                      <strong>Clarification: 430% = 4.3×</strong> (not 430×). We advocate offsetting by 430% of your emissions 
+                      - that's 4.3 times your carbon footprint. This "draw-down" philosophy is an advocacy stance to help reverse 
+                      climate change, not just maintain the status quo.
                     </p>
                     <div className="grid md:grid-cols-3 gap-4 mt-4">
                       <div className="bg-white p-4 rounded-lg border border-yellow-200">
@@ -487,6 +506,19 @@ export function ResearchPage() {
                   </div>
                 </div>
               </section>
+            </div>
+
+            {/* Simple Summary Box */}
+            <div className="bg-blue-50 rounded-lg p-6 mb-8 border border-blue-200">
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">The Bottom Line for Users</h3>
+              <p className="text-gray-700 text-lg mb-4">
+                <strong>A GPT-4o answer costs ~0.11g CO₂ and a thimble-full of water; an o3 'chain-of-thought' 
+                answer costs ~14g CO₂ and a teaspoon of water.</strong>
+              </p>
+              <p className="text-gray-600">
+                Both are dwarfed by training emissions and the energy to run your phone screen for a minute. 
+                However, at scale across millions of queries, the impact adds up quickly.
+              </p>
             </div>
 
             {/* Call to Action */}

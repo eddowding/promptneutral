@@ -20,18 +20,21 @@ interface CarbonResults {
   treeYears: number;
 }
 
-// Based on research data: weighted average of 50% efficient + 50% heavy models
-// Efficient: GPT-4o ~0.35 Wh/query at $0.03/query = 11.7 Wh/$
-// Heavy: o3 ~33 Wh/query at $1-2/query = 16-33 Wh/$
-// Real usage likely involves both types
+// Energy estimates based on expert review (July 2025)
+// Methodology: Weighted mix of efficient and heavy models per provider
+// Assumptions: 
+// - GPT-4o: 0.3 Wh/query at ~$0.01/query = 30 Wh/$
+// - o3/heavy: 39 Wh/query at ~$0.50/query = 78 Wh/$
+// - Typical usage: 80% efficient, 20% heavy models
 const WH_PER_DOLLAR: Record<string, number> = {
-  openai: 45,      // Mix of GPT-4o (cheap) and o3/GPT-4-turbo (expensive)
-  anthropic: 35,   // Mix of Claude Sonnet and Opus
-  google: 30,      // Mix of Gemini Flash and Pro
-  other: 40        // Average estimate
+  openai: 38,      // (0.8 × 30) + (0.2 × 78) = 39.6 Wh/$
+  anthropic: 32,   // Similar mix for Claude models
+  google: 28,      // Flash-heavy usage pattern
+  other: 35        // Conservative average
 };
 
-// Grid carbon intensity: global average ~0.475 kg CO2/kWh
+// Grid carbon intensity: global average 2024
+// Source: IEA electricity carbon intensity data
 const CO2_PER_KWH = 0.475;
 
 const STEAK_CO2_KG = 27;
