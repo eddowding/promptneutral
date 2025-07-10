@@ -376,7 +376,7 @@ export function HomePageV2() {
                     Choose from verified carbon offset projects and make a difference today
                   </p>
                   <p className="mt-2 text-xs text-gray-500">
-                    💡 Tip: Offset by 430% ({formatCurrencyFromEUR(results.offsetCost * 4.3)}) to match atmospheric CO₂ levels
+                    💡 Tip: Offset by 430% ({formatCurrencyFromEUR(Math.round(results.offsetCost * 100) / 100 * 4.3)}) to match atmospheric CO₂ levels
                   </p>
                 </div>
 
@@ -396,28 +396,37 @@ export function HomePageV2() {
                       
                       <div className="grid grid-cols-3 gap-3 mb-4 max-w-md mx-auto">
                         <button
-                          onClick={() => setHeroAmount((results.offsetCost * 4.3).toFixed(2))}
+                          onClick={() => {
+                            const roundedCost = Math.round(results.offsetCost * 100) / 100;
+                            setHeroAmount((roundedCost * 4.3).toFixed(2));
+                          }}
                           className="bg-white border-2 border-yellow-300 rounded-lg p-3 hover:bg-yellow-50 transition-colors"
                         >
                           <div className="text-2xl font-bold text-yellow-700">4.3x</div>
-                          <div className="text-xs text-gray-600">{formatCurrencyFromEUR(results.offsetCost * 4.3)}</div>
+                          <div className="text-xs text-gray-600">{formatCurrencyFromEUR(Math.round(results.offsetCost * 100) / 100 * 4.3)}</div>
                         </button>
                         <button
-                          onClick={() => setHeroAmount((results.offsetCost * 43).toFixed(2))}
+                          onClick={() => {
+                            const roundedCost = Math.round(results.offsetCost * 100) / 100;
+                            setHeroAmount((roundedCost * 43).toFixed(2));
+                          }}
                           className="bg-white border-2 border-yellow-300 rounded-lg p-3 hover:bg-yellow-50 transition-colors"
                         >
                           <div className="text-2xl font-bold text-yellow-700">43x</div>
-                          <div className="text-xs text-gray-600">{formatCurrencyFromEUR(results.offsetCost * 43)}</div>
+                          <div className="text-xs text-gray-600">{formatCurrencyFromEUR(Math.round(results.offsetCost * 100) / 100 * 43)}</div>
                         </button>
                         <button
-                          onClick={() => setHeroAmount((results.offsetCost * 430).toFixed(2))}
+                          onClick={() => {
+                            const roundedCost = Math.round(results.offsetCost * 100) / 100;
+                            setHeroAmount((roundedCost * 430).toFixed(2));
+                          }}
                           className="bg-white border-2 border-yellow-300 rounded-lg p-3 hover:bg-yellow-50 transition-colors relative"
                         >
                           <div className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white text-xs px-2 py-1 rounded-full font-bold">
                             FULL 430
                           </div>
                           <div className="text-2xl font-bold text-yellow-700">430x</div>
-                          <div className="text-xs text-gray-600">{formatCurrencyFromEUR(results.offsetCost * 430)}</div>
+                          <div className="text-xs text-gray-600">{formatCurrencyFromEUR(Math.round(results.offsetCost * 100) / 100 * 430)}</div>
                         </button>
                       </div>
                       
