@@ -111,7 +111,9 @@ export function OffsetOrderPage() {
   const [activeCategory, setActiveCategory] = useState<'all' | 'nature-based' | 'engineered'>('all');
 
   const selectedProjectData = projects.find(p => p.id === selectedProject);
-  const totalCost = selectedProjectData ? (quantity * selectedProjectData.pricePerTonne).toFixed(2) : '0.00';
+  const offsetCost = selectedProjectData ? quantity * selectedProjectData.pricePerTonne : 0;
+  const processingFee = 0.30;
+  const totalCost = selectedProjectData ? (offsetCost + processingFee).toFixed(2) : '0.00';
 
   const filteredProjects = projects.filter(project => 
     activeCategory === 'all' || project.category === activeCategory
@@ -120,9 +122,12 @@ export function OffsetOrderPage() {
   // Recalculate quantity when project is selected in hero mode
   useEffect(() => {
     if (selectedProjectData && heroAmount) {
-      // Calculate how many tonnes needed to reach hero amount
-      const heroQuantity = heroAmount / selectedProjectData.pricePerTonne;
-      setQuantity(Math.round(heroQuantity * 100) / 100); // Round to 2 decimal places
+      // Calculate exact tonnes to match hero amount (minus processing fee)
+      // Hero amount is in USD, project prices are in EUR - assuming 1:1 for now
+      const processingFee = 0.30;
+      const amountForOffset = Math.max(0.01, heroAmount - processingFee);
+      const heroQuantity = amountForOffset / selectedProjectData.pricePerTonne;
+      setQuantity(Math.floor(heroQuantity * 1000) / 1000); // Floor to 3 decimal places to ensure we don't exceed
     }
   }, [selectedProject, heroAmount, selectedProjectData]);
 
@@ -199,15 +204,17 @@ export function OffsetOrderPage() {
                   onChange={(e) => setQuantity(Math.max(0.01, parseFloat(e.target.value) || 0.01))}
                   className="w-32 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
-                {heroAmount && selectedProjectData && (
-                  <p className="text-sm text-gray-600 mt-2">
-                    {quantity.toFixed(2)} tonnes × €{selectedProjectData.pricePerTonne} = €{totalCost}
-                    {parseFloat(totalCost) < heroAmount && (
+                {selectedProjectData && (
+                  <div className="text-sm text-gray-600 mt-2 space-y-1">
+                    <p>{quantity.toFixed(3)} tonnes × €{selectedProjectData.pricePerTonne} = €{offsetCost.toFixed(2)}</p>
+                    <p>Processing fee: €{processingFee.toFixed(2)}</p>
+                    <p className="font-medium">Total: €{totalCost}</p>
+                    {heroAmount && parseFloat(totalCost) > heroAmount && (
                       <span className="text-yellow-600 font-medium">
-                        {' '}(Below your €{heroAmount.toFixed(2)} commitment)
+                        (Exceeds your ${heroAmount.toFixed(2)} commitment)
                       </span>
                     )}
-                  </p>
+                  </div>
                 )}
               </div>
             )}
@@ -340,7 +347,7 @@ export function OffsetOrderPage() {
                 <div>
                   <p className="font-semibold text-gray-900">{selectedProjectData?.name}</p>
                   <p className="text-sm text-gray-600">
-                    {quantity.toFixed(2)} tonne{quantity !== 1 ? 's' : ''} × €{selectedProjectData?.pricePerTonne}
+                    {quantity.toFixed(3)} tonne{quantity !== 1 ? 's' : ''} × €{selectedProjectData?.pricePerTonne} + €0.30 fee
                   </p>
                 </div>
               </div>
