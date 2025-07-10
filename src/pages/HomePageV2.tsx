@@ -102,6 +102,21 @@ export function HomePageV2() {
     }
   };
 
+  const handleIntegerInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Allow: backspace, delete, tab, escape, enter (no decimal point)
+    const allowedKeys = ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
+    
+    // Allow: Ctrl/Cmd+A, Ctrl/Cmd+C, Ctrl/Cmd+V, Ctrl/Cmd+X
+    if ((e.ctrlKey || e.metaKey) && ['a', 'c', 'v', 'x'].includes(e.key.toLowerCase())) {
+      return;
+    }
+    
+    // Prevent if not a number or allowed key
+    if (!allowedKeys.includes(e.key) && isNaN(Number(e.key))) {
+      e.preventDefault();
+    }
+  };
+
   const formatNumber = (num: number): string => {
     return num.toLocaleString('en-US');
   };
@@ -209,9 +224,17 @@ export function HomePageV2() {
                 <input
                   type="text"
                   value={userGuess}
-                  onChange={(e) => setUserGuess(e.target.value.replace(/[$,]/g, ''))}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/[$,]/g, '');
+                    // Only allow integers
+                    if (value === '' || /^\d+$/.test(value)) {
+                      setUserGuess(value);
+                    }
+                  }}
+                  onKeyDown={handleIntegerInput}
                   className="w-full pl-8 pr-4 py-3 text-lg border-2 border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-center font-semibold"
                   placeholder="Take a guess..."
+                  inputMode="numeric"
                 />
               </div>
               <p className="text-sm text-gray-600 mt-3 text-center">
