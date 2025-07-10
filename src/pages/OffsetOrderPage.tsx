@@ -227,7 +227,7 @@ export function OffsetOrderPage() {
                 )}
                 <button
                   onClick={() => setSelectedProject('')}
-                  className="mt-4 text-sm text-green-700 hover:text-green-800 font-medium"
+                  className="mt-4 px-4 py-2 bg-white border border-green-600 text-green-700 rounded-lg hover:bg-green-50 transition-colors font-medium"
                 >
                   Choose a different project →
                 </button>
@@ -243,33 +243,6 @@ export function OffsetOrderPage() {
               </div>
             )}
             
-            {selectedProject && (
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Tonnes of CO₂ to offset
-                </label>
-                <input
-                  type="number"
-                  min="0.01"
-                  step="0.01"
-                  value={quantity}
-                  onChange={(e) => setQuantity(Math.max(0.01, parseFloat(e.target.value) || 0.01))}
-                  className="w-32 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                />
-                {selectedProjectData && (
-                  <div className="text-sm text-gray-600 mt-2 space-y-1">
-                    <p>{parseFloat(quantity.toFixed(3))} tonnes × {formatCurrencyFromEUR(selectedProjectData.pricePerTonne)} = {formatCurrencyFromEUR(offsetCost)}</p>
-                    <p>Processing fee: {formatCurrencyFromEUR(processingFee)}</p>
-                    <p className="font-medium">Total: {formatCurrencyFromEUR(parseFloat(totalCost))}</p>
-                    {heroAmount && parseFloat(totalCost) > convertToEUR(heroAmount) && (
-                      <span className="text-yellow-600 font-medium">
-                        (Exceeds your {currency.symbol}{heroAmount.toFixed(2)} commitment)
-                      </span>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
 
             {!selectedProject && (
               <>
