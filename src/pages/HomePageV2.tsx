@@ -45,7 +45,7 @@ const TREE_CO2_PER_YEAR_KG = 21.77;
 
 export function HomePageV2() {
   const navigate = useNavigate();
-  const { currency, formatCurrency, formatCurrencyFromEUR, loading: currencyLoading } = useCurrency();
+  const { currency, formatCurrency, formatCurrencyFromEUR, convertFromEUR, convertToEUR, loading: currencyLoading } = useCurrency();
   
   const [spending, setSpending] = useState<ProviderSpending>({
     openai: 0,
@@ -402,7 +402,8 @@ export function HomePageV2() {
                         <button
                           onClick={() => {
                             const roundedCost = Math.round(results.offsetCost * 100) / 100;
-                            setHeroAmount((roundedCost * 4.3).toFixed(2));
+                            const localAmount = convertFromEUR(roundedCost * 4.3);
+                            setHeroAmount(localAmount.toFixed(2));
                           }}
                           className="bg-white border-2 border-yellow-300 rounded-lg p-3 hover:bg-yellow-50 transition-colors"
                         >
@@ -412,7 +413,8 @@ export function HomePageV2() {
                         <button
                           onClick={() => {
                             const roundedCost = Math.round(results.offsetCost * 100) / 100;
-                            setHeroAmount((roundedCost * 43).toFixed(2));
+                            const localAmount = convertFromEUR(roundedCost * 43);
+                            setHeroAmount(localAmount.toFixed(2));
                           }}
                           className="bg-white border-2 border-yellow-300 rounded-lg p-3 hover:bg-yellow-50 transition-colors"
                         >
@@ -422,7 +424,8 @@ export function HomePageV2() {
                         <button
                           onClick={() => {
                             const roundedCost = Math.round(results.offsetCost * 100) / 100;
-                            setHeroAmount((roundedCost * 430).toFixed(2));
+                            const localAmount = convertFromEUR(roundedCost * 430);
+                            setHeroAmount(localAmount.toFixed(2));
                           }}
                           className="bg-white border-2 border-yellow-300 rounded-lg p-3 hover:bg-yellow-50 transition-colors relative"
                         >
@@ -451,8 +454,8 @@ export function HomePageV2() {
                       
                       {(heroAmount !== '' ? heroAmount : userGuess) && (
                         <p className="text-sm text-gray-600 mb-4">
-                          That's <span className="font-semibold text-yellow-700">{(parseFloat(heroAmount !== '' ? heroAmount : userGuess) / results.offsetCost).toFixed(1)}x</span> the needed offset
-                          {parseFloat(heroAmount !== '' ? heroAmount : userGuess) >= results.offsetCost * 4.3 && <span> - true climate leadership!</span>}
+                          That's <span className="font-semibold text-yellow-700">{(convertToEUR(parseFloat(heroAmount !== '' ? heroAmount : userGuess)) / results.offsetCost).toFixed(1)}x</span> the needed offset
+                          {convertToEUR(parseFloat(heroAmount !== '' ? heroAmount : userGuess)) >= results.offsetCost * 4.3 && <span> - true climate leadership!</span>}
                         </p>
                       )}
                       
@@ -460,10 +463,11 @@ export function HomePageV2() {
                         onClick={() => navigate('/offset-order', { 
                           state: { 
                             offsetAmount: results.totalCO2Tonnes, 
-                            offsetCost: parseFloat(heroAmount !== '' ? heroAmount : userGuess),
-                            heroAmount: parseFloat(heroAmount !== '' ? heroAmount : userGuess),
+                            offsetCost: convertToEUR(parseFloat(heroAmount !== '' ? heroAmount : userGuess)),
+                            heroAmount: convertToEUR(parseFloat(heroAmount !== '' ? heroAmount : userGuess)),
                             standardCost: results.offsetCost,
-                            userCurrency: currency.code
+                            userCurrency: currency.code,
+                            aiProviders: spending
                           } 
                         })}
                         disabled={!heroAmount && !userGuess}
