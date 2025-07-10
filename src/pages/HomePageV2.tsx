@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calculator, Zap, Plane, Beef, DollarSign, TreePine, Cloud, ShoppingCart, ExternalLink, Car, Building } from 'lucide-react';
+import { Calculator, Zap, Plane, Beef, TreePine, Cloud, ShoppingCart, ExternalLink, Car, Building } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useCurrency } from '../contexts/CurrencyContext';
 import { CurrencySelector } from '../components/CurrencySelector';
@@ -118,11 +118,8 @@ export function HomePageV2() {
             <h1 className="text-5xl font-bold text-gray-900 mb-4">
               What's Your AI Carbon Score?
             </h1>
-            <p className="text-xl text-gray-600 mb-2">
+            <p className="text-xl text-gray-600">
               Calculate the environmental impact of your AI usage
-            </p>
-            <p className="text-sm text-gray-500">
-              We're at 430ppm CO₂ - offset by 430% to make a real difference
             </p>
           </div>
 
@@ -255,11 +252,8 @@ export function HomePageV2() {
 
               <div className="grid md:grid-cols-2 gap-6 mb-6">
                 <div className="bg-green-50 rounded-lg p-8 text-center">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <DollarSign className="h-8 w-8 text-green-600" />
-                    <div className="text-5xl font-bold text-gray-900">
-                      {formatCurrencyFromEUR(results.offsetCost)}
-                    </div>
+                  <div className="text-5xl font-bold text-gray-900 mb-2">
+                    {formatCurrencyFromEUR(results.offsetCost)}
                   </div>
                   <div className="text-lg text-gray-600">Carbon offset cost</div>
                 </div>
@@ -367,19 +361,45 @@ export function HomePageV2() {
                   <div className="mt-8 p-6 bg-gradient-to-r from-yellow-50 to-amber-50 rounded-xl border-2 border-yellow-300">
                     <div className="text-center">
                       <h3 className="text-xl font-bold text-gray-900 mb-2 flex items-center justify-center gap-2">
-                        <span className="text-2xl">🌍</span>
-                        Join the 430x Movement!
+                        <span className="text-2xl">🦸</span>
+                        Make the Hero Move!
                       </h3>
                       <p className="text-gray-700 mb-4">
-                        You guessed ${parseFloat(userGuess).toFixed(2)} - perfect for achieving 430% offset!
+                        You guessed ${parseFloat(userGuess).toFixed(2)} - why not go above and beyond?
                       </p>
                       <p className="text-sm text-gray-600 mb-6">
-                        At 430ppm CO₂, we need radical action. Your 
-                        <span className="font-semibold text-yellow-700"> {((parseFloat(heroAmount || userGuess) / results.offsetCost - 1) * 100).toFixed(0)}% over-contribution</span> helps 
-                        us reach the 430% target needed to reverse climate change!
+                        Choose your impact level or enter a custom amount:
                       </p>
+                      
+                      <div className="grid grid-cols-3 gap-3 mb-4 max-w-md mx-auto">
+                        <button
+                          onClick={() => setHeroAmount((results.offsetCost * 4.3).toFixed(2))}
+                          className="bg-white border-2 border-yellow-300 rounded-lg p-3 hover:bg-yellow-50 transition-colors"
+                        >
+                          <div className="text-2xl font-bold text-yellow-700">4.3x</div>
+                          <div className="text-xs text-gray-600">{formatCurrencyFromEUR(results.offsetCost * 4.3)}</div>
+                        </button>
+                        <button
+                          onClick={() => setHeroAmount((results.offsetCost * 43).toFixed(2))}
+                          className="bg-white border-2 border-yellow-300 rounded-lg p-3 hover:bg-yellow-50 transition-colors"
+                        >
+                          <div className="text-2xl font-bold text-yellow-700">43x</div>
+                          <div className="text-xs text-gray-600">{formatCurrencyFromEUR(results.offsetCost * 43)}</div>
+                        </button>
+                        <button
+                          onClick={() => setHeroAmount((results.offsetCost * 430).toFixed(2))}
+                          className="bg-white border-2 border-yellow-300 rounded-lg p-3 hover:bg-yellow-50 transition-colors relative"
+                        >
+                          <div className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white text-xs px-2 py-1 rounded-full font-bold">
+                            FULL 430
+                          </div>
+                          <div className="text-2xl font-bold text-yellow-700">430x</div>
+                          <div className="text-xs text-gray-600">{formatCurrencyFromEUR(results.offsetCost * 430)}</div>
+                        </button>
+                      </div>
+                      
                       <div className="flex items-center justify-center gap-3 mb-4">
-                        <span className="text-lg font-semibold">Offset for</span>
+                        <span className="text-lg font-semibold">Or offset for</span>
                         <div className="relative">
                           <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-bold">{currency.symbol}</span>
                           <input
@@ -392,6 +412,14 @@ export function HomePageV2() {
                           />
                         </div>
                       </div>
+                      
+                      {heroAmount && (
+                        <p className="text-sm text-gray-600 mb-4">
+                          That's <span className="font-semibold text-yellow-700">{((parseFloat(heroAmount) / results.offsetCost) * 100).toFixed(0)}%</span> of needed offset
+                          {parseFloat(heroAmount) >= results.offsetCost * 4.3 && <span> - true climate leadership!</span>}
+                        </p>
+                      )}
+                      
                       <button
                         onClick={() => navigate('/offset-order', { 
                           state: { 
@@ -406,7 +434,7 @@ export function HomePageV2() {
                         className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white py-4 px-8 rounded-lg font-bold hover:from-yellow-600 hover:to-yellow-700 transition-all inline-flex items-center gap-2 text-lg shadow-lg transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <span className="text-xl">🌍</span>
-                        Join the 430x Movement
+                        Offset My Carbon Impact
                       </button>
                     </div>
                   </div>
