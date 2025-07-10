@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Calculator, Zap, Plane, Beef, TreePine, Cloud, ShoppingCart, ExternalLink, Car, Building } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useCurrency } from '../contexts/CurrencyContext';
-import { CurrencySelector } from '../components/CurrencySelector';
 
 interface ProviderSpending {
   openai: number;
@@ -129,9 +128,6 @@ export function HomePageV2() {
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
-          <div className="flex justify-end mb-4">
-            <CurrencySelector />
-          </div>
           <div className="text-center mb-12">
             <h1 className="text-5xl font-bold text-gray-900 mb-4">
               What's Your AI Carbon Score?
@@ -149,7 +145,12 @@ export function HomePageV2() {
 
             <div className="grid md:grid-cols-2 gap-6 mb-8">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                  <img 
+                    src="https://www.google.com/s2/favicons?domain=openai.com&sz=32" 
+                    alt="OpenAI" 
+                    className="w-4 h-4"
+                  />
                   OpenAI (GPT-4, DALL-E, etc.)
                 </label>
                 <div className="relative">
@@ -165,7 +166,12 @@ export function HomePageV2() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                  <img 
+                    src="https://www.google.com/s2/favicons?domain=anthropic.com&sz=32" 
+                    alt="Anthropic" 
+                    className="w-4 h-4"
+                  />
                   Anthropic (Claude)
                 </label>
                 <div className="relative">
@@ -181,7 +187,12 @@ export function HomePageV2() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                  <img 
+                    src="https://www.google.com/s2/favicons?domain=google.com&sz=32" 
+                    alt="Google" 
+                    className="w-4 h-4"
+                  />
                   Google (Gemini, Bard)
                 </label>
                 <div className="relative">
@@ -197,7 +208,10 @@ export function HomePageV2() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                  <div className="w-4 h-4 bg-gray-300 rounded flex items-center justify-center text-xs font-bold text-gray-600">
+                    AI
+                  </div>
                   Other AI Services
                 </label>
                 <div className="relative">

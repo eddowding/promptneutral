@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Leaf, BarChart3, User, LogOut, Settings, MessageSquare } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { ADMIN_EMAILS } from '../services/config';
+import { CurrencySelector } from './CurrencySelector';
 
 export const Navigation: React.FC = () => {
   const location = useLocation();
@@ -23,38 +24,24 @@ export const Navigation: React.FC = () => {
 
           {/* Navigation Links */}
           <div className="hidden md:flex items-center space-x-8">
-            {isAuthenticated && (
-              <>
-                <Link 
-                  to="/settings" 
-                  className={`flex items-center space-x-1 text-sm font-medium transition-colors ${
-                    location.pathname === '/settings' 
-                      ? 'text-green-600' 
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  <Settings className="w-4 h-4" />
-                  <span>Settings</span>
-                </Link>
-                {isAdmin && (
-                  <Link 
-                    to="/admin/feedback" 
-                    className={`flex items-center space-x-1 text-sm font-medium transition-colors ${
-                      location.pathname === '/admin/feedback' 
-                        ? 'text-green-600' 
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    <MessageSquare className="w-4 h-4" />
-                    <span>Feedback</span>
-                  </Link>
-                )}
-              </>
+            {isAuthenticated && isAdmin && (
+              <Link 
+                to="/admin/feedback" 
+                className={`flex items-center space-x-1 text-sm font-medium transition-colors ${
+                  location.pathname === '/admin/feedback' 
+                    ? 'text-green-600' 
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                <MessageSquare className="w-4 h-4" />
+                <span>Feedback</span>
+              </Link>
             )}
           </div>
 
           {/* CTA Buttons */}
           <div className="flex items-center space-x-4">
+            <CurrencySelector />
             {isAuthenticated ? (
               <>
                 {/* User Menu */}
@@ -68,7 +55,7 @@ export const Navigation: React.FC = () => {
                     className="flex items-center space-x-1 px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
                   >
                     <LogOut className="w-4 h-4" />
-                    <span className="hidden sm:inline">Sign Out</span>
+                    <span>Sign Out</span>
                   </button>
                 </div>
               </>
