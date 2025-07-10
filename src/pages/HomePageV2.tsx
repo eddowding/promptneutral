@@ -409,6 +409,15 @@ export function HomePageV2() {
                         >
                           <div className="text-2xl font-bold text-yellow-700">4.3x</div>
                           <div className="text-xs text-gray-600">{formatCurrencyFromEUR(Math.round(results.offsetCost * 100) / 100 * 4.3)}</div>
+                          {(() => {
+                            const totalAISpending = Object.values(spending).reduce((sum, amount) => sum + amount, 0);
+                            if (totalAISpending > 0) {
+                              const offsetAmount = convertFromEUR(Math.round(results.offsetCost * 100) / 100 * 4.3);
+                              const percentage = (offsetAmount / totalAISpending * 100).toFixed(1);
+                              return <div className="text-xs text-gray-500 mt-1">{percentage}% of AI spend</div>;
+                            }
+                            return null;
+                          })()}
                         </button>
                         <button
                           onClick={() => {
@@ -420,6 +429,15 @@ export function HomePageV2() {
                         >
                           <div className="text-2xl font-bold text-yellow-700">43x</div>
                           <div className="text-xs text-gray-600">{formatCurrencyFromEUR(Math.round(results.offsetCost * 100) / 100 * 43)}</div>
+                          {(() => {
+                            const totalAISpending = Object.values(spending).reduce((sum, amount) => sum + amount, 0);
+                            if (totalAISpending > 0) {
+                              const offsetAmount = convertFromEUR(Math.round(results.offsetCost * 100) / 100 * 43);
+                              const percentage = (offsetAmount / totalAISpending * 100).toFixed(1);
+                              return <div className="text-xs text-gray-500 mt-1">{percentage}% of AI spend</div>;
+                            }
+                            return null;
+                          })()}
                         </button>
                         <button
                           onClick={() => {
@@ -434,6 +452,15 @@ export function HomePageV2() {
                           </div>
                           <div className="text-2xl font-bold text-yellow-700">430x</div>
                           <div className="text-xs text-gray-600">{formatCurrencyFromEUR(Math.round(results.offsetCost * 100) / 100 * 430)}</div>
+                          {(() => {
+                            const totalAISpending = Object.values(spending).reduce((sum, amount) => sum + amount, 0);
+                            if (totalAISpending > 0) {
+                              const offsetAmount = convertFromEUR(Math.round(results.offsetCost * 100) / 100 * 430);
+                              const percentage = (offsetAmount / totalAISpending * 100).toFixed(1);
+                              return <div className="text-xs text-gray-500 mt-1">{percentage}% of AI spend</div>;
+                            }
+                            return null;
+                          })()}
                         </button>
                       </div>
                       
@@ -452,26 +479,7 @@ export function HomePageV2() {
                         </div>
                       </div>
                       
-                      {(heroAmount !== '' ? heroAmount : userGuess) && (
-                        <div className="space-y-2 mb-4">
-                          <p className="text-sm text-gray-600">
-                            That's <span className="font-semibold text-yellow-700">{(convertToEUR(parseFloat(heroAmount !== '' ? heroAmount : userGuess)) / results.offsetCost).toFixed(1)}x</span> the needed offset
-                            {convertToEUR(parseFloat(heroAmount !== '' ? heroAmount : userGuess)) >= results.offsetCost * 4.3 && <span> - true climate leadership!</span>}
-                          </p>
-                          {(() => {
-                            const totalAISpending = Object.values(spending).reduce((sum, amount) => sum + amount, 0);
-                            if (totalAISpending > 0) {
-                              const offsetPercentage = (parseFloat(heroAmount !== '' ? heroAmount : userGuess) / totalAISpending * 100).toFixed(1);
-                              return (
-                                <p className="text-sm text-gray-600">
-                                  Your offset cost is <span className="font-semibold text-green-700">{offsetPercentage}%</span> of your ${totalAISpending.toLocaleString()} AI spending
-                                </p>
-                              );
-                            }
-                            return null;
-                          })()}
-                        </div>
-                      )}
+                      {/* Removed the redundant multiplier text */}
                       
                       <button
                         onClick={() => navigate('/offset-order', { 
