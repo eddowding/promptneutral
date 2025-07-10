@@ -17,16 +17,16 @@ async function testConnection() {
     dotenv.default.config();
 
     const supabaseUrl = process.env.VITE_SUPABASE_URL;
-    const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY;
+    const supabasePublishableKey = process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
     console.log('\n🔍 Testing Supabase connection...');
     console.log('URL:', supabaseUrl);
-    console.log('Anon Key:', supabaseAnonKey ? '✅ Present' : '❌ Missing');
+    console.log('Publishable Key:', supabasePublishableKey ? '✅ Present' : '❌ Missing');
     console.log('Service Key:', serviceKey ? '✅ Present' : '❌ Missing');
 
-    // Test with anon key (what the app uses)
-    const supabaseAnon = createClient(supabaseUrl, supabaseAnonKey);
+    // Test with publishable key (what the app uses)
+    const supabaseClient = createClient(supabaseUrl, supabasePublishableKey);
     
     console.log('\n📡 Testing anon client connection...');
     const { data: session } = await supabaseAnon.auth.getSession();

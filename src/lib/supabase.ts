@@ -1,14 +1,14 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+const supabasePublishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
 
 // Configuration status
-export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey)
+export const isSupabaseConfigured = Boolean(supabaseUrl && supabasePublishableKey)
 
 // Create a Supabase client or null if not configured
 export const supabase: SupabaseClient | null = isSupabaseConfigured
-  ? createClient(supabaseUrl, supabaseAnonKey)
+  ? createClient(supabaseUrl, supabasePublishableKey)
   : null
 
 // Configuration check function
@@ -27,8 +27,8 @@ export const checkSupabaseConfig = (): {
     errors.push('VITE_SUPABASE_URL is not a valid URL')
   }
 
-  if (!supabaseAnonKey) {
-    missingVars.push('VITE_SUPABASE_ANON_KEY')
+  if (!supabasePublishableKey) {
+    missingVars.push('VITE_SUPABASE_PUBLISHABLE_KEY')
   }
 
   if (missingVars.length > 0) {
@@ -154,7 +154,7 @@ export const getSupabaseSetupGuidance = (): {
     steps.push(
       '1. Create a Supabase project at https://supabase.com',
       '2. Go to Project Settings > API',
-      '3. Copy your Project URL and anon/public key',
+      '3. Copy your Project URL and publishable key',
       '4. Create a .env file in your project root',
       '5. Add the environment variables shown below',
       '6. Restart your development server'
@@ -175,7 +175,7 @@ export const getSupabaseSetupGuidance = (): {
     message,
     steps,
     envExample: `VITE_SUPABASE_URL=https://your-project-id.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key-here`
+VITE_SUPABASE_PUBLISHABLE_KEY=your-publishable-key-here`
   }
 }
 

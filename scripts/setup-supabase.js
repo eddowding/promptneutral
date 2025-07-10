@@ -114,7 +114,7 @@ async function main() {
   }
   
   const hasSupabaseUrl = 'VITE_SUPABASE_URL' in existingVars;
-  const hasSupabaseKey = 'VITE_SUPABASE_ANON_KEY' in existingVars;
+  const hasSupabaseKey = 'VITE_SUPABASE_PUBLISHABLE_KEY' in existingVars;
   
   if (hasSupabaseUrl) {
     const url = existingVars.VITE_SUPABASE_URL;
@@ -128,10 +128,10 @@ async function main() {
   }
   
   if (hasSupabaseKey) {
-    const key = existingVars.VITE_SUPABASE_ANON_KEY;
-    printColored(`✓ Supabase anon key found: ${key.substring(0, 20)}...`, 'green');
+    const key = existingVars.VITE_SUPABASE_PUBLISHABLE_KEY;
+    printColored(`✓ Supabase publishable key found: ${key.substring(0, 20)}...`, 'green');
   } else {
-    printColored('✗ VITE_SUPABASE_ANON_KEY not found', 'red');
+    printColored('✗ VITE_SUPABASE_PUBLISHABLE_KEY not found', 'red');
   }
   
   // If everything is configured, ask if user wants to reconfigure
@@ -167,7 +167,7 @@ async function main() {
   console.log('• Go to your Supabase project dashboard');
   console.log('• Click on "Settings" in the left sidebar');
   console.log('• Click on "API" in the settings menu');
-  console.log('• You will see your Project URL and anon/public key');
+  console.log('• You will see your Project URL and publishable key');
   
   console.log();
   const projectUrl = await askQuestion('Enter your Supabase Project URL: ');
@@ -183,10 +183,10 @@ async function main() {
     }
   }
   
-  const anonKey = await askQuestion('Enter your Supabase anon/public key: ');
+  const anonKey = await askQuestion('Enter your Supabase publishable key: ');
   
   if (!anonKey || anonKey.length < 100) {
-    printColored('Warning: The key you entered seems too short for a Supabase anon key.', 'yellow');
+    printColored('Warning: The key you entered seems too short for a Supabase publishable key.', 'yellow');
     const proceed = await askQuestion('Do you want to continue anyway? (y/N): ');
     if (proceed.toLowerCase() !== 'y' && proceed.toLowerCase() !== 'yes') {
       printColored('Setup cancelled.', 'red');
@@ -211,8 +211,8 @@ async function main() {
       if (line.startsWith('VITE_SUPABASE_URL=')) {
         updatedLines.push(`VITE_SUPABASE_URL=${projectUrl}`);
         urlUpdated = true;
-      } else if (line.startsWith('VITE_SUPABASE_ANON_KEY=')) {
-        updatedLines.push(`VITE_SUPABASE_ANON_KEY=${anonKey}`);
+      } else if (line.startsWith('VITE_SUPABASE_PUBLISHABLE_KEY=')) {
+        updatedLines.push(`VITE_SUPABASE_PUBLISHABLE_KEY=${anonKey}`);
         keyUpdated = true;
       } else {
         updatedLines.push(line);
@@ -223,7 +223,7 @@ async function main() {
       updatedLines.push(`VITE_SUPABASE_URL=${projectUrl}`);
     }
     if (!keyUpdated) {
-      updatedLines.push(`VITE_SUPABASE_ANON_KEY=${anonKey}`);
+      updatedLines.push(`VITE_SUPABASE_PUBLISHABLE_KEY=${anonKey}`);
     }
     
     newEnvContent = updatedLines.join('\n');
@@ -231,7 +231,7 @@ async function main() {
     // Create new .env file
     newEnvContent = `# Supabase Configuration
 VITE_SUPABASE_URL=${projectUrl}
-VITE_SUPABASE_ANON_KEY=${anonKey}
+VITE_SUPABASE_PUBLISHABLE_KEY=${anonKey}
 
 # OpenAI Configuration (add your OpenAI API key here)
 # VITE_OPENAI_API_KEY=your-openai-api-key-here
