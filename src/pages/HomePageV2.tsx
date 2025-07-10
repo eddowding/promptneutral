@@ -118,8 +118,11 @@ export function HomePageV2() {
             <h1 className="text-5xl font-bold text-gray-900 mb-4">
               What's Your AI Carbon Score?
             </h1>
-            <p className="text-xl text-gray-600">
+            <p className="text-xl text-gray-600 mb-2">
               Calculate the environmental impact of your AI usage
+            </p>
+            <p className="text-sm text-gray-500">
+              We're at 430ppm CO₂ - offset by 430% to make a real difference
             </p>
           </div>
 
@@ -355,23 +358,25 @@ export function HomePageV2() {
                   <p className="mt-3 text-sm text-gray-600">
                     Choose from verified carbon offset projects and make a difference today
                   </p>
+                  <p className="mt-2 text-xs text-gray-500">
+                    💡 Tip: Offset by 430% ({formatCurrencyFromEUR(results.offsetCost * 4.3)}) to match atmospheric CO₂ levels
+                  </p>
                 </div>
 
                 {userGuess && parseFloat(userGuess) > results.offsetCost && (
                   <div className="mt-8 p-6 bg-gradient-to-r from-yellow-50 to-amber-50 rounded-xl border-2 border-yellow-300">
                     <div className="text-center">
                       <h3 className="text-xl font-bold text-gray-900 mb-2 flex items-center justify-center gap-2">
-                        <span className="text-2xl">🦸</span>
-                        Make the Hero Move!
+                        <span className="text-2xl">🌍</span>
+                        Join the 430x Movement!
                       </h3>
                       <p className="text-gray-700 mb-4">
-                        You guessed ${parseFloat(userGuess).toFixed(2)} - why not go above and beyond?
+                        You guessed ${parseFloat(userGuess).toFixed(2)} - perfect for achieving 430% offset!
                       </p>
                       <p className="text-sm text-gray-600 mb-6">
-                        Your over-contribution will be highlighted on your certificate as a 
-                        <span className="font-semibold text-yellow-700"> Climate Champion</span> who gave 
-                        {' '}{((parseFloat(heroAmount || userGuess) / results.offsetCost - 1) * 100).toFixed(0)}% 
-                        more than required!
+                        At 430ppm CO₂, we need radical action. Your 
+                        <span className="font-semibold text-yellow-700"> {((parseFloat(heroAmount || userGuess) / results.offsetCost - 1) * 100).toFixed(0)}% over-contribution</span> helps 
+                        us reach the 430% target needed to reverse climate change!
                       </p>
                       <div className="flex items-center justify-center gap-3 mb-4">
                         <span className="text-lg font-semibold">Offset for</span>
@@ -400,8 +405,8 @@ export function HomePageV2() {
                         disabled={!heroAmount && !userGuess}
                         className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white py-4 px-8 rounded-lg font-bold hover:from-yellow-600 hover:to-yellow-700 transition-all inline-flex items-center gap-2 text-lg shadow-lg transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <span className="text-xl">⚡</span>
-                        Continue with Hero Mode
+                        <span className="text-xl">🌍</span>
+                        Join the 430x Movement
                       </button>
                     </div>
                   </div>

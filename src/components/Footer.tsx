@@ -13,10 +13,10 @@ export const Footer: React.FC = () => {
               <div className="p-2 bg-green-600 rounded-lg">
                 <Leaf className="w-6 h-6 text-white" />
               </div>
-              <span className="text-xl font-bold">PromptNeutral</span>
+              <span className="text-xl font-bold">430xAI</span>
             </div>
             <p className="text-gray-400 mb-6 max-w-md">
-              Making AI carbon neutral with real-time tracking and verified carbon credit retirement.
+              Offset your AI carbon footprint by 430% - matching our 430ppm CO₂ reality.
             </p>
           </div>
 
@@ -46,7 +46,7 @@ export const Footer: React.FC = () => {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between">
           <p className="text-gray-400 text-sm">
-            © 2024 PromptNeutral. All rights reserved. EU Green Claims Directive compliant.
+            © 2024 430xAI. All rights reserved. EU Green Claims Directive compliant.
           </p>
           <div className="flex items-center space-x-6 mt-4 md:mt-0">
             <Link to="/" className="text-gray-400 hover:text-white transition-colors text-sm">

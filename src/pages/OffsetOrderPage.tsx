@@ -179,16 +179,18 @@ export function OffsetOrderPage() {
             {heroAmount && (
               <div className="mb-6 p-4 bg-gradient-to-r from-yellow-50 to-amber-50 rounded-lg border border-yellow-300">
                 <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
-                  <span className="text-xl">🦸</span>
-                  Hero Mode Activated!
+                  <span className="text-xl">🌍</span>
+                  430x Mode Activated!
                 </h3>
                 <p className="text-gray-700">
-                  You're choosing to contribute <span className="font-bold">{currency.symbol}{heroAmount.toFixed(2)}</span> instead 
+                  You're contributing <span className="font-bold">{currency.symbol}{heroAmount.toFixed(2)}</span> instead 
                   of the calculated {currency.symbol}{standardCost.toFixed(2)} - that's{' '}
                   <span className="font-bold text-yellow-700">
-                    {((heroAmount / standardCost - 1) * 100).toFixed(0)}% extra
+                    {((heroAmount / standardCost) * 100).toFixed(0)}% of needed offset
                   </span>!
-                  Your certificate will recognize you as a <span className="font-semibold">Climate Champion</span>.
+                  {((heroAmount / standardCost) * 100) >= 430 
+                    ? <span> You've reached the <span className="font-semibold">430x target</span> - true climate leadership!</span>
+                    : <span> Get to 430% to match atmospheric CO₂ levels!</span>}
                 </p>
               </div>
             )}

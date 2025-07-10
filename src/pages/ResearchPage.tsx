@@ -177,6 +177,44 @@ export function ResearchPage() {
             <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
               <h2 className="text-3xl font-bold mb-6">Environmental Impact of AI Queries Across Leading Models</h2>
               
+              {/* 430ppm Significance */}
+              <section className="mb-8">
+                <div className="bg-gradient-to-r from-yellow-50 to-amber-50 rounded-lg p-6 border border-yellow-300">
+                  <h3 className="text-2xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <span className="text-3xl">🌍</span>
+                    Why 430x? The 430ppm Reality
+                  </h3>
+                  <div className="space-y-4 text-gray-700">
+                    <p>
+                      <strong>We're at 430ppm CO₂</strong> - the highest atmospheric carbon dioxide concentration in human history. 
+                      Pre-industrial levels were around 280ppm, meaning we've increased atmospheric CO₂ by over 50%.
+                    </p>
+                    <p>
+                      <strong>The 430x Movement</strong>: To truly counteract AI's carbon footprint at our current atmospheric reality, 
+                      we recommend offsetting by 430% - not just neutralizing, but actively removing 4.3x more carbon than you emit.
+                    </p>
+                    <div className="grid md:grid-cols-3 gap-4 mt-4">
+                      <div className="bg-white p-4 rounded-lg border border-yellow-200">
+                        <div className="text-2xl font-bold text-yellow-700">430ppm</div>
+                        <div className="text-sm text-gray-600">Current CO₂ levels</div>
+                      </div>
+                      <div className="bg-white p-4 rounded-lg border border-yellow-200">
+                        <div className="text-2xl font-bold text-yellow-700">+50%</div>
+                        <div className="text-sm text-gray-600">Increase since 1850</div>
+                      </div>
+                      <div className="bg-white p-4 rounded-lg border border-yellow-200">
+                        <div className="text-2xl font-bold text-yellow-700">430%</div>
+                        <div className="text-sm text-gray-600">Our offset target</div>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600 mt-4">
+                      <strong>Why this matters:</strong> Standard carbon neutrality (100% offset) maintains the status quo. 
+                      To actually reverse climate change, we need to remove more carbon than we emit - hence the 430x movement.
+                    </p>
+                  </div>
+                </div>
+              </section>
+
               {/* Introduction */}
               <section className="mb-8">
                 <h3 className="text-2xl font-semibold mb-4">Introduction</h3>

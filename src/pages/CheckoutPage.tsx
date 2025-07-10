@@ -152,7 +152,10 @@ export function CheckoutPage() {
               Complete Your Order
             </h1>
             <p className="text-gray-600 mb-6">
-              Just one more step to offset your AI carbon footprint!
+              {checkoutData.heroAmount 
+                ? `You're offsetting by ${((checkoutData.heroAmount / checkoutData.standardCost!) * 100).toFixed(0)}% - ${((checkoutData.heroAmount / checkoutData.standardCost!) * 100) >= 430 ? 'true 430x climate leadership!' : 'every bit helps!'}`
+                : 'Just one more step to offset your AI carbon footprint!'
+              }
             </p>
 
             <div className="bg-gray-50 rounded-lg p-4 mb-6">
@@ -178,6 +181,30 @@ export function CheckoutPage() {
                 </div>
               </div>
             </div>
+
+            {checkoutData.heroAmount && checkoutData.standardCost && (
+              <div className="mb-6 p-4 bg-gradient-to-r from-yellow-50 to-amber-50 rounded-lg border border-yellow-300">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">🌍</span>
+                    <span className="font-bold text-lg">430x Movement</span>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-yellow-700">
+                      {((checkoutData.heroAmount / checkoutData.standardCost) * 100).toFixed(0)}%
+                    </div>
+                    <div className="text-xs text-gray-600">
+                      of needed offset
+                    </div>
+                  </div>
+                </div>
+                {((checkoutData.heroAmount / checkoutData.standardCost) * 100) >= 430 && (
+                  <p className="text-sm text-yellow-700 mt-2 font-medium">
+                    ✨ You've reached the 430x target - matching our 430ppm CO₂ reality!
+                  </p>
+                )}
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>

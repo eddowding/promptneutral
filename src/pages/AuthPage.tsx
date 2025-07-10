@@ -40,7 +40,7 @@ export const AuthPage: React.FC = () => {
           <div className="p-3 bg-green-100 rounded-xl">
             <Leaf className="w-8 h-8 text-green-600" />
           </div>
-          <span className="ml-3 text-2xl font-bold text-gray-900">PromptNeutral</span>
+          <span className="ml-3 text-2xl font-bold text-gray-900">430xAI</span>
         </div>
 
         {/* Tab Navigation */}

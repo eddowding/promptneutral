@@ -18,7 +18,7 @@ export const Navigation: React.FC = () => {
             <div className="p-2 bg-green-100 rounded-lg">
               <Leaf className="w-6 h-6 text-green-600" />
             </div>
-            <span className="text-xl font-bold text-gray-900">PromptNeutral</span>
+            <span className="text-xl font-bold text-gray-900">430xAI</span>
           </Link>
 
           {/* Navigation Links */}

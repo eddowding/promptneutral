@@ -20,11 +20,11 @@ export const WelcomeStep: React.FC<WelcomeStepProps> = ({ onNext }) => {
           </div>
         </div>
         <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          Welcome to PromptNeutral
+          Welcome to 430xAI
         </h1>
         <p className="text-xl text-gray-600 leading-relaxed">
-          Make your AI usage completely carbon neutral with real-time monitoring, 
-          verified carbon credits, and instant compliance reporting.
+          Offset your AI carbon footprint by 430% - matching our 430ppm CO₂ reality
+          with real-time monitoring and verified carbon credits.
         </p>
       </div>
 

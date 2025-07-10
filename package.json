@@ -1,7 +1,7 @@
 {
-  "name": "openai-usage-dashboard",
+  "name": "430xai",
   "version": "1.0.0",
-  "description": "TypeScript dashboard for OpenAI usage analytics",
+  "description": "Carbon offset your AI usage by 430x - tracking 430ppm CO2 levels",
   "main": "index.js",
   "scripts": {
     "dev": "vite",
