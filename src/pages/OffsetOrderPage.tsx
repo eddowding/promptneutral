@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { TreePine, Wind, Waves, Sun, ShoppingCart, ArrowLeft, Check, Zap, Factory, Leaf, Globe } from 'lucide-react';
 
@@ -18,7 +18,7 @@ const projects: Project[] = [
   // Nature-based solutions
   {
     id: 'indus-delta',
-    name: 'Indus Delta Blue Carbon - 1',
+    name: 'Indus Delta Blue Carbon',
     description: 'Afforestation, Reforestation Revegetation (ARR)',
     location: 'Pakistan',
     pricePerTonne: 40,
@@ -26,17 +26,6 @@ const projects: Project[] = [
     type: 'Afforestation',
     category: 'nature-based',
     tags: ['High Co-benefits', 'Long Permanence', 'Biodiversity']
-  },
-  {
-    id: 'ejido-km120',
-    name: 'Ejido KM 120',
-    description: 'Afforestation, Reforestation Revegetation (ARR)',
-    location: 'Mexico',
-    pricePerTonne: 22,
-    icon: <TreePine className="h-6 w-6 text-green-600" />,
-    type: 'Afforestation',
-    category: 'nature-based',
-    tags: ['Community Impact', 'Biodiversity']
   },
   // Renewable Energy
   {
@@ -60,17 +49,6 @@ const projects: Project[] = [
     type: 'Solar Energy',
     category: 'engineered',
     tags: ['Renewable Energy', 'Clean Grid']
-  },
-  {
-    id: 'ventus-wind',
-    name: 'Ventus Wind Farm',
-    description: 'Wind Onshore renewable energy',
-    location: 'El Salvador',
-    pricePerTonne: 8,
-    icon: <Wind className="h-6 w-6 text-blue-600" />,
-    type: 'Wind Energy',
-    category: 'engineered',
-    tags: ['Renewable Energy']
   },
   // Agriculture & Waste
   {
@@ -138,6 +116,15 @@ export function OffsetOrderPage() {
   const filteredProjects = projects.filter(project => 
     activeCategory === 'all' || project.category === activeCategory
   );
+
+  // Recalculate quantity when project is selected in hero mode
+  useEffect(() => {
+    if (selectedProjectData && heroAmount) {
+      // Calculate how many tonnes needed to reach hero amount
+      const heroQuantity = Math.ceil(heroAmount / selectedProjectData.pricePerTonne);
+      setQuantity(heroQuantity);
+    }
+  }, [selectedProject, heroAmount, selectedProjectData]);
 
   const handlePurchase = () => {
     if (!selectedProject || !selectedProjectData) {
@@ -208,6 +195,30 @@ export function OffsetOrderPage() {
               </div>
             )}
             
+            {selectedProject && (
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tonnes of CO₂ to offset
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  value={quantity}
+                  onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                  className="w-32 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
+                {heroAmount && selectedProjectData && (
+                  <p className="text-sm text-gray-600 mt-2">
+                    {quantity} tonnes × €{selectedProjectData.pricePerTonne} = €{totalCost}
+                    {parseFloat(totalCost) < heroAmount && (
+                      <span className="text-yellow-600 font-medium">
+                        {' '}(Below your €{heroAmount.toFixed(2)} commitment)
+                      </span>
+                    )}
+                  </p>
+                )}
+              </div>
+            )}
 
             <div className="mb-6">
               <h3 className="text-lg font-semibold mb-4">Filter by Project Type</h3>
