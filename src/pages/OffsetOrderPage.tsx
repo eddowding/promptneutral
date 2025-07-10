@@ -12,8 +12,6 @@ interface Project {
   type: string;
   category: 'nature-based' | 'engineered';
   tags: string[];
-  availability: string;
-  standard?: string;
 }
 
 const projects: Project[] = [
@@ -24,11 +22,10 @@ const projects: Project[] = [
     description: 'Afforestation, Reforestation Revegetation (ARR)',
     location: 'Pakistan',
     pricePerTonne: 40,
-    icon: <TreePine className="h-8 w-8 text-green-600" />,
+    icon: <TreePine className="h-6 w-6 text-green-600" />,
     type: 'Afforestation',
     category: 'nature-based',
-    tags: ['High Co-benefits', 'Long Permanence', 'Biodiversity'],
-    availability: '< 100 available'
+    tags: ['High Co-benefits', 'Long Permanence', 'Biodiversity']
   },
   {
     id: 'ejido-km120',
@@ -36,11 +33,10 @@ const projects: Project[] = [
     description: 'Afforestation, Reforestation Revegetation (ARR)',
     location: 'Mexico',
     pricePerTonne: 22,
-    icon: <TreePine className="h-8 w-8 text-green-600" />,
+    icon: <TreePine className="h-6 w-6 text-green-600" />,
     type: 'Afforestation',
     category: 'nature-based',
-    tags: ['Community Impact', 'Biodiversity'],
-    availability: '< 100 available'
+    tags: ['Community Impact', 'Biodiversity']
   },
   // Renewable Energy
   {
@@ -49,12 +45,10 @@ const projects: Project[] = [
     description: 'Wind Onshore renewable energy generation',
     location: 'Argentina',
     pricePerTonne: 14,
-    icon: <Wind className="h-8 w-8 text-blue-600" />,
+    icon: <Wind className="h-6 w-6 text-blue-600" />,
     type: 'Wind Energy',
     category: 'engineered',
-    tags: ['Renewable Energy', 'Grid Stability'],
-    availability: '150,000+ available',
-    standard: 'Developed by South Pole'
+    tags: ['Renewable Energy', 'Grid Stability']
   },
   {
     id: 'genneia-solar',
@@ -62,12 +56,10 @@ const projects: Project[] = [
     description: 'Grid Connected Solar power generation',
     location: 'Argentina',
     pricePerTonne: 9.60,
-    icon: <Sun className="h-8 w-8 text-yellow-600" />,
+    icon: <Sun className="h-6 w-6 text-yellow-600" />,
     type: 'Solar Energy',
     category: 'engineered',
-    tags: ['Renewable Energy', 'Clean Grid'],
-    availability: '100,000+ available',
-    standard: 'Developed by South Pole'
+    tags: ['Renewable Energy', 'Clean Grid']
   },
   {
     id: 'ventus-wind',
@@ -75,26 +67,22 @@ const projects: Project[] = [
     description: 'Wind Onshore renewable energy',
     location: 'El Salvador',
     pricePerTonne: 8,
-    icon: <Wind className="h-8 w-8 text-blue-600" />,
+    icon: <Wind className="h-6 w-6 text-blue-600" />,
     type: 'Wind Energy',
     category: 'engineered',
-    tags: ['Renewable Energy'],
-    availability: '50,000+ available',
-    standard: 'Developed by South Pole'
+    tags: ['Renewable Energy']
   },
   // Agriculture & Waste
   {
     id: 'mooh-cooperative',
-    name: 'Mooh Cooperative Grouped',
+    name: 'Mooh Cooperative Group',
     description: 'Feed Additives in cattle to reduce methane emissions',
     location: 'Switzerland',
     pricePerTonne: 130,
-    icon: <Leaf className="h-8 w-8 text-green-500" />,
+    icon: <Leaf className="h-6 w-6 text-green-500" />,
     type: 'Agriculture',
     category: 'nature-based',
-    tags: ['High Impact', 'Innovation', 'Sustainable Farming'],
-    availability: '1,000+ available',
-    standard: 'Developed by South Pole'
+    tags: ['High Impact', 'Innovation', 'Sustainable Farming']
   },
   {
     id: 'rural-farms',
@@ -102,12 +90,10 @@ const projects: Project[] = [
     description: 'Manure management improvement',
     location: 'India',
     pricePerTonne: 8,
-    icon: <Factory className="h-8 w-8 text-amber-600" />,
+    icon: <Factory className="h-6 w-6 text-amber-600" />,
     type: 'Waste Management',
     category: 'engineered',
-    tags: ['Rural Development', 'Waste Reduction'],
-    availability: '< 100 available',
-    standard: 'Developed by South Pole'
+    tags: ['Rural Development', 'Waste Reduction']
   },
   {
     id: 'monterrey-waste',
@@ -115,11 +101,10 @@ const projects: Project[] = [
     description: 'Landfill gas (LFG) capture and energy generation',
     location: 'Mexico',
     pricePerTonne: 5,
-    icon: <Factory className="h-8 w-8 text-amber-600" />,
+    icon: <Factory className="h-6 w-6 text-amber-600" />,
     type: 'Waste to Energy',
     category: 'engineered',
-    tags: ['Waste Reduction', 'Energy Recovery'],
-    availability: '4,000+ available'
+    tags: ['Waste Reduction', 'Energy Recovery']
   },
   // DAC
   {
@@ -127,12 +112,11 @@ const projects: Project[] = [
     name: 'Climeworks Direct Air Capture',
     description: 'Permanent CO₂ removal through direct air capture and geological storage',
     location: 'Iceland',
-    pricePerTonne: 600,
-    icon: <Zap className="h-8 w-8 text-purple-600" />,
+    pricePerTonne: 950,
+    icon: <Zap className="h-6 w-6 text-purple-600" />,
     type: 'Direct Air Capture',
     category: 'engineered',
-    tags: ['Permanent Removal', 'Cutting Edge', 'Verified Storage'],
-    availability: 'Limited availability'
+    tags: ['Permanent Removal', 'Cutting Edge', 'Verified Storage']
   }
 ];
 
@@ -224,33 +208,6 @@ export function OffsetOrderPage() {
               </div>
             )}
             
-            <div className="mb-6">
-              <h2 className="text-xl font-semibold mb-2">Recommended Offset Amount</h2>
-              <p className="text-gray-600">
-                Based on your AI usage, we recommend offsetting{' '}
-                <span className="font-bold text-green-600">{suggestedOffset} tonnes of CO₂</span>{' '}
-                {heroAmount ? (
-                  <span>
-                    (Hero contribution: <span className="font-bold text-yellow-700">${heroAmount.toFixed(2)}</span>)
-                  </span>
-                ) : (
-                  <span>(approximately €{suggestedCost})</span>
-                )}
-              </p>
-            </div>
-
-            <div className="mb-8">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tonnes of CO₂ to offset
-              </label>
-              <input
-                type="number"
-                min="1"
-                value={quantity}
-                onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                className="w-32 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
-            </div>
 
             <div className="mb-6">
               <h3 className="text-lg font-semibold mb-4">Filter by Project Type</h3>
@@ -296,36 +253,36 @@ export function OffsetOrderPage() {
                 <div
                   key={project.id}
                   onClick={() => setSelectedProject(project.id)}
-                  className={`border-2 rounded-lg p-6 cursor-pointer transition-all ${
+                  className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
                     selectedProject === project.id
                       ? 'border-green-500 bg-green-50'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0 pt-1">
                       {project.icon}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <h4 className="font-semibold text-lg flex items-center gap-2">
+                          <h4 className="font-semibold flex items-center gap-2">
                             {project.name}
                             {selectedProject === project.id && (
-                              <Check className="h-5 w-5 text-green-600" />
+                              <Check className="h-4 w-4 text-green-600" />
                             )}
                           </h4>
-                          <p className="text-gray-600 mt-1">{project.description}</p>
-                          <div className="flex items-center gap-2 mt-2">
-                            <Globe className="h-4 w-4 text-gray-500" />
-                            <span className="text-sm text-gray-700">{project.location}</span>
-                            <span className="text-sm text-gray-500">• {project.type}</span>
+                          <p className="text-sm text-gray-600 mt-0.5">{project.description}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <Globe className="h-3 w-3 text-gray-500" />
+                            <span className="text-xs text-gray-700">{project.location}</span>
+                            <span className="text-xs text-gray-500">• {project.type}</span>
                           </div>
-                          <div className="flex flex-wrap gap-2 mt-3">
-                            {project.tags.map((tag, index) => (
+                          <div className="flex flex-wrap gap-1.5 mt-2">
+                            {project.tags.slice(0, 2).map((tag, index) => (
                               <span
                                 key={index}
-                                className={`text-xs px-2 py-1 rounded-full ${
+                                className={`text-xs px-2 py-0.5 rounded-full ${
                                   tag.includes('Permanent') ? 'bg-purple-100 text-purple-700' :
                                   tag.includes('High') ? 'bg-orange-100 text-orange-700' :
                                   tag.includes('Community') || tag.includes('Biodiversity') ? 'bg-green-100 text-green-700' :
@@ -336,16 +293,12 @@ export function OffsetOrderPage() {
                               </span>
                             ))}
                           </div>
-                          <p className="text-sm text-gray-500 mt-2">{project.availability}</p>
-                          {project.standard && (
-                            <p className="text-xs text-gray-500 mt-1">{project.standard}</p>
-                          )}
                         </div>
-                        <div className="text-right ml-4">
-                          <p className="text-2xl font-bold text-gray-900">
+                        <div className="text-right ml-3">
+                          <p className="text-xl font-bold text-gray-900">
                             €{project.pricePerTonne}
                           </p>
-                          <p className="text-sm text-gray-600">per tonne</p>
+                          <p className="text-xs text-gray-600">per tonne</p>
                         </div>
                       </div>
                     </div>

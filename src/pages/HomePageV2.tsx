@@ -240,7 +240,7 @@ export function HomePageV2() {
               {userGuess && (
                 <div className="bg-yellow-50 rounded-lg p-4 mb-6">
                   <p className="text-yellow-800 font-medium">
-                    Your guess: ${userGuess} | Actual cost: ${results.offsetCost.toFixed(2)}
+                    Your guess: ${parseFloat(userGuess).toLocaleString()} | Actual cost: ${results.offsetCost.toLocaleString()}
                   </p>
                   <p className="text-sm text-yellow-700 mt-1">
                     {parseFloat(userGuess) > results.offsetCost 
@@ -256,7 +256,7 @@ export function HomePageV2() {
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <DollarSign className="h-8 w-8 text-green-600" />
                     <div className="text-5xl font-bold text-gray-900">
-                      ${results.offsetCost}
+                      ${results.offsetCost.toLocaleString()}
                     </div>
                   </div>
                   <div className="text-lg text-gray-600">Carbon offset cost</div>
@@ -308,7 +308,7 @@ export function HomePageV2() {
                   <div className="flex items-center justify-center gap-1 mb-1">
                     <TreePine className="h-4 w-4 text-emerald-600" />
                     <div className="text-2xl font-bold text-gray-900">
-                      {results.treeYears}
+                      {results.treeYears.toLocaleString()}
                     </div>
                   </div>
                   <div className="text-xs text-gray-600">Tree-years</div>
@@ -318,22 +318,13 @@ export function HomePageV2() {
                   <div className="flex items-center justify-center gap-1 mb-1">
                     <Building className="h-4 w-4 text-purple-600" />
                     <div className="text-2xl font-bold text-gray-900">
-                      {Math.round(results.totalCO2Tonnes * 1000 / 2.3)}
+                      {Math.round(results.totalCO2Tonnes * 1000 / 2.3).toLocaleString()}
                     </div>
                   </div>
                   <div className="text-xs text-gray-600">Days of home energy</div>
                 </div>
               </div>
 
-              <div className="mt-8 p-6 bg-green-50 rounded-lg">
-                <h3 className="font-semibold text-lg mb-2">What can you do?</h3>
-                <ul className="space-y-2 text-sm text-gray-700">
-                  <li>• Consider purchasing carbon offsets for ${results.offsetCost}</li>
-                  <li>• Optimize your AI usage by choosing efficient models</li>
-                  <li>• Support AI providers committed to renewable energy</li>
-                  <li>• Track and reduce your usage over time</li>
-                </ul>
-              </div>
 
               <div className="mt-6">
                 <a
@@ -359,7 +350,7 @@ export function HomePageV2() {
                     className="bg-green-600 text-white py-4 px-8 rounded-lg font-semibold hover:bg-green-700 transition-colors inline-flex items-center gap-2 text-lg"
                   >
                     <ShoppingCart className="h-6 w-6" />
-                    Offset My Carbon Impact for ${results.offsetCost}
+                    Offset My Carbon Impact for ${results.offsetCost.toLocaleString()}
                   </button>
                   <p className="mt-3 text-sm text-gray-600">
                     Choose from verified carbon offset projects and make a difference today
@@ -374,7 +365,7 @@ export function HomePageV2() {
                         Make the Hero Move!
                       </h3>
                       <p className="text-gray-700 mb-4">
-                        You guessed ${parseFloat(userGuess).toFixed(2)} - why not go above and beyond?
+                        You guessed ${parseFloat(userGuess).toLocaleString()} - why not go above and beyond?
                       </p>
                       <p className="text-sm text-gray-600 mb-6">
                         Your over-contribution will be highlighted on your certificate as a 
