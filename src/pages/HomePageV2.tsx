@@ -511,58 +511,6 @@ export function HomePageV2() {
                         })()}
                       </div>
                       
-                      {/* Alternative slider design */}
-                      <div className="w-full max-w-lg mx-auto mb-6 px-4">
-                        <div className="bg-white border-2 border-yellow-300 rounded-lg p-4">
-                          <div className="flex justify-between items-center mb-2">
-                            <span className="text-sm font-semibold text-gray-700">Drag to set your contribution</span>
-                            <div className="flex items-center gap-2">
-                              <span className="text-2xl font-bold text-yellow-700">
-                                {currency.symbol}{heroAmount !== '' ? parseFloat(heroAmount).toFixed(2) : parseFloat(userGuess).toFixed(2)}
-                              </span>
-                            </div>
-                          </div>
-                          <input
-                            type="range"
-                            min={convertFromEUR(results.offsetCost)}
-                            max={convertFromEUR(results.offsetCost * 500)}
-                            step="0.01"
-                            value={heroAmount !== '' ? heroAmount : userGuess}
-                            onChange={(e) => setHeroAmount(e.target.value)}
-                            className="w-full h-3 bg-yellow-100 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:bg-yellow-500 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:shadow-lg [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:bg-yellow-500 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:cursor-pointer [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:shadow-lg"
-                            style={{
-                              background: `linear-gradient(to right, #FCD34D 0%, #FCD34D ${
-                                ((parseFloat(heroAmount !== '' ? heroAmount : userGuess) - convertFromEUR(results.offsetCost)) / 
-                                (convertFromEUR(results.offsetCost * 500) - convertFromEUR(results.offsetCost))) * 100
-                              }%, #FEF3C7 ${
-                                ((parseFloat(heroAmount !== '' ? heroAmount : userGuess) - convertFromEUR(results.offsetCost)) / 
-                                (convertFromEUR(results.offsetCost * 500) - convertFromEUR(results.offsetCost))) * 100
-                              }%, #FEF3C7 100%)`
-                            }}
-                          />
-                          <div className="flex justify-between mt-2">
-                            <span className="text-xs text-gray-500">1x</span>
-                            <span className="text-xs text-gray-500">500x</span>
-                          </div>
-                          {(() => {
-                            const amount = parseFloat(heroAmount !== '' ? heroAmount : userGuess);
-                            const amountEUR = convertToEUR(amount);
-                            const multiplier = (amountEUR / results.offsetCost).toFixed(1);
-                            const totalAISpending = Object.values(spending).reduce((sum, amount) => sum + amount, 0);
-                            const percentage = totalAISpending > 0 ? (amount / totalAISpending * 100).toFixed(1) : null;
-                            
-                            return (
-                              <div className="text-center mt-3">
-                                <span className="text-2xl font-bold text-yellow-700">{multiplier}x</span>
-                                {percentage && (
-                                  <span className="text-sm text-gray-600 ml-2">• {percentage}% of AI spend</span>
-                                )}
-                              </div>
-                            );
-                          })()}
-                        </div>
-                      </div>
-                      
                       <button
                         onClick={() => navigate('/offset-order', { 
                           state: { 
