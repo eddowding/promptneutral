@@ -23,43 +23,6 @@ export const Navigation: React.FC = () => {
 
           {/* Navigation Links */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link 
-              to="/" 
-              className={`text-sm font-medium transition-colors ${
-                location.pathname === '/' 
-                  ? 'text-green-600' 
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              How It Works
-            </Link>
-            <Link 
-              to="/" 
-              className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              Features
-            </Link>
-            <Link 
-              to="/pricing" 
-              className={`text-sm font-medium transition-colors ${
-                location.pathname === '/pricing' 
-                  ? 'text-green-600' 
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              Pricing
-            </Link>
-            <Link 
-              to="/dashboard" 
-              className={`flex items-center space-x-1 text-sm font-medium transition-colors ${
-                location.pathname === '/dashboard' 
-                  ? 'text-green-600' 
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <BarChart3 className="w-4 h-4" />
-              <span>Dashboard</span>
-            </Link>
             {isAuthenticated && (
               <>
                 <Link 
