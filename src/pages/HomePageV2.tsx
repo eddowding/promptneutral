@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Calculator, Zap, Plane, Beef, DollarSign, TreePine, Cloud, ShoppingCart, ExternalLink, Car, Building } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useCurrency } from '../contexts/CurrencyContext';
+import { CurrencySelector } from '../components/CurrencySelector';
 
 interface ProviderSpending {
   openai: number;
@@ -40,6 +42,8 @@ const TREE_CO2_PER_YEAR_KG = 21.77;
 
 export function HomePageV2() {
   const navigate = useNavigate();
+  const { currency, formatCurrency, formatCurrencyFromEUR, loading: currencyLoading } = useCurrency();
+  
   const [spending, setSpending] = useState<ProviderSpending>({
     openai: 0,
     anthropic: 0,
@@ -102,19 +106,14 @@ export function HomePageV2() {
     return num.toLocaleString('en-US');
   };
 
-  const formatCurrency = (num: number): string => {
-    return num.toLocaleString('en-US', { 
-      style: 'currency', 
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    });
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
+          <div className="flex justify-end mb-4">
+            <CurrencySelector />
+          </div>
           <div className="text-center mb-12">
             <h1 className="text-5xl font-bold text-gray-900 mb-4">
               What's Your AI Carbon Score?
@@ -256,7 +255,7 @@ export function HomePageV2() {
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <DollarSign className="h-8 w-8 text-green-600" />
                     <div className="text-5xl font-bold text-gray-900">
-                      ${results.offsetCost.toLocaleString()}
+                      {formatCurrencyFromEUR(results.offsetCost)}
                     </div>
                   </div>
                   <div className="text-lg text-gray-600">Carbon offset cost</div>
@@ -376,7 +375,7 @@ export function HomePageV2() {
                       <div className="flex items-center justify-center gap-3 mb-4">
                         <span className="text-lg font-semibold">Offset for</span>
                         <div className="relative">
-                          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-bold">$</span>
+                          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-bold">{currency.symbol}</span>
                           <input
                             type="text"
                             value={heroAmount || userGuess}

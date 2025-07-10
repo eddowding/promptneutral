@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { TreePine, Wind, Waves, Sun, ShoppingCart, ArrowLeft, Check, Zap, Factory, Leaf, Globe } from 'lucide-react';
+import { useCurrency } from '../contexts/CurrencyContext';
 
 interface Project {
   id: string;
@@ -101,6 +102,7 @@ const projects: Project[] = [
 export function OffsetOrderPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { currency, formatCurrencyFromEUR, convertToEUR } = useCurrency();
   const [selectedProject, setSelectedProject] = useState<string>('');
   
   const suggestedOffset = location.state?.offsetAmount || 0.1;
@@ -122,14 +124,14 @@ export function OffsetOrderPage() {
   // Recalculate quantity when project is selected in hero mode
   useEffect(() => {
     if (selectedProjectData && heroAmount) {
-      // Calculate exact tonnes to match hero amount (minus processing fee)
-      // Hero amount is in USD, project prices are in EUR - assuming 1:1 for now
+      // Convert hero amount from local currency to EUR
+      const heroAmountEUR = convertToEUR(heroAmount);
       const processingFee = 0.30;
-      const amountForOffset = Math.max(0.01, heroAmount - processingFee);
+      const amountForOffset = Math.max(0.01, heroAmountEUR - processingFee);
       const heroQuantity = amountForOffset / selectedProjectData.pricePerTonne;
       setQuantity(Math.floor(heroQuantity * 1000) / 1000); // Floor to 3 decimal places to ensure we don't exceed
     }
-  }, [selectedProject, heroAmount, selectedProjectData]);
+  }, [selectedProject, heroAmount, selectedProjectData, convertToEUR]);
 
   const handlePurchase = () => {
     if (!selectedProject || !selectedProjectData) {
@@ -181,8 +183,8 @@ export function OffsetOrderPage() {
                   Hero Mode Activated!
                 </h3>
                 <p className="text-gray-700">
-                  You're choosing to contribute <span className="font-bold">${heroAmount.toFixed(2)}</span> instead 
-                  of the calculated ${standardCost.toFixed(2)} - that's{' '}
+                  You're choosing to contribute <span className="font-bold">{currency.symbol}{heroAmount.toFixed(2)}</span> instead 
+                  of the calculated {currency.symbol}{standardCost.toFixed(2)} - that's{' '}
                   <span className="font-bold text-yellow-700">
                     {((heroAmount / standardCost - 1) * 100).toFixed(0)}% extra
                   </span>!
@@ -208,10 +210,10 @@ export function OffsetOrderPage() {
                   <div className="text-sm text-gray-600 mt-2 space-y-1">
                     <p>{quantity.toFixed(3)} tonnes × €{selectedProjectData.pricePerTonne} = €{offsetCost.toFixed(2)}</p>
                     <p>Processing fee: €{processingFee.toFixed(2)}</p>
-                    <p className="font-medium">Total: €{totalCost}</p>
-                    {heroAmount && parseFloat(totalCost) > heroAmount && (
+                    <p className="font-medium">Total: €{totalCost} ({formatCurrencyFromEUR(parseFloat(totalCost))})</p>
+                    {heroAmount && parseFloat(totalCost) > convertToEUR(heroAmount) && (
                       <span className="text-yellow-600 font-medium">
-                        (Exceeds your ${heroAmount.toFixed(2)} commitment)
+                        (Exceeds your {currency.symbol}{heroAmount.toFixed(2)} commitment)
                       </span>
                     )}
                   </div>

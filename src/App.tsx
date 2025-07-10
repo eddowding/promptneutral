@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { CurrencyProvider } from './contexts/CurrencyContext';
 import { Navigation } from './components/Navigation';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { HomePage } from './pages/HomePage';
@@ -22,10 +23,11 @@ import SouthPoleTest from './components/SouthPoleTest';
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <div className="min-h-screen bg-white">
-          <FeedbackTab />
-          <Routes>
+      <CurrencyProvider>
+        <Router>
+          <div className="min-h-screen bg-white">
+            <FeedbackTab />
+            <Routes>
             <Route path="/" element={
               <>
                 <Navigation />
@@ -88,6 +90,7 @@ function App() {
           </Routes>
         </div>
       </Router>
+      </CurrencyProvider>
     </AuthProvider>
   );
 }
