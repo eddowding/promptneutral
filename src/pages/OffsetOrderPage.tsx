@@ -103,7 +103,7 @@ export function OffsetOrderPage() {
   const location = useLocation();
   const [selectedProject, setSelectedProject] = useState<string>('');
   
-  const suggestedOffset = Math.ceil(location.state?.offsetAmount || 1);
+  const suggestedOffset = location.state?.offsetAmount || 0.1;
   const suggestedCost = location.state?.offsetCost || 15;
   const heroAmount = location.state?.heroAmount;
   const standardCost = location.state?.standardCost;
@@ -121,8 +121,8 @@ export function OffsetOrderPage() {
   useEffect(() => {
     if (selectedProjectData && heroAmount) {
       // Calculate how many tonnes needed to reach hero amount
-      const heroQuantity = Math.ceil(heroAmount / selectedProjectData.pricePerTonne);
-      setQuantity(heroQuantity);
+      const heroQuantity = heroAmount / selectedProjectData.pricePerTonne;
+      setQuantity(Math.round(heroQuantity * 100) / 100); // Round to 2 decimal places
     }
   }, [selectedProject, heroAmount, selectedProjectData]);
 
@@ -150,15 +150,6 @@ export function OffsetOrderPage() {
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-            <p className="text-sm text-yellow-800">
-              <strong>Notice:</strong> Per State of California Legislation AB1305, entities residing in California are temporarily prohibited from buying Carbon Credits via this website. 
-              Instead, please email your purchase inquiry to:{' '}
-              <a href="mailto:sales.northamerica@southpole.com" className="underline font-medium">
-                sales.northamerica@southpole.com
-              </a>
-            </p>
-          </div>
 
           <button
             onClick={() => navigate(-1)}
@@ -202,14 +193,15 @@ export function OffsetOrderPage() {
                 </label>
                 <input
                   type="number"
-                  min="1"
+                  min="0.01"
+                  step="0.01"
                   value={quantity}
-                  onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                  onChange={(e) => setQuantity(Math.max(0.01, parseFloat(e.target.value) || 0.01))}
                   className="w-32 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                 />
                 {heroAmount && selectedProjectData && (
                   <p className="text-sm text-gray-600 mt-2">
-                    {quantity} tonnes × €{selectedProjectData.pricePerTonne} = €{totalCost}
+                    {quantity.toFixed(2)} tonnes × €{selectedProjectData.pricePerTonne} = €{totalCost}
                     {parseFloat(totalCost) < heroAmount && (
                       <span className="text-yellow-600 font-medium">
                         {' '}(Below your €{heroAmount.toFixed(2)} commitment)
@@ -348,7 +340,7 @@ export function OffsetOrderPage() {
                 <div>
                   <p className="font-semibold text-gray-900">{selectedProjectData?.name}</p>
                   <p className="text-sm text-gray-600">
-                    {quantity} tonne{quantity !== 1 ? 's' : ''} × €{selectedProjectData?.pricePerTonne}
+                    {quantity.toFixed(2)} tonne{quantity !== 1 ? 's' : ''} × €{selectedProjectData?.pricePerTonne}
                   </p>
                 </div>
               </div>

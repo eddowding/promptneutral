@@ -64,7 +64,7 @@ export function HomePageV2() {
     const totalCO2Tonnes = totalCO2Kg / 1000;
 
     setResults({
-      totalCO2Tonnes,
+      totalCO2Tonnes: Math.round(totalCO2Tonnes * 1000) / 1000, // Round to 3 decimal places
       steakEquivalent: Math.round(totalCO2Kg / STEAK_CO2_KG),
       flightsLondonNY: Math.round((totalCO2Kg / FLIGHT_LONDON_NY_CO2_KG) * 10) / 10,
       offsetCost: Math.round(totalCO2Tonnes * OFFSET_COST_PER_TONNE * 100) / 100,
