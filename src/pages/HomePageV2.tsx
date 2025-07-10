@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Calculator, Zap, Plane, Beef, DollarSign, TreePine, Cloud, ChevronDown, ChevronUp, ShoppingCart } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Calculator, Zap, Plane, Beef, DollarSign, TreePine, Cloud, ShoppingCart, ExternalLink } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
 
 interface ProviderSpending {
   openai: number;
@@ -18,12 +18,19 @@ interface CarbonResults {
   treeYears: number;
 }
 
-const CO2_PER_DOLLAR: Record<string, number> = {
-  openai: 0.00042,
-  anthropic: 0.00038,
-  google: 0.00035,
-  other: 0.0004
+// Based on research data: weighted average of 50% efficient + 50% heavy models
+// Efficient: GPT-4o ~0.35 Wh/query at $0.03/query = 11.7 Wh/$
+// Heavy: o3 ~33 Wh/query at $1-2/query = 16-33 Wh/$
+// Real usage likely involves both types
+const WH_PER_DOLLAR: Record<string, number> = {
+  openai: 45,      // Mix of GPT-4o (cheap) and o3/GPT-4-turbo (expensive)
+  anthropic: 35,   // Mix of Claude Sonnet and Opus
+  google: 30,      // Mix of Gemini Flash and Pro
+  other: 40        // Average estimate
 };
+
+// Grid carbon intensity: global average ~0.475 kg CO2/kWh
+const CO2_PER_KWH = 0.475;
 
 const STEAK_CO2_KG = 27;
 const FLIGHT_LONDON_NY_CO2_KG = 986;
@@ -41,14 +48,18 @@ export function HomePageV2() {
   });
 
   const [results, setResults] = useState<CarbonResults | null>(null);
-  const [showAssumptions, setShowAssumptions] = useState(false);
+  const [userGuess, setUserGuess] = useState<string>('');
 
   const calculateCarbon = () => {
-    const totalCO2Tonnes = Object.entries(spending).reduce((total, [provider, amount]) => {
-      return total + (amount * CO2_PER_DOLLAR[provider]);
+    // Calculate total energy consumption in Wh
+    const totalWh = Object.entries(spending).reduce((total, [provider, amount]) => {
+      return total + (amount * WH_PER_DOLLAR[provider]);
     }, 0);
-
-    const totalCO2Kg = totalCO2Tonnes * 1000;
+    
+    // Convert to kWh and then to CO2
+    const totalKWh = totalWh / 1000;
+    const totalCO2Kg = totalKWh * CO2_PER_KWH;
+    const totalCO2Tonnes = totalCO2Kg / 1000;
 
     setResults({
       totalCO2Tonnes,
@@ -61,8 +72,23 @@ export function HomePageV2() {
   };
 
   const handleInputChange = (provider: keyof ProviderSpending, value: string) => {
-    const numValue = parseFloat(value) || 0;
+    // Remove commas and $ before parsing
+    const cleanValue = value.replace(/[$,]/g, '');
+    const numValue = parseFloat(cleanValue) || 0;
     setSpending(prev => ({ ...prev, [provider]: numValue }));
+  };
+
+  const formatNumber = (num: number): string => {
+    return num.toLocaleString('en-US');
+  };
+
+  const formatCurrency = (num: number): string => {
+    return num.toLocaleString('en-US', { 
+      style: 'currency', 
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
   };
 
   return (
@@ -89,58 +115,94 @@ export function HomePageV2() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   OpenAI (GPT-4, DALL-E, etc.)
                 </label>
-                <input
-                  type="number"
-                  value={spending.openai || ''}
-                  onChange={(e) => handleInputChange('openai', e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  placeholder="0"
-                />
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                  <input
+                    type="text"
+                    value={spending.openai ? formatNumber(spending.openai) : ''}
+                    onChange={(e) => handleInputChange('openai', e.target.value)}
+                    className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="0"
+                  />
+                </div>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Anthropic (Claude)
                 </label>
-                <input
-                  type="number"
-                  value={spending.anthropic || ''}
-                  onChange={(e) => handleInputChange('anthropic', e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  placeholder="0"
-                />
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                  <input
+                    type="text"
+                    value={spending.anthropic ? formatNumber(spending.anthropic) : ''}
+                    onChange={(e) => handleInputChange('anthropic', e.target.value)}
+                    className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="0"
+                  />
+                </div>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Google (Gemini, Bard)
                 </label>
-                <input
-                  type="number"
-                  value={spending.google || ''}
-                  onChange={(e) => handleInputChange('google', e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  placeholder="0"
-                />
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                  <input
+                    type="text"
+                    value={spending.google ? formatNumber(spending.google) : ''}
+                    onChange={(e) => handleInputChange('google', e.target.value)}
+                    className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="0"
+                  />
+                </div>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Other AI Services
                 </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                  <input
+                    type="text"
+                    value={spending.other ? formatNumber(spending.other) : ''}
+                    onChange={(e) => handleInputChange('other', e.target.value)}
+                    className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 p-6 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl border border-purple-200">
+              <div className="text-center mb-4">
+                <label className="block text-lg font-semibold text-gray-800 mb-2">
+                  🤔 Before we calculate...
+                </label>
+                <p className="text-gray-700">
+                  What do you think it would cost to offset your AI carbon footprint?
+                </p>
+              </div>
+              <div className="relative max-w-xs mx-auto">
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg font-semibold">$</span>
                 <input
-                  type="number"
-                  value={spending.other || ''}
-                  onChange={(e) => handleInputChange('other', e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  placeholder="0"
+                  type="text"
+                  value={userGuess}
+                  onChange={(e) => setUserGuess(e.target.value.replace(/[$,]/g, ''))}
+                  className="w-full pl-8 pr-4 py-3 text-lg border-2 border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-center font-semibold"
+                  placeholder="Take a guess..."
                 />
               </div>
+              <p className="text-sm text-gray-600 mt-3 text-center">
+                We'll show you how your guess compares to the actual cost
+              </p>
             </div>
 
             <button
               onClick={calculateCarbon}
-              className="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+              className="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center gap-2 mt-6"
             >
               <Zap className="h-5 w-5" />
               Calculate My AI Carbon Impact
@@ -153,6 +215,27 @@ export function HomePageV2() {
                 <Cloud className="h-6 w-6 text-blue-600" />
                 Your AI Carbon Impact
               </h2>
+              
+              <div className="bg-blue-50 rounded-lg p-4 mb-6 text-sm">
+                <p className="text-blue-800">
+                  <strong>Calculation based on:</strong> Energy consumption data from latest AI models (GPT-4o, Claude 4, Gemini 2.5) 
+                  with global average grid carbon intensity of 0.475 kg CO₂/kWh
+                </p>
+              </div>
+
+              {userGuess && (
+                <div className="bg-yellow-50 rounded-lg p-4 mb-6">
+                  <p className="text-yellow-800 font-medium">
+                    Your guess: ${userGuess} | Actual cost: ${results.offsetCost.toFixed(2)}
+                  </p>
+                  <p className="text-sm text-yellow-700 mt-1">
+                    {parseFloat(userGuess) > results.offsetCost 
+                      ? `You overestimated by ${((parseFloat(userGuess) / results.offsetCost - 1) * 100).toFixed(0)}%`
+                      : `You underestimated by ${((results.offsetCost / parseFloat(userGuess) - 1) * 100).toFixed(0)}%`
+                    }
+                  </p>
+                </div>
+              )}
 
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div className="bg-gray-50 rounded-lg p-6">
@@ -166,7 +249,7 @@ export function HomePageV2() {
                   <div className="flex items-center gap-2 mb-2">
                     <Beef className="h-5 w-5 text-red-600" />
                     <div className="text-3xl font-bold text-gray-900">
-                      {results.steakEquivalent}
+                      {formatNumber(results.steakEquivalent)}
                     </div>
                   </div>
                   <div className="text-sm text-gray-600">Steak dinners</div>
@@ -194,7 +277,7 @@ export function HomePageV2() {
 
                 <div className="bg-orange-50 rounded-lg p-6">
                   <div className="text-3xl font-bold text-gray-900 mb-2">
-                    {results.drivingMiles.toLocaleString()}
+                    {formatNumber(results.drivingMiles)}
                   </div>
                   <div className="text-sm text-gray-600">Miles driven</div>
                 </div>
@@ -221,61 +304,69 @@ export function HomePageV2() {
               </div>
 
               <div className="mt-6">
-                <button
-                  onClick={() => setShowAssumptions(!showAssumptions)}
-                  className="flex items-center gap-2 text-gray-700 hover:text-gray-900 font-medium"
+                <a
+                  href="/research"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-gray-700 hover:text-gray-900 font-medium"
                 >
-                  {showAssumptions ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
-                  Show assumptions
-                </button>
-                
-                {showAssumptions && (
-                  <div className="mt-4 p-6 bg-gray-50 rounded-lg">
-                    <h4 className="font-semibold mb-3">Calculation Assumptions:</h4>
-                    <div className="space-y-2 text-sm text-gray-700">
-                      <div>
-                        <strong>CO₂ emissions per dollar spent:</strong>
-                        <ul className="ml-4 mt-1">
-                          <li>• OpenAI: 0.42 kg CO₂/$</li>
-                          <li>• Anthropic: 0.38 kg CO₂/$</li>
-                          <li>• Google: 0.35 kg CO₂/$</li>
-                          <li>• Other providers: 0.40 kg CO₂/$</li>
-                        </ul>
-                      </div>
-                      <div className="mt-3">
-                        <strong>Equivalency factors:</strong>
-                        <ul className="ml-4 mt-1">
-                          <li>• 1 steak dinner = 27 kg CO₂</li>
-                          <li>• 1 flight London → NYC = 986 kg CO₂</li>
-                          <li>• 1 mile driven = 0.404 kg CO₂</li>
-                          <li>• 1 tree absorbs 21.77 kg CO₂/year</li>
-                          <li>• Carbon offset cost = $15/tonne CO₂</li>
-                        </ul>
-                      </div>
-                      <p className="mt-3 text-xs italic">
-                        Note: These are estimates based on industry averages. Actual emissions may vary based on data center efficiency, renewable energy usage, and model complexity.
+                  <ExternalLink className="h-4 w-4" />
+                  Show assumptions and methodology
+                </a>
+              </div>
+
+              <div className="mt-8">
+                <div className="text-center">
+                  <button
+                    onClick={() => navigate('/offset-order', { 
+                      state: { 
+                        offsetAmount: results.totalCO2Tonnes, 
+                        offsetCost: results.offsetCost 
+                      } 
+                    })}
+                    className="bg-green-600 text-white py-4 px-8 rounded-lg font-semibold hover:bg-green-700 transition-colors inline-flex items-center gap-2 text-lg"
+                  >
+                    <ShoppingCart className="h-6 w-6" />
+                    Offset My Carbon Impact for ${results.offsetCost}
+                  </button>
+                  <p className="mt-3 text-sm text-gray-600">
+                    Choose from verified carbon offset projects and make a difference today
+                  </p>
+                </div>
+
+                {userGuess && parseFloat(userGuess) > results.offsetCost && (
+                  <div className="mt-8 p-6 bg-gradient-to-r from-yellow-50 to-amber-50 rounded-xl border-2 border-yellow-300">
+                    <div className="text-center">
+                      <h3 className="text-xl font-bold text-gray-900 mb-2 flex items-center justify-center gap-2">
+                        <span className="text-2xl">🦸</span>
+                        Make the Hero Move!
+                      </h3>
+                      <p className="text-gray-700 mb-4">
+                        You guessed ${parseFloat(userGuess).toFixed(2)} - why not go above and beyond?
                       </p>
+                      <p className="text-sm text-gray-600 mb-6">
+                        Your over-contribution will be highlighted on your certificate as a 
+                        <span className="font-semibold text-yellow-700"> Climate Champion</span> who gave 
+                        {' '}{((parseFloat(userGuess) / results.offsetCost) * 100).toFixed(0)}% 
+                        more than required!
+                      </p>
+                      <button
+                        onClick={() => navigate('/offset-order', { 
+                          state: { 
+                            offsetAmount: results.totalCO2Tonnes, 
+                            offsetCost: parseFloat(userGuess),
+                            heroAmount: parseFloat(userGuess),
+                            standardCost: results.offsetCost
+                          } 
+                        })}
+                        className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white py-4 px-8 rounded-lg font-bold hover:from-yellow-600 hover:to-yellow-700 transition-all inline-flex items-center gap-2 text-lg shadow-lg transform hover:scale-105"
+                      >
+                        <span className="text-xl">⚡</span>
+                        Offset for ${parseFloat(userGuess).toFixed(2)} (Hero Mode)
+                      </button>
                     </div>
                   </div>
                 )}
-              </div>
-
-              <div className="mt-8 text-center">
-                <button
-                  onClick={() => navigate('/offset-order', { 
-                    state: { 
-                      offsetAmount: results.totalCO2Tonnes, 
-                      offsetCost: results.offsetCost 
-                    } 
-                  })}
-                  className="bg-green-600 text-white py-4 px-8 rounded-lg font-semibold hover:bg-green-700 transition-colors inline-flex items-center gap-2 text-lg"
-                >
-                  <ShoppingCart className="h-6 w-6" />
-                  Offset My Carbon Impact for ${results.offsetCost}
-                </button>
-                <p className="mt-3 text-sm text-gray-600">
-                  Choose from verified carbon offset projects and make a difference today
-                </p>
               </div>
             </div>
           )}

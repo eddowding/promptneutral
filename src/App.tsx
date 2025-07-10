@@ -8,6 +8,7 @@ import { HomePageV2 } from './pages/HomePageV2';
 import { DashboardPage } from './pages/DashboardPage';
 import { OffsetOrderPage } from './pages/OffsetOrderPage';
 import { CheckoutPage } from './pages/CheckoutPage';
+import { ResearchPage } from './pages/ResearchPage';
 import { PricingPage } from './pages/PricingPage';
 import { AuthPage } from './pages/AuthPage';
 import { OnboardingPage } from './pages/OnboardingPage';
@@ -83,6 +84,7 @@ function App() {
               </>
             } />
             <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/research" element={<ResearchPage />} />
           </Routes>
         </div>
       </Router>

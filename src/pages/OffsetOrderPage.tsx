@@ -143,6 +143,8 @@ export function OffsetOrderPage() {
   
   const suggestedOffset = Math.ceil(location.state?.offsetAmount || 1);
   const suggestedCost = location.state?.offsetCost || 15;
+  const heroAmount = location.state?.heroAmount;
+  const standardCost = location.state?.standardCost;
   const [quantity, setQuantity] = useState(suggestedOffset);
   const [activeCategory, setActiveCategory] = useState<'all' | 'nature-based' | 'engineered'>('all');
 
@@ -166,7 +168,9 @@ export function OffsetOrderPage() {
         quantity,
         pricePerTonne: selectedProjectData.pricePerTonne,
         totalCost,
-        offsetAmount: suggestedOffset
+        offsetAmount: suggestedOffset,
+        heroAmount: heroAmount,
+        standardCost: standardCost
       }
     });
   };
@@ -203,12 +207,35 @@ export function OffsetOrderPage() {
           </div>
 
           <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
+            {heroAmount && (
+              <div className="mb-6 p-4 bg-gradient-to-r from-yellow-50 to-amber-50 rounded-lg border border-yellow-300">
+                <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
+                  <span className="text-xl">🦸</span>
+                  Hero Mode Activated!
+                </h3>
+                <p className="text-gray-700">
+                  You're choosing to contribute <span className="font-bold">${heroAmount.toFixed(2)}</span> instead 
+                  of the calculated ${standardCost.toFixed(2)} - that's{' '}
+                  <span className="font-bold text-yellow-700">
+                    {((heroAmount / standardCost - 1) * 100).toFixed(0)}% extra
+                  </span>!
+                  Your certificate will recognize you as a <span className="font-semibold">Climate Champion</span>.
+                </p>
+              </div>
+            )}
+            
             <div className="mb-6">
               <h2 className="text-xl font-semibold mb-2">Recommended Offset Amount</h2>
               <p className="text-gray-600">
                 Based on your AI usage, we recommend offsetting{' '}
                 <span className="font-bold text-green-600">{suggestedOffset} tonnes of CO₂</span>{' '}
-                (approximately €{suggestedCost})
+                {heroAmount ? (
+                  <span>
+                    (Hero contribution: <span className="font-bold text-yellow-700">${heroAmount.toFixed(2)}</span>)
+                  </span>
+                ) : (
+                  <span>(approximately €{suggestedCost})</span>
+                )}
               </p>
             </div>
 

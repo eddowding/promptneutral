@@ -10,6 +10,8 @@ interface CheckoutData {
   pricePerTonne: number;
   totalCost: string;
   offsetAmount: number;
+  heroAmount?: number;
+  standardCost?: number;
 }
 
 export function CheckoutPage() {
@@ -38,19 +40,29 @@ export function CheckoutPage() {
         return;
       }
       
+      // Prepare the order data
+      const orderData: any = {
+        email,
+        project_id: checkoutData.projectId,
+        project_name: checkoutData.projectName,
+        tonnes_offset: checkoutData.quantity,
+        price_per_tonne: checkoutData.pricePerTonne,
+        total_cost: parseFloat(checkoutData.totalCost),
+        ai_carbon_footprint: checkoutData.offsetAmount,
+        status: 'pending',
+        created_at: new Date().toISOString()
+      };
+
+      // Add hero fields if they exist (graceful handling for pre-migration state)
+      if (checkoutData.heroAmount) {
+        orderData.hero_amount = checkoutData.heroAmount;
+        orderData.is_hero = true;
+        orderData.standard_cost = checkoutData.standardCost;
+      }
+
       const { error } = await supabase
         .from('carbon_offset_orders')
-        .insert({
-          email,
-          project_id: checkoutData.projectId,
-          project_name: checkoutData.projectName,
-          tonnes_offset: checkoutData.quantity,
-          price_per_tonne: checkoutData.pricePerTonne,
-          total_cost: parseFloat(checkoutData.totalCost),
-          ai_carbon_footprint: checkoutData.offsetAmount,
-          status: 'pending',
-          created_at: new Date().toISOString()
-        });
+        .insert(orderData);
 
       if (error) {
         console.error('Error saving order:', error);
