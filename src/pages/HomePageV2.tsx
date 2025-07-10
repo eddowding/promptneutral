@@ -367,7 +367,8 @@ export function HomePageV2() {
                       state: { 
                         offsetAmount: results.totalCO2Tonnes, 
                         offsetCost: results.offsetCost,
-                        userCurrency: currency.code
+                        userCurrency: currency.code,
+                        aiProviders: spending
                       } 
                     })}
                     className="bg-green-600 text-white py-4 px-8 rounded-lg font-semibold hover:bg-green-700 transition-colors inline-flex items-center gap-2 text-lg"

@@ -109,6 +109,7 @@ export function OffsetOrderPage() {
   const suggestedCost = location.state?.offsetCost || 15;
   const heroAmount = location.state?.heroAmount;
   const standardCost = location.state?.standardCost;
+  const aiProviders = location.state?.aiProviders;
   const [quantity, setQuantity] = useState(suggestedOffset);
   const [activeCategory, setActiveCategory] = useState<'all' | 'nature-based' | 'engineered'>('all');
 
@@ -148,7 +149,8 @@ export function OffsetOrderPage() {
         totalCost,
         offsetAmount: suggestedOffset,
         heroAmount: heroAmount,
-        standardCost: standardCost
+        standardCost: standardCost,
+        aiProviders: aiProviders
       }
     });
   };

@@ -12,6 +12,12 @@ interface CheckoutData {
   offsetAmount: number;
   heroAmount?: number;
   standardCost?: number;
+  aiProviders?: {
+    openai: number;
+    anthropic: number;
+    google: number;
+    other: number;
+  };
 }
 
 export function CheckoutPage() {
@@ -22,6 +28,7 @@ export function CheckoutPage() {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showThankYou, setShowThankYou] = useState(false);
+  const [isMonthly, setIsMonthly] = useState(false);
 
   if (!checkoutData) {
     navigate('/offset-order');
@@ -50,6 +57,7 @@ export function CheckoutPage() {
         total_cost: parseFloat(checkoutData.totalCost),
         ai_carbon_footprint: checkoutData.offsetAmount,
         status: 'pending',
+        is_monthly: isMonthly,
         created_at: new Date().toISOString()
       };
 
@@ -58,6 +66,11 @@ export function CheckoutPage() {
         orderData.hero_amount = checkoutData.heroAmount;
         orderData.is_hero = true;
         orderData.standard_cost = checkoutData.standardCost;
+      }
+
+      // Add AI provider breakdown if it exists
+      if (checkoutData.aiProviders) {
+        orderData.ai_providers = checkoutData.aiProviders;
       }
 
       const { error } = await supabase
@@ -167,7 +180,7 @@ export function CheckoutPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Quantity:</span>
-                  <span className="font-medium">{checkoutData.quantity} tonnes CO₂</span>
+                  <span className="font-medium">{checkoutData.quantity.toFixed(3)} tonnes CO₂</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Price per tonne:</span>
@@ -228,12 +241,31 @@ export function CheckoutPage() {
                 </p>
               </div>
 
+              <div className="bg-blue-50 rounded-lg p-4">
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={isMonthly}
+                    onChange={(e) => setIsMonthly(e.target.checked)}
+                    className="mt-1 h-5 w-5 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                  />
+                  <div className="flex-1">
+                    <p className="font-medium text-gray-900">
+                      Make this a monthly contribution
+                    </p>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Automatically offset {checkoutData.quantity.toFixed(3)} tonnes every month to maintain your carbon neutrality
+                    </p>
+                  </div>
+                </label>
+              </div>
+
               <button
                 type="submit"
                 disabled={isSubmitting}
                 className="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? 'Processing...' : 'Continue Purchase'}
+                {isSubmitting ? 'Processing...' : isMonthly ? 'Start Monthly Subscription' : 'Continue Purchase'}
               </button>
 
               <p className="text-xs text-center text-gray-500">
