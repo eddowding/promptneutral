@@ -439,7 +439,7 @@ export function HomePageV2() {
                           <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-bold">{currency.symbol}</span>
                           <input
                             type="text"
-                            value={heroAmount || userGuess}
+                            value={heroAmount !== '' ? heroAmount : userGuess}
                             onChange={(e) => setHeroAmount(e.target.value.replace(/[$,]/g, ''))}
                             onKeyDown={handleNumberInput}
                             className="w-32 pl-8 pr-4 py-2 text-lg border-2 border-yellow-400 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent text-center font-bold"
@@ -448,10 +448,10 @@ export function HomePageV2() {
                         </div>
                       </div>
                       
-                      {heroAmount && (
+                      {(heroAmount !== '' ? heroAmount : userGuess) && (
                         <p className="text-sm text-gray-600 mb-4">
-                          That's <span className="font-semibold text-yellow-700">{((parseFloat(heroAmount) / results.offsetCost) * 100).toFixed(0)}%</span> of needed offset
-                          {parseFloat(heroAmount) >= results.offsetCost * 4.3 && <span> - true climate leadership!</span>}
+                          That's <span className="font-semibold text-yellow-700">{(parseFloat(heroAmount !== '' ? heroAmount : userGuess) / results.offsetCost).toFixed(1)}x</span> the needed offset
+                          {parseFloat(heroAmount !== '' ? heroAmount : userGuess) >= results.offsetCost * 4.3 && <span> - true climate leadership!</span>}
                         </p>
                       )}
                       
@@ -459,8 +459,8 @@ export function HomePageV2() {
                         onClick={() => navigate('/offset-order', { 
                           state: { 
                             offsetAmount: results.totalCO2Tonnes, 
-                            offsetCost: parseFloat(heroAmount || userGuess),
-                            heroAmount: parseFloat(heroAmount || userGuess),
+                            offsetCost: parseFloat(heroAmount !== '' ? heroAmount : userGuess),
+                            heroAmount: parseFloat(heroAmount !== '' ? heroAmount : userGuess),
                             standardCost: results.offsetCost,
                             userCurrency: currency.code
                           } 
