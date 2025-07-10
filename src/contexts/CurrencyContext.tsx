@@ -6,7 +6,8 @@ import {
   CURRENCIES,
   convertFromEUR,
   convertToEUR,
-  formatCurrency as formatCurrencyUtil
+  formatCurrency as formatCurrencyUtil,
+  updateCurrencyRates
 } from '../services/currencyService';
 
 interface CurrencyContextValue {
@@ -26,7 +27,10 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getUserCurrency().then(detectedCurrency => {
+    // Update currency rates first, then get user currency
+    updateCurrencyRates().then(() => {
+      return getUserCurrency();
+    }).then(detectedCurrency => {
       setCurrencyState(detectedCurrency);
       setLoading(false);
     });

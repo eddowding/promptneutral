@@ -239,7 +239,7 @@ export function HomePageV2() {
               {userGuess && (
                 <div className="bg-yellow-50 rounded-lg p-4 mb-6">
                   <p className="text-yellow-800 font-medium">
-                    Your guess: ${parseFloat(userGuess).toLocaleString()} | Actual cost: ${results.offsetCost.toLocaleString()}
+                    Your guess: ${parseFloat(userGuess).toLocaleString()} | Actual cost: {formatCurrencyFromEUR(results.offsetCost)}
                   </p>
                   <p className="text-sm text-yellow-700 mt-1">
                     {parseFloat(userGuess) > results.offsetCost 
@@ -343,13 +343,14 @@ export function HomePageV2() {
                     onClick={() => navigate('/offset-order', { 
                       state: { 
                         offsetAmount: results.totalCO2Tonnes, 
-                        offsetCost: results.offsetCost 
+                        offsetCost: results.offsetCost,
+                        userCurrency: currency.code
                       } 
                     })}
                     className="bg-green-600 text-white py-4 px-8 rounded-lg font-semibold hover:bg-green-700 transition-colors inline-flex items-center gap-2 text-lg"
                   >
                     <ShoppingCart className="h-6 w-6" />
-                    Offset My Carbon Impact for ${results.offsetCost.toLocaleString()}
+                    Offset My Carbon Impact for {formatCurrencyFromEUR(results.offsetCost)}
                   </button>
                   <p className="mt-3 text-sm text-gray-600">
                     Choose from verified carbon offset projects and make a difference today
@@ -364,7 +365,7 @@ export function HomePageV2() {
                         Make the Hero Move!
                       </h3>
                       <p className="text-gray-700 mb-4">
-                        You guessed ${parseFloat(userGuess).toLocaleString()} - why not go above and beyond?
+                        You guessed ${parseFloat(userGuess).toFixed(2)} - why not go above and beyond?
                       </p>
                       <p className="text-sm text-gray-600 mb-6">
                         Your over-contribution will be highlighted on your certificate as a 
@@ -392,7 +393,8 @@ export function HomePageV2() {
                             offsetAmount: results.totalCO2Tonnes, 
                             offsetCost: parseFloat(heroAmount || userGuess),
                             heroAmount: parseFloat(heroAmount || userGuess),
-                            standardCost: results.offsetCost
+                            standardCost: results.offsetCost,
+                            userCurrency: currency.code
                           } 
                         })}
                         disabled={!heroAmount && !userGuess}

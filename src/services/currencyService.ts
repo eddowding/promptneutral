@@ -5,28 +5,144 @@ export interface CurrencyInfo {
   position: 'before' | 'after';
 }
 
-// Currency conversion rates from EUR (approximate)
-export const CURRENCIES: Record<string, CurrencyInfo> = {
-  USD: { code: 'USD', symbol: '$', rate: 1.08, position: 'before' },
-  EUR: { code: 'EUR', symbol: '€', rate: 1.00, position: 'before' },
-  GBP: { code: 'GBP', symbol: '£', rate: 0.85, position: 'before' },
-  CAD: { code: 'CAD', symbol: 'C$', rate: 1.48, position: 'before' },
-  AUD: { code: 'AUD', symbol: 'A$', rate: 1.65, position: 'before' },
-  JPY: { code: 'JPY', symbol: '¥', rate: 161, position: 'before' },
-  CNY: { code: 'CNY', symbol: '¥', rate: 7.85, position: 'before' },
-  INR: { code: 'INR', symbol: '₹', rate: 90, position: 'before' },
-  BRL: { code: 'BRL', symbol: 'R$', rate: 5.40, position: 'before' },
-  MXN: { code: 'MXN', symbol: '$', rate: 18.50, position: 'before' },
-  CHF: { code: 'CHF', symbol: 'CHF', rate: 0.95, position: 'before' },
-  SEK: { code: 'SEK', symbol: 'kr', rate: 11.30, position: 'after' },
-  NOK: { code: 'NOK', symbol: 'kr', rate: 11.50, position: 'after' },
-  DKK: { code: 'DKK', symbol: 'kr', rate: 7.45, position: 'after' },
-  SGD: { code: 'SGD', symbol: 'S$', rate: 1.45, position: 'before' },
-  NZD: { code: 'NZD', symbol: 'NZ$', rate: 1.75, position: 'before' },
-  ZAR: { code: 'ZAR', symbol: 'R', rate: 19.80, position: 'before' },
-  KRW: { code: 'KRW', symbol: '₩', rate: 1420, position: 'before' },
-  // Default to EUR for unsupported countries
+// Default currency info (fallback rates if API fails)
+const DEFAULT_RATES: Record<string, number> = {
+  USD: 1.08, EUR: 1.00, GBP: 0.85, CAD: 1.48, AUD: 1.65,
+  JPY: 161, CNY: 7.85, INR: 90, BRL: 5.40, MXN: 18.50,
+  CHF: 0.95, SEK: 11.30, NOK: 11.50, DKK: 7.45, SGD: 1.45,
+  NZD: 1.75, ZAR: 19.80, KRW: 1420
 };
+
+// Currency symbols and positions
+const CURRENCY_SYMBOLS: Record<string, { symbol: string; position: 'before' | 'after' }> = {
+  USD: { symbol: '$', position: 'before' },
+  EUR: { symbol: '€', position: 'before' },
+  GBP: { symbol: '£', position: 'before' },
+  CAD: { symbol: 'C$', position: 'before' },
+  AUD: { symbol: 'A$', position: 'before' },
+  JPY: { symbol: '¥', position: 'before' },
+  CNY: { symbol: '¥', position: 'before' },
+  INR: { symbol: '₹', position: 'before' },
+  BRL: { symbol: 'R$', position: 'before' },
+  MXN: { symbol: '$', position: 'before' },
+  CHF: { symbol: 'CHF', position: 'before' },
+  SEK: { symbol: 'kr', position: 'after' },
+  NOK: { symbol: 'kr', position: 'after' },
+  DKK: { symbol: 'kr', position: 'after' },
+  SGD: { symbol: 'S$', position: 'before' },
+  NZD: { symbol: 'NZ$', position: 'before' },
+  ZAR: { symbol: 'R', position: 'before' },
+  KRW: { symbol: '₩', position: 'before' },
+};
+
+// Build CURRENCIES object with cached rates
+export let CURRENCIES: Record<string, CurrencyInfo> = {};
+
+// Initialize with default rates
+Object.entries(DEFAULT_RATES).forEach(([code, rate]) => {
+  const symbolInfo = CURRENCY_SYMBOLS[code];
+  CURRENCIES[code] = {
+    code,
+    symbol: symbolInfo.symbol,
+    rate,
+    position: symbolInfo.position
+  };
+});
+
+// Cache rates for 24 hours
+const RATE_CACHE_KEY = 'currency_rates_cache';
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+
+interface RateCache {
+  rates: Record<string, number>;
+  timestamp: number;
+}
+
+async function fetchLatestRates(): Promise<Record<string, number>> {
+  try {
+    // Try multiple free APIs
+    const apis = [
+      'https://api.exchangerate-api.com/v4/latest/EUR',
+      'https://api.frankfurter.app/latest',
+      'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/eur.json'
+    ];
+
+    for (const api of apis) {
+      try {
+        const response = await fetch(api);
+        if (response.ok) {
+          const data = await response.json();
+          
+          // Handle different API response formats
+          let rates: Record<string, number> = {};
+          
+          if (data.rates) {
+            rates = data.rates;
+          } else if (data.eur) {
+            // fawazahmed0 API format
+            Object.entries(data.eur).forEach(([code, rate]) => {
+              rates[code.toUpperCase()] = rate as number;
+            });
+          }
+          
+          // Only return rates we support
+          const supportedRates: Record<string, number> = { EUR: 1 };
+          Object.keys(DEFAULT_RATES).forEach(code => {
+            if (rates[code]) {
+              supportedRates[code] = rates[code];
+            }
+          });
+          
+          return supportedRates;
+        }
+      } catch {
+        // Try next API
+      }
+    }
+  } catch (error) {
+    console.error('Failed to fetch currency rates:', error);
+  }
+  
+  return DEFAULT_RATES;
+}
+
+export async function updateCurrencyRates(): Promise<void> {
+  // Check cache first
+  const cached = localStorage.getItem(RATE_CACHE_KEY);
+  if (cached) {
+    try {
+      const cache: RateCache = JSON.parse(cached);
+      if (Date.now() - cache.timestamp < CACHE_DURATION) {
+        // Update CURRENCIES with cached rates
+        Object.entries(cache.rates).forEach(([code, rate]) => {
+          if (CURRENCIES[code]) {
+            CURRENCIES[code].rate = rate;
+          }
+        });
+        return;
+      }
+    } catch {
+      // Invalid cache
+    }
+  }
+
+  // Fetch new rates
+  const rates = await fetchLatestRates();
+  
+  // Update CURRENCIES
+  Object.entries(rates).forEach(([code, rate]) => {
+    if (CURRENCIES[code]) {
+      CURRENCIES[code].rate = rate;
+    }
+  });
+  
+  // Cache the rates
+  const cache: RateCache = {
+    rates,
+    timestamp: Date.now()
+  };
+  localStorage.setItem(RATE_CACHE_KEY, JSON.stringify(cache));
+}
 
 // Country to currency mapping
 const COUNTRY_CURRENCY: Record<string, string> = {
