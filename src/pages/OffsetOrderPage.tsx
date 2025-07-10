@@ -210,9 +210,9 @@ export function OffsetOrderPage() {
                 />
                 {selectedProjectData && (
                   <div className="text-sm text-gray-600 mt-2 space-y-1">
-                    <p>{quantity.toFixed(3)} tonnes × €{selectedProjectData.pricePerTonne} = €{offsetCost.toFixed(2)}</p>
-                    <p>Processing fee: €{processingFee.toFixed(2)}</p>
-                    <p className="font-medium">Total: €{totalCost} ({formatCurrencyFromEUR(parseFloat(totalCost))})</p>
+                    <p>{quantity.toFixed(3)} tonnes × {formatCurrencyFromEUR(selectedProjectData.pricePerTonne)} = {formatCurrencyFromEUR(offsetCost)}</p>
+                    <p>Processing fee: {formatCurrencyFromEUR(processingFee)}</p>
+                    <p className="font-medium">Total: {formatCurrencyFromEUR(parseFloat(totalCost))}</p>
                     {heroAmount && parseFloat(totalCost) > convertToEUR(heroAmount) && (
                       <span className="text-yellow-600 font-medium">
                         (Exceeds your {currency.symbol}{heroAmount.toFixed(2)} commitment)
@@ -310,7 +310,7 @@ export function OffsetOrderPage() {
                         </div>
                         <div className="text-right ml-3">
                           <p className="text-xl font-bold text-gray-900">
-                            €{project.pricePerTonne}
+                            {formatCurrencyFromEUR(project.pricePerTonne)}
                           </p>
                           <p className="text-xs text-gray-600">per tonne</p>
                         </div>
@@ -351,14 +351,14 @@ export function OffsetOrderPage() {
                 <div>
                   <p className="font-semibold text-gray-900">{selectedProjectData?.name}</p>
                   <p className="text-sm text-gray-600">
-                    {quantity.toFixed(3)} tonne{quantity !== 1 ? 's' : ''} × €{selectedProjectData?.pricePerTonne} + €0.30 fee
+                    {quantity.toFixed(3)} tonne{quantity !== 1 ? 's' : ''} × {formatCurrencyFromEUR(selectedProjectData?.pricePerTonne || 0)} + {formatCurrencyFromEUR(0.30)} fee
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-6">
                 <div className="text-right">
                   <p className="text-sm text-gray-600">Total</p>
-                  <p className="text-2xl font-bold text-gray-900">€{totalCost}</p>
+                  <p className="text-2xl font-bold text-gray-900">{formatCurrencyFromEUR(parseFloat(totalCost))}</p>
                 </div>
                 <button
                   onClick={handlePurchase}
