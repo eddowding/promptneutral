@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Mail, Sparkles, Construction, Heart } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -29,6 +29,11 @@ export function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showThankYou, setShowThankYou] = useState(false);
   const [isMonthly, setIsMonthly] = useState(false);
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   if (!checkoutData) {
     navigate('/offset-order');

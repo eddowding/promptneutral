@@ -113,6 +113,11 @@ export function OffsetOrderPage() {
   const [quantity, setQuantity] = useState(suggestedOffset);
   const [activeCategory, setActiveCategory] = useState<'all' | 'nature-based' | 'engineered'>('all');
 
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const selectedProjectData = projects.find(p => p.id === selectedProject);
   const offsetCost = selectedProjectData ? quantity * selectedProjectData.pricePerTonne : 0;
   const processingFee = 0.30;
