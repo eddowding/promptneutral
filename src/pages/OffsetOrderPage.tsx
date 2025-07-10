@@ -103,7 +103,7 @@ export function OffsetOrderPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { currency, formatCurrencyFromEUR, convertToEUR } = useCurrency();
-  const [selectedProject, setSelectedProject] = useState<string>('');
+  const [selectedProject, setSelectedProject] = useState<string>('indus-delta'); // Default to Indus Delta project
   
   const suggestedOffset = location.state?.offsetAmount || 0.1;
   const suggestedCost = location.state?.offsetCost || 15;
@@ -201,6 +201,47 @@ export function OffsetOrderPage() {
                 </p>
               </div>
             )}
+
+            {/* Default project selection */}
+            {selectedProject ? (
+              <div className="mb-6 p-6 bg-green-50 rounded-lg border-2 border-green-200">
+                <h3 className="font-semibold text-lg mb-3 text-gray-900">Your selected project</h3>
+                {selectedProjectData && (
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0 pt-1">
+                      {selectedProjectData.icon}
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-gray-900">{selectedProjectData.name}</h4>
+                      <p className="text-sm text-gray-600 mt-0.5">{selectedProjectData.description}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Globe className="h-3 w-3 text-gray-500" />
+                        <span className="text-xs text-gray-700">{selectedProjectData.location}</span>
+                        <span className="text-xs text-gray-500">• {selectedProjectData.type}</span>
+                      </div>
+                      <p className="text-lg font-bold text-gray-900 mt-2">
+                        {formatCurrencyFromEUR(selectedProjectData.pricePerTonne)} per tonne
+                      </p>
+                    </div>
+                  </div>
+                )}
+                <button
+                  onClick={() => setSelectedProject('')}
+                  className="mt-4 text-sm text-green-700 hover:text-green-800 font-medium"
+                >
+                  Choose a different project →
+                </button>
+              </div>
+            ) : (
+              <div className="mb-6">
+                <button
+                  onClick={() => setSelectedProject('indus-delta')}
+                  className="text-sm text-gray-600 hover:text-gray-800 font-medium mb-4"
+                >
+                  ← Back to recommended project
+                </button>
+              </div>
+            )}
             
             {selectedProject && (
               <div className="mb-6">
@@ -230,9 +271,11 @@ export function OffsetOrderPage() {
               </div>
             )}
 
-            <div className="mb-6">
-              <h3 className="text-lg font-semibold mb-4">Filter by Project Type</h3>
-              <div className="flex gap-2 mb-6">
+            {!selectedProject && (
+              <>
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold mb-4">Choose a different project</h3>
+                  <div className="flex gap-2 mb-6">
                 <button
                   onClick={() => setActiveCategory('all')}
                   className={`px-4 py-2 rounded-full font-medium transition-colors ${
@@ -268,7 +311,6 @@ export function OffsetOrderPage() {
               </div>
             </div>
 
-            <h3 className="text-lg font-semibold mb-4">Select a Project</h3>
             <div className="grid gap-4">
               {filteredProjects.map((project) => (
                 <div
@@ -327,6 +369,8 @@ export function OffsetOrderPage() {
                 </div>
               ))}
             </div>
+              </>
+            )}
 
           </div>
 
