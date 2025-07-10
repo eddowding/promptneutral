@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calculator, Zap, Plane, Beef, DollarSign, TreePine, Cloud, ShoppingCart, ExternalLink } from 'lucide-react';
+import { Calculator, Zap, Plane, Beef, DollarSign, TreePine, Cloud, ShoppingCart, ExternalLink, Car, Building } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 
 interface ProviderSpending {
@@ -49,8 +49,10 @@ export function HomePageV2() {
 
   const [results, setResults] = useState<CarbonResults | null>(null);
   const [userGuess, setUserGuess] = useState<string>('');
+  const [heroAmount, setHeroAmount] = useState<string>('');
 
-  const calculateCarbon = () => {
+  const calculateCarbon = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     // Calculate total energy consumption in Wh
     const totalWh = Object.entries(spending).reduce((total, [provider, amount]) => {
       return total + (amount * WH_PER_DOLLAR[provider]);
@@ -69,6 +71,9 @@ export function HomePageV2() {
       drivingMiles: Math.round(totalCO2Kg / CAR_CO2_PER_MILE_KG),
       treeYears: Math.round((totalCO2Kg / TREE_CO2_PER_YEAR_KG) * 10) / 10
     });
+    
+    // Reset hero amount when calculating new results
+    setHeroAmount('');
   };
 
   const handleInputChange = (provider: keyof ProviderSpending, value: string) => {
@@ -76,6 +81,21 @@ export function HomePageV2() {
     const cleanValue = value.replace(/[$,]/g, '');
     const numValue = parseFloat(cleanValue) || 0;
     setSpending(prev => ({ ...prev, [provider]: numValue }));
+  };
+
+  const handleNumberInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Allow: backspace, delete, tab, escape, enter, decimal point
+    const allowedKeys = ['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', '.', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'];
+    
+    // Allow: Ctrl/Cmd+A, Ctrl/Cmd+C, Ctrl/Cmd+V, Ctrl/Cmd+X
+    if ((e.ctrlKey || e.metaKey) && ['a', 'c', 'v', 'x'].includes(e.key.toLowerCase())) {
+      return;
+    }
+    
+    // Prevent if not a number or allowed key
+    if (!allowedKeys.includes(e.key) && isNaN(Number(e.key))) {
+      e.preventDefault();
+    }
   };
 
   const formatNumber = (num: number): string => {
@@ -104,7 +124,7 @@ export function HomePageV2() {
             </p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
+          <form onSubmit={calculateCarbon} className="bg-white rounded-2xl shadow-xl p-8 mb-8">
             <h2 className="text-2xl font-semibold mb-6 flex items-center gap-2">
               <Calculator className="h-6 w-6 text-green-600" />
               Enter Your Monthly AI Spending ($)
@@ -201,13 +221,14 @@ export function HomePageV2() {
             </div>
 
             <button
-              onClick={calculateCarbon}
-              className="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center gap-2 mt-6"
+              type="submit"
+              disabled={!userGuess}
+              className="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center gap-2 mt-6 disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
               <Zap className="h-5 w-5" />
               Calculate My AI Carbon Impact
             </button>
-          </div>
+          </form>
 
           {results && (
             <div className="bg-white rounded-2xl shadow-xl p-8">
@@ -215,13 +236,6 @@ export function HomePageV2() {
                 <Cloud className="h-6 w-6 text-blue-600" />
                 Your AI Carbon Impact
               </h2>
-              
-              <div className="bg-blue-50 rounded-lg p-4 mb-6 text-sm">
-                <p className="text-blue-800">
-                  <strong>Calculation based on:</strong> Energy consumption data from latest AI models (GPT-4o, Claude 4, Gemini 2.5) 
-                  with global average grid carbon intensity of 0.475 kg CO₂/kWh
-                </p>
-              </div>
 
               {userGuess && (
                 <div className="bg-yellow-50 rounded-lg p-4 mb-6">
@@ -237,59 +251,77 @@ export function HomePageV2() {
                 </div>
               )}
 
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div className="bg-gray-50 rounded-lg p-6">
-                  <div className="text-3xl font-bold text-gray-900 mb-2">
-                    {results.totalCO2Tonnes.toFixed(2)}
-                  </div>
-                  <div className="text-sm text-gray-600">Tonnes of CO₂</div>
-                </div>
-
-                <div className="bg-red-50 rounded-lg p-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Beef className="h-5 w-5 text-red-600" />
-                    <div className="text-3xl font-bold text-gray-900">
-                      {formatNumber(results.steakEquivalent)}
-                    </div>
-                  </div>
-                  <div className="text-sm text-gray-600">Steak dinners</div>
-                </div>
-
-                <div className="bg-blue-50 rounded-lg p-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Plane className="h-5 w-5 text-blue-600" />
-                    <div className="text-3xl font-bold text-gray-900">
-                      {results.flightsLondonNY}
-                    </div>
-                  </div>
-                  <div className="text-sm text-gray-600">Flights London → NYC</div>
-                </div>
-
-                <div className="bg-green-50 rounded-lg p-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <DollarSign className="h-5 w-5 text-green-600" />
-                    <div className="text-3xl font-bold text-gray-900">
+              <div className="grid md:grid-cols-2 gap-6 mb-6">
+                <div className="bg-green-50 rounded-lg p-8 text-center">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <DollarSign className="h-8 w-8 text-green-600" />
+                    <div className="text-5xl font-bold text-gray-900">
                       ${results.offsetCost}
                     </div>
                   </div>
-                  <div className="text-sm text-gray-600">Carbon offset cost</div>
+                  <div className="text-lg text-gray-600">Carbon offset cost</div>
                 </div>
 
-                <div className="bg-orange-50 rounded-lg p-6">
-                  <div className="text-3xl font-bold text-gray-900 mb-2">
-                    {formatNumber(results.drivingMiles)}
+                <div className="bg-gray-50 rounded-lg p-8 text-center">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <Cloud className="h-8 w-8 text-gray-600" />
+                    <div className="text-5xl font-bold text-gray-900">
+                      {results.totalCO2Tonnes.toFixed(2)}
+                    </div>
                   </div>
-                  <div className="text-sm text-gray-600">Miles driven</div>
+                  <div className="text-lg text-gray-600">Tonnes of CO₂</div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div className="bg-red-50 rounded-lg p-4 text-center">
+                  <div className="flex items-center justify-center gap-1 mb-1">
+                    <Beef className="h-4 w-4 text-red-600" />
+                    <div className="text-2xl font-bold text-gray-900">
+                      {formatNumber(results.steakEquivalent)}
+                    </div>
+                  </div>
+                  <div className="text-xs text-gray-600">Steak dinners</div>
                 </div>
 
-                <div className="bg-emerald-50 rounded-lg p-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <TreePine className="h-5 w-5 text-emerald-600" />
-                    <div className="text-3xl font-bold text-gray-900">
+                <div className="bg-orange-50 rounded-lg p-4 text-center">
+                  <div className="flex items-center justify-center gap-1 mb-1">
+                    <Car className="h-4 w-4 text-orange-600" />
+                    <div className="text-2xl font-bold text-gray-900">
+                      {formatNumber(results.drivingMiles)}
+                    </div>
+                  </div>
+                  <div className="text-xs text-gray-600">Miles driven</div>
+                </div>
+
+                <div className="bg-blue-50 rounded-lg p-4 text-center">
+                  <div className="flex items-center justify-center gap-1 mb-1">
+                    <Plane className="h-4 w-4 text-blue-600" />
+                    <div className="text-2xl font-bold text-gray-900">
+                      {results.flightsLondonNY}
+                    </div>
+                  </div>
+                  <div className="text-xs text-gray-600">Flights LDN→NYC</div>
+                </div>
+
+                <div className="bg-emerald-50 rounded-lg p-4 text-center">
+                  <div className="flex items-center justify-center gap-1 mb-1">
+                    <TreePine className="h-4 w-4 text-emerald-600" />
+                    <div className="text-2xl font-bold text-gray-900">
                       {results.treeYears}
                     </div>
                   </div>
-                  <div className="text-sm text-gray-600">Tree-years to offset</div>
+                  <div className="text-xs text-gray-600">Tree-years</div>
+                </div>
+
+                <div className="bg-purple-50 rounded-lg p-4 text-center">
+                  <div className="flex items-center justify-center gap-1 mb-1">
+                    <Building className="h-4 w-4 text-purple-600" />
+                    <div className="text-2xl font-bold text-gray-900">
+                      {Math.round(results.totalCO2Tonnes * 1000 / 2.3)}
+                    </div>
+                  </div>
+                  <div className="text-xs text-gray-600">Days of home energy</div>
                 </div>
               </div>
 
@@ -347,22 +379,37 @@ export function HomePageV2() {
                       <p className="text-sm text-gray-600 mb-6">
                         Your over-contribution will be highlighted on your certificate as a 
                         <span className="font-semibold text-yellow-700"> Climate Champion</span> who gave 
-                        {' '}{((parseFloat(userGuess) / results.offsetCost) * 100).toFixed(0)}% 
+                        {' '}{((parseFloat(heroAmount || userGuess) / results.offsetCost - 1) * 100).toFixed(0)}% 
                         more than required!
                       </p>
+                      <div className="flex items-center justify-center gap-3 mb-4">
+                        <span className="text-lg font-semibold">Offset for</span>
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-bold">$</span>
+                          <input
+                            type="text"
+                            value={heroAmount || userGuess}
+                            onChange={(e) => setHeroAmount(e.target.value.replace(/[$,]/g, ''))}
+                            onKeyDown={handleNumberInput}
+                            className="w-32 pl-8 pr-4 py-2 text-lg border-2 border-yellow-400 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent text-center font-bold"
+                            inputMode="decimal"
+                          />
+                        </div>
+                      </div>
                       <button
                         onClick={() => navigate('/offset-order', { 
                           state: { 
                             offsetAmount: results.totalCO2Tonnes, 
-                            offsetCost: parseFloat(userGuess),
-                            heroAmount: parseFloat(userGuess),
+                            offsetCost: parseFloat(heroAmount || userGuess),
+                            heroAmount: parseFloat(heroAmount || userGuess),
                             standardCost: results.offsetCost
                           } 
                         })}
-                        className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white py-4 px-8 rounded-lg font-bold hover:from-yellow-600 hover:to-yellow-700 transition-all inline-flex items-center gap-2 text-lg shadow-lg transform hover:scale-105"
+                        disabled={!heroAmount && !userGuess}
+                        className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white py-4 px-8 rounded-lg font-bold hover:from-yellow-600 hover:to-yellow-700 transition-all inline-flex items-center gap-2 text-lg shadow-lg transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <span className="text-xl">⚡</span>
-                        Offset for ${parseFloat(userGuess).toFixed(2)} (Hero Mode)
+                        Continue with Hero Mode
                       </button>
                     </div>
                   </div>
