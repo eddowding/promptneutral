@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calculator, Zap, Plane, Beef, TreePine, Cloud, ShoppingCart, ExternalLink, Car, Building } from 'lucide-react';
+import { Calculator, Zap, Plane, Beef, TreePine, Cloud, ShoppingCart, ExternalLink, Car, Building, Info, ChevronDown, ChevronUp } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useCurrency } from '../contexts/CurrencyContext';
 
@@ -56,6 +56,7 @@ export function HomePageV2() {
   const [results, setResults] = useState<CarbonResults | null>(null);
   const [userGuess, setUserGuess] = useState<string>('');
   const [heroAmount, setHeroAmount] = useState<string>('');
+  const [showWhy430x, setShowWhy430x] = useState(false);
 
   const calculateCarbon = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -462,7 +463,7 @@ export function HomePageV2() {
                           className="bg-white border-2 border-yellow-300 rounded-lg p-3 hover:bg-yellow-50 transition-colors relative"
                         >
                           <div className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white text-xs px-2 py-1 rounded-full font-bold">
-                            FULL 430
+                            430ppm CO₂
                           </div>
                           <div className="text-2xl font-bold text-yellow-700">430x</div>
                           <div className="text-xs text-gray-600">{formatCurrencyFromEUR(Math.round(results.offsetCost * 100) / 100 * 430)}</div>
@@ -531,6 +532,82 @@ export function HomePageV2() {
                     </div>
                   </div>
                 )}
+
+                {/* Why 430x? Explainer */}
+                <div className="mt-8 bg-blue-50 rounded-lg p-6">
+                  <button
+                    onClick={() => setShowWhy430x(!showWhy430x)}
+                    className="w-full flex items-center justify-between text-left"
+                  >
+                    <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                      <Info className="h-5 w-5 text-blue-600" />
+                      Why 430x?
+                    </h3>
+                    {showWhy430x ? (
+                      <ChevronUp className="h-5 w-5 text-gray-600" />
+                    ) : (
+                      <ChevronDown className="h-5 w-5 text-gray-600" />
+                    )}
+                  </button>
+                  
+                  {showWhy430x && (
+                    <div className="mt-4 space-y-4 text-gray-700">
+                      <div>
+                        <h4 className="font-semibold mb-2">🌍 We're at 430ppm CO₂</h4>
+                        <p className="text-sm">
+                          Earth's atmosphere now contains 430 parts per million of CO₂ - the highest in human history. 
+                          Pre-industrial levels were 280ppm. That's why we recommend offsetting by 430%.
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-semibold mb-2">💡 Just ~10% of your AI savings</h4>
+                        <p className="text-sm">
+                          AI typically reduces business costs by 50-90%. Reinvesting just 10% of those savings 
+                          into climate action creates massive impact while you still benefit from huge cost reductions.
+                        </p>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-semibold mb-2">🚀 Beyond neutral to climate positive</h4>
+                        <p className="text-sm">
+                          1x offset = carbon neutral. 430x = actively removing historic emissions. 
+                          Join the movement of companies going beyond neutrality to reverse climate change.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Visual Progress Indicator - Separate div for testing */}
+                <div className="mt-8 p-6 bg-gray-50 rounded-lg">
+                  <h4 className="text-sm font-semibold text-gray-700 mb-3">Offset Impact Scale</h4>
+                  <div className="relative">
+                    <div className="h-8 bg-gray-200 rounded-full overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-green-300 via-yellow-400 to-red-500"></div>
+                    </div>
+                    <div className="absolute inset-0 flex items-center justify-between px-2">
+                      <div className="flex flex-col items-center">
+                        <div className="w-0.5 h-10 bg-gray-600"></div>
+                        <span className="text-xs font-medium mt-1">1x</span>
+                        <span className="text-xs text-gray-500">Neutral</span>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <div className="w-0.5 h-10 bg-gray-600"></div>
+                        <span className="text-xs font-medium mt-1">43x</span>
+                        <span className="text-xs text-gray-500">~1%</span>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <div className="w-0.5 h-10 bg-gray-600"></div>
+                        <span className="text-xs font-medium mt-1">430x</span>
+                        <span className="text-xs text-gray-500">~10%</span>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-600 mt-3 text-center">
+                    430x = 430ppm atmospheric CO₂ = ~10% of AI savings for maximum impact
+                  </p>
+                </div>
               </div>
             </div>
           )}

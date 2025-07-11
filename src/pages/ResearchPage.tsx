@@ -301,6 +301,56 @@ export function ResearchPage() {
                 </div>
               </section>
 
+              {/* 430x Methodology */}
+              <section className="mb-8">
+                <h3 className="text-2xl font-semibold mb-4 flex items-center gap-2">
+                  <Cloud className="h-6 w-6 text-yellow-600" />
+                  The 430x Methodology
+                </h3>
+                
+                <div className="bg-yellow-50 rounded-lg p-6 mb-4">
+                  <h4 className="font-semibold mb-3">Why 430x? The Science Behind Our Recommendation</h4>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <h5 className="font-semibold text-gray-900">Atmospheric Reality: 430ppm CO₂</h5>
+                      <p className="text-gray-700 text-sm mt-1">
+                        As of 2025, Earth's atmosphere contains 430 parts per million (ppm) of CO₂. 
+                        This is a 54% increase from pre-industrial levels of 280ppm. We recommend offsetting 
+                        by 430% to symbolically match this atmospheric concentration.
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <h5 className="font-semibold text-gray-900">The 10% Reinvestment Principle</h5>
+                      <p className="text-gray-700 text-sm mt-1">
+                        AI typically reduces operational costs by 50-90%. Our 430x offset represents approximately 
+                        10% of your AI spending. This means you can achieve massive climate impact while still 
+                        realizing 80-90% of your AI cost savings.
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <h5 className="font-semibold text-gray-900">From Neutral to Climate Positive</h5>
+                      <ul className="text-gray-700 text-sm mt-1 space-y-1">
+                        <li>• <strong>1x offset:</strong> Carbon neutral (breaks even)</li>
+                        <li>• <strong>4.3x offset:</strong> Carbon negative (removes 3.3x your emissions)</li>
+                        <li>• <strong>43x offset:</strong> Significant climate contribution (~1% of AI spend)</li>
+                        <li>• <strong>430x offset:</strong> Maximum impact (~10% of AI spend)</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="bg-blue-50 border-l-4 border-blue-400 p-4">
+                  <p className="text-sm">
+                    <strong>Scientific Context:</strong> The 430ppm milestone was reached in 2024-2025. 
+                    Climate scientists warn that we need to return to 350ppm for a stable climate. 
+                    By offsetting 430x, you're contributing to this reversal while demonstrating climate leadership.
+                  </p>
+                </div>
+              </section>
+
               {/* Water Usage */}
               <section className="mb-8">
                 <h3 className="text-2xl font-semibold mb-4 flex items-center gap-2">
