@@ -198,8 +198,8 @@ export function OffsetOrderPage() {
                   {Math.round(heroAmount / standardCost) >= 430 
                     ? <span> You've reached the <span className="font-semibold">430x target</span> - true climate leadership!</span>
                     : Math.round(heroAmount / standardCost) >= 43
-                    ? <span> You're making a massive impact! Get to 430x to match atmospheric CO₂ levels!</span>
-                    : <span> Get to 430x to match atmospheric CO₂ levels!</span>}
+                    ? <span> You're making a massive impact!</span>
+                    : <span> </span>}
                 </p>
               </div>
             )}
