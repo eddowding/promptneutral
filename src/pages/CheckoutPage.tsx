@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Mail, Sparkles, Construction, Heart } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useCurrency } from '../contexts/CurrencyContext';
 
 interface CheckoutData {
   projectId: string;
@@ -24,6 +25,7 @@ export function CheckoutPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const checkoutData = location.state as CheckoutData;
+  const { formatCurrencyFromEUR } = useCurrency();
   
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -125,7 +127,7 @@ export function CheckoutPage() {
                 <div className="bg-blue-50 rounded-lg p-4 mt-6">
                   <p className="text-sm">
                     <strong>Your impact preview:</strong> You selected{' '}
-                    <span className="font-medium">{parseFloat(checkoutData.quantity.toFixed(3))} tonnes</span> of carbon offsets 
+                    <span className="font-medium">{Math.ceil(checkoutData.quantity * 10) / 10} tonnes</span> of carbon offsets 
                     through the <span className="font-medium">{checkoutData.projectName}</span> project. 
                     That's amazing! 
                   </p>
@@ -171,7 +173,7 @@ export function CheckoutPage() {
             </h1>
             <p className="text-gray-600 mb-6">
               {checkoutData.heroAmount 
-                ? `You're offsetting by ${((checkoutData.heroAmount / checkoutData.standardCost!) * 100).toFixed(0)}% - ${((checkoutData.heroAmount / checkoutData.standardCost!) * 100) >= 430 ? 'true 430x climate leadership!' : 'every bit helps!'}`
+                ? `You're offsetting by ${Math.round(checkoutData.heroAmount / checkoutData.standardCost!)}x - ${Math.round(checkoutData.heroAmount / checkoutData.standardCost!) >= 430 ? 'true 430x climate leadership!' : Math.round(checkoutData.heroAmount / checkoutData.standardCost!) >= 43 ? 'making a massive impact!' : 'every bit helps!'}`
                 : 'Just one more step to offset your AI carbon footprint!'
               }
             </p>
@@ -185,16 +187,16 @@ export function CheckoutPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Quantity:</span>
-                  <span className="font-medium">{parseFloat(checkoutData.quantity.toFixed(3))} tonnes CO₂</span>
+                  <span className="font-medium">{Math.ceil(checkoutData.quantity * 10) / 10} tonnes CO₂</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Price per tonne:</span>
-                  <span className="font-medium">€{checkoutData.pricePerTonne}</span>
+                  <span className="font-medium">{formatCurrencyFromEUR(checkoutData.pricePerTonne)}</span>
                 </div>
                 <div className="border-t pt-2 mt-2">
                   <div className="flex justify-between text-lg font-semibold">
                     <span>Total:</span>
-                    <span>€{checkoutData.totalCost}</span>
+                    <span>{formatCurrencyFromEUR(parseFloat(checkoutData.totalCost))}</span>
                   </div>
                 </div>
               </div>
@@ -205,18 +207,18 @@ export function CheckoutPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="text-2xl">🌍</span>
-                    <span className="font-bold text-lg">430x Movement</span>
+                    <span className="font-bold text-lg">{Math.round(checkoutData.heroAmount / checkoutData.standardCost)}x Movement</span>
                   </div>
                   <div className="text-right">
                     <div className="text-2xl font-bold text-yellow-700">
-                      {((checkoutData.heroAmount / checkoutData.standardCost) * 100).toFixed(0)}%
+                      {Math.round(checkoutData.heroAmount / checkoutData.standardCost)}x
                     </div>
                     <div className="text-xs text-gray-600">
-                      of needed offset
+                      more than needed
                     </div>
                   </div>
                 </div>
-                {((checkoutData.heroAmount / checkoutData.standardCost) * 100) >= 430 && (
+                {Math.round(checkoutData.heroAmount / checkoutData.standardCost) >= 430 && (
                   <p className="text-sm text-yellow-700 mt-2 font-medium">
                     ✨ You've reached the 430x target - matching our 430ppm CO₂ reality!
                   </p>
@@ -259,7 +261,7 @@ export function CheckoutPage() {
                       Make this a monthly contribution
                     </p>
                     <p className="text-sm text-gray-600 mt-1">
-                      Automatically offset {parseFloat(checkoutData.quantity.toFixed(3))} tonnes every month to maintain your carbon neutrality
+                      Automatically offset {Math.ceil(checkoutData.quantity * 10) / 10} tonnes every month to maintain your carbon neutrality
                     </p>
                   </div>
                 </label>
