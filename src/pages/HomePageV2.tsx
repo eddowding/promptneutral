@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Calculator, Zap, Plane, Beef, TreePine, Cloud, ShoppingCart, ExternalLink, Car, Building, Info, ChevronDown, ChevronUp } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useCurrency } from '../contexts/CurrencyContext';
@@ -57,6 +57,7 @@ export function HomePageV2() {
   const [userGuess, setUserGuess] = useState<string>('');
   const [heroAmount, setHeroAmount] = useState<string>('');
   const [showWhy430x, setShowWhy430x] = useState(false);
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   const calculateCarbon = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -81,6 +82,15 @@ export function HomePageV2() {
     
     // Reset hero amount when calculating new results
     setHeroAmount('');
+    
+    // Scroll to results after a brief delay to ensure they're rendered
+    setTimeout(() => {
+      if (resultsRef.current) {
+        const yOffset = -20; // Small offset from top
+        const y = resultsRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+    }, 100);
   };
 
   const handleInputChange = (provider: keyof ProviderSpending, value: string) => {
@@ -271,7 +281,7 @@ export function HomePageV2() {
           </form>
 
           {results && (
-            <div className="bg-white rounded-2xl shadow-xl p-8">
+            <div ref={resultsRef} className="bg-white rounded-2xl shadow-xl p-8">
               <h2 className="text-2xl font-semibold mb-6 flex items-center gap-2">
                 <Cloud className="h-6 w-6 text-blue-600" />
                 Your AI Carbon Impact
