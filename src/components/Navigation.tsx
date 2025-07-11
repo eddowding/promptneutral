@@ -19,7 +19,7 @@ export const Navigation: React.FC = () => {
             <img 
               src="/430xlogo.png" 
               alt="430xAI Logo" 
-              className="w-10 h-10"
+              className="w-12 h-12"
             />
             <div className="flex flex-col">
               <span className="text-xl font-bold text-primary">430xAI</span>
