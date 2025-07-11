@@ -394,9 +394,6 @@ export function HomePageV2() {
                   <p className="mt-3 text-sm text-gray-600">
                     Choose from verified carbon offset projects and make a difference today
                   </p>
-                  <p className="mt-2 text-xs text-gray-500">
-                    💡 Tip: Offset by 430% ({formatCurrencyFromEUR(Math.round(results.offsetCost * 100) / 100 * 4.3)}) to match atmospheric CO₂ levels
-                  </p>
                 </div>
 
                 {userGuess && parseFloat(userGuess) > results.offsetCost && (
@@ -558,15 +555,16 @@ export function HomePageV2() {
                       <div>
                         <h4 className="font-semibold mb-2">🌍 We're at 430ppm CO₂</h4>
                         <p className="text-sm">
-                          Earth's atmosphere now contains 430 parts per million of CO₂ - the highest in human history. 
-                          Pre-industrial levels were 280ppm. That's why we recommend offsetting by 430%.
+                          Earth's atmosphere hit 430ppm CO₂ - a fun coincidence that became our rallying cry! 
+                          We're at an inflection point with both AI and climate. While AI saves you massive costs, 
+                          let's reinvest 10-100x our footprint into regenerative environmental projects.
                         </p>
                       </div>
                       
                       <div>
                         <h4 className="font-semibold mb-2">💡 Less than you think, more than enough</h4>
                         <p className="text-sm">
-                          Most people overestimate offset costs by 100x-1000x. Even at 430x offset, 
+                          Most people overestimate offset costs by 500x-10,000x. Even at 430x offset, 
                           it's typically just ~10% of your AI spend - far less than most initial guesses, 
                           yet enough to make a massive climate impact.
                         </p>
@@ -583,35 +581,6 @@ export function HomePageV2() {
                   )}
                 </div>
 
-                {/* Visual Progress Indicator - Separate div for testing */}
-                <div className="mt-8 p-6 bg-gray-50 rounded-lg">
-                  <h4 className="text-sm font-semibold text-gray-700 mb-3">Offset Impact Scale</h4>
-                  <div className="relative">
-                    <div className="h-8 bg-gray-200 rounded-full overflow-hidden">
-                      <div className="h-full bg-gradient-to-r from-green-300 via-yellow-400 to-red-500"></div>
-                    </div>
-                    <div className="absolute inset-0 flex items-center justify-between px-2">
-                      <div className="flex flex-col items-center">
-                        <div className="w-0.5 h-10 bg-gray-600"></div>
-                        <span className="text-xs font-medium mt-1">1x</span>
-                        <span className="text-xs text-gray-500">Neutral</span>
-                      </div>
-                      <div className="flex flex-col items-center">
-                        <div className="w-0.5 h-10 bg-gray-600"></div>
-                        <span className="text-xs font-medium mt-1">43x</span>
-                        <span className="text-xs text-gray-500">~1%</span>
-                      </div>
-                      <div className="flex flex-col items-center">
-                        <div className="w-0.5 h-10 bg-gray-600"></div>
-                        <span className="text-xs font-medium mt-1">430x</span>
-                        <span className="text-xs text-gray-500">~10%</span>
-                      </div>
-                    </div>
-                  </div>
-                  <p className="text-xs text-gray-600 mt-3 text-center">
-                    430x = 430ppm atmospheric CO₂ = ~10% of AI savings for maximum impact
-                  </p>
-                </div>
               </div>
             </div>
           )}

@@ -313,20 +313,20 @@ export function ResearchPage() {
                   
                   <div className="space-y-4">
                     <div>
-                      <h5 className="font-semibold text-gray-900">Atmospheric Reality: 430ppm CO₂</h5>
+                      <h5 className="font-semibold text-gray-900">The 430 Coincidence</h5>
                       <p className="text-gray-700 text-sm mt-1">
-                        As of 2025, Earth's atmosphere contains 430 parts per million (ppm) of CO₂. 
-                        This is a 54% increase from pre-industrial levels of 280ppm. We recommend offsetting 
-                        by 430% to symbolically match this atmospheric concentration.
+                        Earth hit 430ppm CO₂ just as AI is transforming business. It's a memorable number that 
+                        became our rallying cry! We're at a unique moment where AI creates massive savings while 
+                        climate needs massive action. 430x is our playful way to connect these inflection points.
                       </p>
                     </div>
                     
                     <div>
-                      <h5 className="font-semibold text-gray-900">The 10% Reinvestment Principle</h5>
+                      <h5 className="font-semibold text-gray-900">The Economics Make Sense</h5>
                       <p className="text-gray-700 text-sm mt-1">
-                        AI typically reduces operational costs by 50-90%. Our 430x offset represents approximately 
-                        10% of your AI spending. This means you can achieve massive climate impact while still 
-                        realizing 80-90% of your AI cost savings.
+                        People typically overestimate carbon offset costs by 500x-10,000x! Even at 430x, you're 
+                        investing just ~10% of your AI spend. Since AI often cuts costs by 50-90%, you keep massive 
+                        savings while funding regenerative environmental projects at scale.
                       </p>
                     </div>
                     
