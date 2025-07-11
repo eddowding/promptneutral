@@ -126,27 +126,27 @@ export function HomePageV2() {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-blue-50">
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="text-5xl font-bold text-gray-900 mb-4">
               What's Your AI Carbon Score?
             </h1>
-            <p className="text-xl text-gray-600">
+            <p className="text-xl text-neutral">
               Calculate the environmental impact of your AI usage
             </p>
           </div>
 
           <form onSubmit={calculateCarbon} className="bg-white rounded-2xl shadow-xl p-8 mb-8">
             <h2 className="text-2xl font-semibold mb-6 flex items-center gap-2">
-              <Calculator className="h-6 w-6 text-green-600" />
+              <Calculator className="h-6 w-6 text-primary-600" />
               Enter Your Monthly AI Spending ($)
             </h2>
 
             <div className="grid md:grid-cols-2 gap-6 mb-8">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                <label className="block text-sm font-medium text-neutral-dark mb-2 flex items-center gap-2">
                   <img 
                     src="https://www.google.com/s2/favicons?domain=openai.com&sz=32" 
                     alt="OpenAI" 
@@ -155,19 +155,19 @@ export function HomePageV2() {
                   OpenAI (GPT-4, DALL-E, etc.)
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-light">$</span>
                   <input
                     type="text"
                     value={spending.openai ? formatNumber(spending.openai) : ''}
                     onChange={(e) => handleInputChange('openai', e.target.value)}
-                    className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="0"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                <label className="block text-sm font-medium text-neutral-dark mb-2 flex items-center gap-2">
                   <img 
                     src="https://www.google.com/s2/favicons?domain=anthropic.com&sz=32" 
                     alt="Anthropic" 
@@ -176,19 +176,19 @@ export function HomePageV2() {
                   Anthropic (Claude)
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-light">$</span>
                   <input
                     type="text"
                     value={spending.anthropic ? formatNumber(spending.anthropic) : ''}
                     onChange={(e) => handleInputChange('anthropic', e.target.value)}
-                    className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="0"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                <label className="block text-sm font-medium text-neutral-dark mb-2 flex items-center gap-2">
                   <img 
                     src="https://www.google.com/s2/favicons?domain=google.com&sz=32" 
                     alt="Google" 
@@ -197,48 +197,48 @@ export function HomePageV2() {
                   Google (Gemini, Bard)
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-light">$</span>
                   <input
                     type="text"
                     value={spending.google ? formatNumber(spending.google) : ''}
                     onChange={(e) => handleInputChange('google', e.target.value)}
-                    className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="0"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                  <div className="w-4 h-4 bg-gray-300 rounded flex items-center justify-center text-xs font-bold text-gray-600">
+                <label className="block text-sm font-medium text-neutral-dark mb-2 flex items-center gap-2">
+                  <div className="w-4 h-4 bg-gray-300 rounded flex items-center justify-center text-xs font-bold text-neutral">
                     AI
                   </div>
                   Other AI Services
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-light">$</span>
                   <input
                     type="text"
                     value={spending.other ? formatNumber(spending.other) : ''}
                     onChange={(e) => handleInputChange('other', e.target.value)}
-                    className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="w-full pl-8 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="0"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="mt-8 p-6 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl border border-purple-200">
+            <div className="mt-8 p-6 bg-gradient-to-r from-accent-mauve/10 to-accent-mauve/5 rounded-xl border border-accent-mauve/30">
               <div className="text-center mb-4">
                 <label className="block text-lg font-semibold text-gray-800 mb-2">
                   🤔 Before we calculate...
                 </label>
-                <p className="text-gray-700">
+                <p className="text-neutral-dark">
                   What do you think it would cost to offset your AI carbon footprint?
                 </p>
               </div>
               <div className="relative max-w-xs mx-auto">
-                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg font-semibold">$</span>
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-light text-lg font-semibold">$</span>
                 <input
                   type="text"
                   value={userGuess}
@@ -250,12 +250,12 @@ export function HomePageV2() {
                     }
                   }}
                   onKeyDown={handleIntegerInput}
-                  className="w-full pl-8 pr-4 py-3 text-lg border-2 border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-center font-semibold"
+                  className="w-full pl-8 pr-4 py-3 text-lg border-2 border-accent-mauve/40 rounded-lg focus:ring-2 focus:ring-accent-mauve focus:border-transparent text-center font-semibold"
                   placeholder="Take a guess..."
                   inputMode="numeric"
                 />
               </div>
-              <p className="text-sm text-gray-600 mt-3 text-center">
+              <p className="text-sm text-neutral mt-3 text-center">
                 We'll show you how your guess compares to the actual cost
               </p>
             </div>
@@ -263,7 +263,7 @@ export function HomePageV2() {
             <button
               type="submit"
               disabled={!userGuess}
-              className="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center gap-2 mt-6 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="w-full bg-primary-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-primary-700 transition-colors flex items-center justify-center gap-2 mt-6 disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
               <Zap className="h-5 w-5" />
               Calculate My AI Carbon Impact
@@ -292,21 +292,21 @@ export function HomePageV2() {
               )}
 
               <div className="grid md:grid-cols-2 gap-6 mb-6">
-                <div className="bg-green-50 rounded-lg p-8 text-center">
+                <div className="bg-primary-50 rounded-lg p-8 text-center">
                   <div className="text-5xl font-bold text-gray-900 mb-2">
                     {formatCurrencyFromEUR(results.offsetCost)}
                   </div>
-                  <div className="text-lg text-gray-600">Carbon offset cost</div>
+                  <div className="text-lg text-neutral">Carbon offset cost</div>
                 </div>
 
                 <div className="bg-gray-50 rounded-lg p-8 text-center">
                   <div className="flex items-center justify-center gap-2 mb-2">
-                    <Cloud className="h-8 w-8 text-gray-600" />
+                    <Cloud className="h-8 w-8 text-neutral" />
                     <div className="text-5xl font-bold text-gray-900">
                       {results.totalCO2Tonnes.toFixed(2)}
                     </div>
                   </div>
-                  <div className="text-lg text-gray-600">Tonnes of CO₂</div>
+                  <div className="text-lg text-neutral">Tonnes of CO₂</div>
                 </div>
               </div>
 
@@ -318,7 +318,7 @@ export function HomePageV2() {
                       {formatNumber(results.steakEquivalent)}
                     </div>
                   </div>
-                  <div className="text-xs text-gray-600">Steak dinners</div>
+                  <div className="text-xs text-neutral">Steak dinners</div>
                 </div>
 
                 <div className="bg-orange-50 rounded-lg p-4 text-center">
@@ -328,7 +328,7 @@ export function HomePageV2() {
                       {formatNumber(results.drivingMiles)}
                     </div>
                   </div>
-                  <div className="text-xs text-gray-600">Miles driven</div>
+                  <div className="text-xs text-neutral">Miles driven</div>
                 </div>
 
                 <div className="bg-blue-50 rounded-lg p-4 text-center">
@@ -338,7 +338,7 @@ export function HomePageV2() {
                       {results.flightsLondonNY}
                     </div>
                   </div>
-                  <div className="text-xs text-gray-600">Flights LDN→NYC</div>
+                  <div className="text-xs text-neutral">Flights LDN→NYC</div>
                 </div>
 
                 <div className="bg-emerald-50 rounded-lg p-4 text-center">
@@ -348,7 +348,7 @@ export function HomePageV2() {
                       {results.treeYears.toLocaleString()}
                     </div>
                   </div>
-                  <div className="text-xs text-gray-600">Tree-years</div>
+                  <div className="text-xs text-neutral">Tree-years</div>
                 </div>
 
                 <div className="bg-purple-50 rounded-lg p-4 text-center">
@@ -358,7 +358,7 @@ export function HomePageV2() {
                       {Math.round(results.totalCO2Tonnes * 1000 / 2.3).toLocaleString()}
                     </div>
                   </div>
-                  <div className="text-xs text-gray-600">Days of home energy</div>
+                  <div className="text-xs text-neutral">Days of home energy</div>
                 </div>
               </div>
 
@@ -368,7 +368,7 @@ export function HomePageV2() {
                   href="/research"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-gray-700 hover:text-gray-900 font-medium"
+                  className="inline-flex items-center gap-2 text-neutral-dark hover:text-gray-900 font-medium"
                 >
                   <ExternalLink className="h-4 w-4" />
                   Show assumptions and methodology
@@ -386,12 +386,12 @@ export function HomePageV2() {
                         aiProviders: spending
                       } 
                     })}
-                    className="bg-green-600 text-white py-4 px-8 rounded-lg font-semibold hover:bg-green-700 transition-colors inline-flex items-center gap-2 text-lg"
+                    className="bg-primary-600 text-white py-4 px-8 rounded-lg font-semibold hover:bg-primary-700 transition-colors inline-flex items-center gap-2 text-lg"
                   >
                     <ShoppingCart className="h-6 w-6" />
                     Offset My Carbon Impact for {formatCurrencyFromEUR(results.offsetCost)}
                   </button>
-                  <p className="mt-3 text-sm text-gray-600">
+                  <p className="mt-3 text-sm text-neutral">
                     Choose from verified carbon offset projects and make a difference today
                   </p>
                 </div>
@@ -403,10 +403,10 @@ export function HomePageV2() {
                         <span className="text-2xl">🦸</span>
                         Make the Hero Move!
                       </h3>
-                      <p className="text-gray-700 mb-4">
+                      <p className="text-neutral-dark mb-4">
                         You guessed ${parseFloat(userGuess).toFixed(2)} - great news, even at 430x it's still less!
                       </p>
-                      <p className="text-sm text-gray-600 mb-6">
+                      <p className="text-sm text-neutral mb-6">
                         {parseFloat(userGuess) > convertFromEUR(results.offsetCost * 430) 
                           ? `Even our maximum 430x offset (${formatCurrencyFromEUR(results.offsetCost * 430)}) is less than your guess!`
                           : 'Choose your impact level or enter a custom amount:'
@@ -423,13 +423,13 @@ export function HomePageV2() {
                           className="bg-white border-2 border-yellow-300 rounded-lg p-3 hover:bg-yellow-50 transition-colors"
                         >
                           <div className="text-2xl font-bold text-yellow-700">4.3x</div>
-                          <div className="text-xs text-gray-600">{formatCurrencyFromEUR(Math.round(results.offsetCost * 100) / 100 * 4.3)}</div>
+                          <div className="text-xs text-neutral">{formatCurrencyFromEUR(Math.round(results.offsetCost * 100) / 100 * 4.3)}</div>
                           {(() => {
                             const totalAISpending = Object.values(spending).reduce((sum, amount) => sum + amount, 0);
                             if (totalAISpending > 0) {
                               const offsetAmount = convertFromEUR(Math.round(results.offsetCost * 100) / 100 * 4.3);
                               const percentage = (offsetAmount / totalAISpending * 100).toFixed(1);
-                              return <div className="text-xs text-gray-500 mt-1">{percentage}% of AI spend</div>;
+                              return <div className="text-xs text-neutral-light mt-1">{percentage}% of AI spend</div>;
                             }
                             return null;
                           })()}
@@ -443,13 +443,13 @@ export function HomePageV2() {
                           className="bg-white border-2 border-yellow-300 rounded-lg p-3 hover:bg-yellow-50 transition-colors"
                         >
                           <div className="text-2xl font-bold text-yellow-700">43x</div>
-                          <div className="text-xs text-gray-600">{formatCurrencyFromEUR(Math.round(results.offsetCost * 100) / 100 * 43)}</div>
+                          <div className="text-xs text-neutral">{formatCurrencyFromEUR(Math.round(results.offsetCost * 100) / 100 * 43)}</div>
                           {(() => {
                             const totalAISpending = Object.values(spending).reduce((sum, amount) => sum + amount, 0);
                             if (totalAISpending > 0) {
                               const offsetAmount = convertFromEUR(Math.round(results.offsetCost * 100) / 100 * 43);
                               const percentage = (offsetAmount / totalAISpending * 100).toFixed(1);
-                              return <div className="text-xs text-gray-500 mt-1">{percentage}% of AI spend</div>;
+                              return <div className="text-xs text-neutral-light mt-1">{percentage}% of AI spend</div>;
                             }
                             return null;
                           })()}
@@ -466,13 +466,13 @@ export function HomePageV2() {
                             430ppm CO₂
                           </div>
                           <div className="text-2xl font-bold text-yellow-700">430x</div>
-                          <div className="text-xs text-gray-600">{formatCurrencyFromEUR(Math.round(results.offsetCost * 100) / 100 * 430)}</div>
+                          <div className="text-xs text-neutral">{formatCurrencyFromEUR(Math.round(results.offsetCost * 100) / 100 * 430)}</div>
                           {(() => {
                             const totalAISpending = Object.values(spending).reduce((sum, amount) => sum + amount, 0);
                             if (totalAISpending > 0) {
                               const offsetAmount = convertFromEUR(Math.round(results.offsetCost * 100) / 100 * 430);
                               const percentage = (offsetAmount / totalAISpending * 100).toFixed(1);
-                              return <div className="text-xs text-gray-500 mt-1">{percentage}% of AI spend</div>;
+                              return <div className="text-xs text-neutral-light mt-1">{percentage}% of AI spend</div>;
                             }
                             return null;
                           })()}
@@ -483,7 +483,7 @@ export function HomePageV2() {
                         <div className="flex items-center justify-center gap-3 mb-3">
                           <span className="text-lg font-semibold">Or offset for</span>
                           <div className="relative bg-white border-2 border-yellow-300 rounded-lg p-3">
-                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-bold text-xl">{currency.symbol}</span>
+                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-light font-bold text-xl">{currency.symbol}</span>
                             <input
                               type="text"
                               value={heroAmount !== '' ? heroAmount : userGuess}
@@ -505,7 +505,7 @@ export function HomePageV2() {
                             <div className="text-center mt-2">
                               <div className="text-3xl font-bold text-yellow-700">{multiplier}x</div>
                               {percentage && (
-                                <div className="text-sm text-gray-600 mt-1">{percentage}% of AI spend</div>
+                                <div className="text-sm text-neutral mt-1">{percentage}% of AI spend</div>
                               )}
                             </div>
                           );
@@ -544,14 +544,14 @@ export function HomePageV2() {
                       Why 430x?
                     </h3>
                     {showWhy430x ? (
-                      <ChevronUp className="h-5 w-5 text-gray-600" />
+                      <ChevronUp className="h-5 w-5 text-neutral" />
                     ) : (
-                      <ChevronDown className="h-5 w-5 text-gray-600" />
+                      <ChevronDown className="h-5 w-5 text-neutral" />
                     )}
                   </button>
                   
                   {showWhy430x && (
-                    <div className="mt-4 space-y-4 text-gray-700">
+                    <div className="mt-4 space-y-4 text-neutral-dark">
                       <div>
                         <h4 className="font-semibold mb-2">🌍 We're at 430ppm CO₂</h4>
                         <p className="text-sm">

@@ -98,7 +98,7 @@ export function CheckoutPage() {
 
   if (showThankYou) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 to-blue-50 flex items-center justify-center px-4">
         <div className="max-w-lg w-full">
           <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
             <div className="mb-6">
@@ -120,7 +120,7 @@ export function CheckoutPage() {
                 <p>
                   We're putting the finishing touches on our payment system (making sure it's as 
                   eco-friendly as possible, of course 🌱). We'll email you at{' '}
-                  <span className="font-medium text-green-600">{email}</span> as soon as we're live!
+                  <span className="font-medium text-primary-600">{email}</span> as soon as we're live!
                 </p>
                 <div className="bg-blue-50 rounded-lg p-4 mt-6">
                   <p className="text-sm">
@@ -139,7 +139,7 @@ export function CheckoutPage() {
             <div className="mt-8 space-y-3">
               <button
                 onClick={() => navigate('/')}
-                className="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors"
+                className="w-full bg-primary-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-primary-700 transition-colors"
               >
                 Back to Calculator
               </button>
@@ -154,7 +154,7 @@ export function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-blue-50">
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-lg mx-auto">
           <button
@@ -237,7 +237,7 @@ export function CheckoutPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     placeholder="your@email.com"
                   />
                 </div>
@@ -252,7 +252,7 @@ export function CheckoutPage() {
                     type="checkbox"
                     checked={isMonthly}
                     onChange={(e) => setIsMonthly(e.target.checked)}
-                    className="mt-1 h-5 w-5 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                    className="mt-1 h-5 w-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                   />
                   <div className="flex-1">
                     <p className="font-medium text-gray-900">
@@ -268,7 +268,7 @@ export function CheckoutPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-primary-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? 'Processing...' : isMonthly ? 'Start Monthly Subscription' : 'Continue Purchase'}
               </button>

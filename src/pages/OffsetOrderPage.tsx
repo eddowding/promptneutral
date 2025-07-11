@@ -23,7 +23,7 @@ const projects: Project[] = [
     description: 'Afforestation, Reforestation Revegetation (ARR)',
     location: 'Pakistan',
     pricePerTonne: 40,
-    icon: <TreePine className="h-6 w-6 text-green-600" />,
+    icon: <TreePine className="h-6 w-6 text-primary-600" />,
     type: 'Afforestation',
     category: 'nature-based',
     tags: ['High Co-benefits', 'Long Permanence', 'Biodiversity']
@@ -58,7 +58,7 @@ const projects: Project[] = [
     description: 'Feed Additives in cattle to reduce methane emissions',
     location: 'Switzerland',
     pricePerTonne: 130,
-    icon: <Leaf className="h-6 w-6 text-green-500" />,
+    icon: <Leaf className="h-6 w-6 text-primary-500" />,
     type: 'Agriculture',
     category: 'nature-based',
     tags: ['High Impact', 'Innovation', 'Sustainable Farming']
@@ -161,7 +161,7 @@ export function OffsetOrderPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-blue-50">
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
 
@@ -204,7 +204,7 @@ export function OffsetOrderPage() {
 
             {/* Default project selection */}
             {selectedProject ? (
-              <div className="mb-6 p-6 bg-green-50 rounded-lg border-2 border-green-200">
+              <div className="mb-6 p-6 bg-primary-50 rounded-lg border-2 border-primary-200">
                 <h3 className="font-semibold text-lg mb-3 text-gray-900">Recommended project</h3>
                 {selectedProjectData && (
                   <div className="flex items-start gap-3">
@@ -234,7 +234,7 @@ export function OffsetOrderPage() {
                 )}
                 <button
                   onClick={() => setSelectedProject('')}
-                  className="mt-4 px-4 py-2 bg-white border border-green-600 text-green-700 rounded-lg hover:bg-green-50 transition-colors font-medium"
+                  className="mt-4 px-4 py-2 bg-white border border-primary-600 text-primary-700 rounded-lg hover:bg-primary-50 transition-colors font-medium"
                 >
                   Choose a different project →
                 </button>
@@ -260,7 +260,7 @@ export function OffsetOrderPage() {
                   onClick={() => setActiveCategory('all')}
                   className={`px-4 py-2 rounded-full font-medium transition-colors ${
                     activeCategory === 'all'
-                      ? 'bg-green-600 text-white'
+                      ? 'bg-primary-600 text-white'
                       : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                   }`}
                 >
@@ -270,7 +270,7 @@ export function OffsetOrderPage() {
                   onClick={() => setActiveCategory('nature-based')}
                   className={`px-4 py-2 rounded-full font-medium transition-colors ${
                     activeCategory === 'nature-based'
-                      ? 'bg-green-600 text-white'
+                      ? 'bg-primary-600 text-white'
                       : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                   }`}
                 >
@@ -281,7 +281,7 @@ export function OffsetOrderPage() {
                   onClick={() => setActiveCategory('engineered')}
                   className={`px-4 py-2 rounded-full font-medium transition-colors ${
                     activeCategory === 'engineered'
-                      ? 'bg-green-600 text-white'
+                      ? 'bg-primary-600 text-white'
                       : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                   }`}
                 >
@@ -298,7 +298,7 @@ export function OffsetOrderPage() {
                   onClick={() => setSelectedProject(project.id)}
                   className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
                     selectedProject === project.id
-                      ? 'border-green-500 bg-green-50'
+                      ? 'border-primary-500 bg-primary-50'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
@@ -312,7 +312,7 @@ export function OffsetOrderPage() {
                           <h4 className="font-semibold flex items-center gap-2">
                             {project.name}
                             {selectedProject === project.id && (
-                              <Check className="h-4 w-4 text-green-600" />
+                              <Check className="h-4 w-4 text-primary-600" />
                             )}
                           </h4>
                           <p className="text-sm text-gray-600 mt-0.5">{project.description}</p>
@@ -328,7 +328,7 @@ export function OffsetOrderPage() {
                                 className={`text-xs px-2 py-0.5 rounded-full ${
                                   tag.includes('Permanent') ? 'bg-purple-100 text-purple-700' :
                                   tag.includes('High') ? 'bg-orange-100 text-orange-700' :
-                                  tag.includes('Community') || tag.includes('Biodiversity') ? 'bg-green-100 text-green-700' :
+                                  tag.includes('Community') || tag.includes('Biodiversity') ? 'bg-primary-100 text-primary-700' :
                                   'bg-blue-100 text-blue-700'
                                 }`}
                               >
@@ -393,7 +393,7 @@ export function OffsetOrderPage() {
                 </div>
                 <button
                   onClick={handlePurchase}
-                  className="bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center gap-2"
+                  className="bg-primary-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-primary-700 transition-colors flex items-center gap-2"
                 >
                   <ShoppingCart className="h-5 w-5" />
                   Checkout

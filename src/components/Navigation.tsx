@@ -16,8 +16,8 @@ export const Navigation: React.FC = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <Leaf className="w-6 h-6 text-green-600" />
+            <div className="p-2 bg-primary-100 rounded-lg">
+              <Leaf className="w-6 h-6 text-primary-600" />
             </div>
             <span className="text-xl font-bold text-gray-900">430xAI</span>
           </Link>
@@ -29,7 +29,7 @@ export const Navigation: React.FC = () => {
                 to="/admin/feedback" 
                 className={`flex items-center space-x-1 text-sm font-medium transition-colors ${
                   location.pathname === '/admin/feedback' 
-                    ? 'text-green-600' 
+                    ? 'text-primary-600' 
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
@@ -69,7 +69,7 @@ export const Navigation: React.FC = () => {
                 </Link>
                 <Link 
                   to="/auth"
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+                  className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium"
                 >
                   Get Started
                 </Link>
