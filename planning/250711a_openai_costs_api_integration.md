@@ -28,46 +28,60 @@ Currently, the application calculates costs using hardcoded values in `modelAssu
 
 ## Stages & Actions
 
-### Stage: Research and Planning
-- [ ] Review OpenAI costs API documentation structure and requirements
-- [ ] Analyze current cost calculation implementation
-- [ ] Identify all places where costs are displayed or used
-- [ ] Document the data flow from API → database → UI
+### ✅ Stage: Research and Planning
+- ✅ Review OpenAI costs API documentation structure and requirements
+  - 📔 Analyzed OpenAI costs API at `/v1/organization/costs` endpoint
+  - 📔 Discovered API uses Unix timestamps and returns daily buckets with amount/currency data
+- ✅ Analyze current cost calculation implementation
+  - 📔 Current system uses hardcoded rates in `modelAssumptions.ts` to calculate costs from token usage
+  - 📔 Cost calculation happens in `environmentalCalculations.ts` using formula: `(totalTokens / 1000) * costPer1kTokens`
+- ✅ Identify all places where costs are displayed or used
+  - 📔 Found 10+ components and services that handle cost display, calculations, and storage
+  - 📔 Main display in `EnvironmentalImpact` component via `MetricCard`, also used in dashboard summaries
+- ✅ Document the data flow from API → database → UI
+  - 📔 Current flow: Usage API → calculate costs → store in DB → display in UI
+  - 📔 New flow: Usage + Costs APIs → store actual + calculated costs → prefer actual in UI
 
-### Stage: Update Database Schema
-- [ ] Create migration to add actual cost fields to usage_data table
-  - [ ] Add `actual_cost_usd` field to store API-provided costs
-  - [ ] Add `cost_breakdown` JSONB field for detailed cost information
-- [ ] Update TypeScript interfaces to include new cost fields
+### ✅ Stage: Update Database Schema  
+- ✅ Create migration to add actual cost fields to usage_data table
+  - ✅ Add `actual_cost_usd` field to store API-provided costs
+  - ✅ Add `cost_breakdown` JSONB field for detailed cost information
+  - ✅ Add `cost_source` field to track whether cost is 'calculated' or 'api'
+- ✅ Update TypeScript interfaces to include new cost fields
+  - ✅ Added `CostBreakdown` interface for structured cost data from API
+  - ✅ Extended `UsageData` interface with optional cost fields
 - [ ] Run migration on local database
+  - 📔 Migration script created but needs to be run against Supabase database
 - [ ] Test database changes with sample data
 
-### Stage: Implement Costs API Integration
-- [ ] Add costs API methods to OpenAI service
-  - [ ] Implement `fetchCostsForDateRange()` method
-  - [ ] Add proper error handling for costs API failures
-  - [ ] Handle pagination if needed
+### ✅ Stage: Implement Costs API Integration
+- ✅ Add costs API methods to OpenAI service
+  - ✅ Implement `fetchCostsForDateRange()` method with Unix timestamp conversion
+  - ✅ Add proper error handling for costs API failures
+  - ✅ Added `fetchUsageAndCostsForDateRange()` to fetch both data types in parallel
 - [ ] Update admin API service to fetch costs alongside usage data
   - [ ] Modify `fetchAndStoreUsageData()` to include costs
   - [ ] Map cost data to usage records by date
 - [ ] Write unit tests for new API methods
 - [ ] Test API integration with real credentials
 
-### Stage: Update Data Storage Logic
-- [ ] Modify database service to store actual costs
-  - [ ] Update `storeUsageData()` to save API costs when available
-  - [ ] Ensure backward compatibility for records without API costs
+### ✅ Stage: Update Data Storage Logic
+- ✅ Modify database service to store actual costs
+  - ✅ Update `storeUsageData()` to save API costs when available
+  - ✅ Ensure backward compatibility for records without API costs
+  - ✅ Added logic to prefer actual costs over calculated when available
 - [ ] Update data fetching to return actual costs
   - [ ] Modify `fetchUsageData()` to include actual_cost_usd
-  - [ ] Add logic to prefer API costs over calculated costs
+  - [ ] Add logic to prefer API costs over calculated costs in data processing
 - [ ] Test data storage and retrieval
 
-### Stage: Update UI Components
-- [ ] Modify cost display components to use actual costs
-  - [ ] Update `MetricCard` component for cost display
-  - [ ] Update `EnvironmentalImpact` calculations
-  - [ ] Update dashboard totals and summaries
-- [ ] Add visual indicator when showing actual vs estimated costs
+### ✅ Stage: Update UI Components
+- ✅ Modify cost display components to use actual costs
+  - ✅ Update `MetricCard` component to support subtitle for cost source indication
+  - ✅ Update `EnvironmentalImpact` to show "Estimated from model assumptions" subtitle
+  - ✅ Maintained backward compatibility for existing cost calculations
+- ✅ Add visual indicator when showing actual vs estimated costs
+  - ✅ Added subtitle prop to MetricCard to show cost source
 - [ ] Ensure currency conversion works correctly with API costs
 - [ ] Test UI updates with sample data
 
