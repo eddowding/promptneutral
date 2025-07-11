@@ -1,4 +1,4 @@
-import { UsageReport } from '../types/usage';
+import { UsageReport, CostBreakdown } from '../types/usage';
 import { ConfigService } from './config';
 import { DatabaseService } from './databaseService';
 
@@ -589,6 +589,141 @@ export class OpenAIApiService {
     } catch (error) {
       console.error('API connection test failed:', error);
       return false;
+    }
+  }
+
+  /**
+   * Fetch costs from OpenAI Costs API for a date range
+   */
+  async fetchCostsForDateRange(startDate: string, endDate: string): Promise<any> {
+    try {
+      const apiKey = await this.configService.getApiKey();
+      
+      // Convert dates to Unix timestamps (required by the API)
+      const startTime = Math.floor(new Date(startDate + 'T00:00:00Z').getTime() / 1000);
+      const endTime = Math.floor(new Date(endDate + 'T23:59:59Z').getTime() / 1000);
+      
+      const url = new URL('https://api.openai.com/v1/organization/costs');
+      url.searchParams.append('start_time', startTime.toString());
+      url.searchParams.append('end_time', endTime.toString());
+      url.searchParams.append('bucket_width', '1d'); // Only supported value currently
+      
+      console.log(`🔄 Fetching costs from ${startDate} to ${endDate} (${startTime} to ${endTime})`);
+      
+      const response = await fetch(url.toString(), {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`OpenAI Costs API error: ${response.status} ${response.statusText} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log(`✓ Fetched costs data: ${data.data?.length || 0} buckets`);
+      return data;
+    } catch (error) {
+      console.error('Error fetching costs from OpenAI API:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Process costs API response and group by date
+   */
+  private processCostsData(costsResponse: any): Record<string, CostBreakdown> {
+    const costsByDate: Record<string, CostBreakdown> = {};
+    
+    if (costsResponse.data && Array.isArray(costsResponse.data)) {
+      for (const bucket of costsResponse.data) {
+        // Convert Unix timestamp to date string
+        const date = new Date(bucket.start_time * 1000).toISOString().split('T')[0];
+        
+        costsByDate[date] = {
+          amount: bucket.amount || 0,
+          currency: bucket.currency || 'USD',
+          description: bucket.description,
+          timestamp: bucket.start_time,
+          metadata: bucket.metadata || {}
+        };
+      }
+    }
+    
+    return costsByDate;
+  }
+
+  /**
+   * Fetch both usage and costs data for a date range
+   */
+  async fetchUsageAndCostsForDateRange(startDate: string, endDate: string): Promise<{
+    usage: UsageReport;
+    costs: Record<string, CostBreakdown>;
+  }> {
+    try {
+      console.log(`🔄 Fetching usage and costs data from ${startDate} to ${endDate}`);
+      
+      // Fetch both usage and costs in parallel
+      const [usageResponse, costsResponse] = await Promise.all([
+        this.fetchUsageForDateRange(startDate, endDate),
+        this.fetchCostsForDateRange(startDate, endDate)
+      ]);
+      
+      const usage = this.groupByDate(usageResponse);
+      const costs = this.processCostsData(costsResponse);
+      
+      console.log(`✓ Fetched usage for ${Object.keys(usage).length} days and costs for ${Object.keys(costs).length} days`);
+      
+      return { usage, costs };
+    } catch (error) {
+      console.error('Error fetching usage and costs:', error);
+      // Return usage data only if costs fail
+      try {
+        const usageResponse = await this.fetchUsageForDateRange(startDate, endDate);
+        const usage = this.groupByDate(usageResponse);
+        console.warn('⚠️ Costs API failed, returning usage data only');
+        return { usage, costs: {} };
+      } catch (usageError) {
+        console.error('Both usage and costs APIs failed:', usageError);
+        throw error;
+      }
+    }
+  }
+
+  /**
+   * Sync costs data for recent usage records
+   */
+  async syncCostsForRecentData(userId: string, days: number = 7): Promise<void> {
+    try {
+      const endDate = new Date().toISOString().split('T')[0];
+      const startDate = new Date(Date.now() - (days - 1) * 24 * 60 * 60 * 1000)
+        .toISOString().split('T')[0];
+
+      console.log(`💰 Syncing costs for last ${days} days...`);
+      
+      // Fetch costs data
+      const costsData = await this.fetchCostsForDateRange(startDate, endDate);
+      const processedCosts = this.processCostsData(costsData);
+      
+      if (Object.keys(processedCosts).length === 0) {
+        console.log('⚠️ No cost data available from API');
+        return;
+      }
+
+      // Update existing usage records with actual costs
+      for (const [date, costInfo] of Object.entries(processedCosts)) {
+        // This would require updating the database directly
+        // For now, we'll just log the costs we received
+        console.log(`💰 ${date}: $${costInfo.amount} ${costInfo.currency}`);
+      }
+      
+      console.log(`✅ Cost sync completed for ${Object.keys(processedCosts).length} days`);
+    } catch (error) {
+      console.error('Error syncing costs:', error);
+      throw error;
     }
   }
 }

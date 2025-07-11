@@ -40,9 +40,21 @@ export interface UsageData {
   project_id?: string;
   api_key_id?: string;
   batch?: string;
-  cost: number;
+  cost: number; // Calculated cost (for backward compatibility)
+  actual_cost_usd?: number; // Actual cost from OpenAI Costs API in USD
+  cost_breakdown?: CostBreakdown; // Detailed cost breakdown from API
+  cost_source?: 'calculated' | 'api'; // Source of cost data
   co2_grams: number;
   created_at: string;
+}
+
+// Cost breakdown structure from OpenAI Costs API
+export interface CostBreakdown {
+  amount: number;
+  currency: string;
+  description?: string;
+  timestamp?: number;
+  metadata?: Record<string, any>;
 }
 
 // Legacy interfaces for backward compatibility

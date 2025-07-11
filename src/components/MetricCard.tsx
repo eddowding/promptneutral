@@ -10,6 +10,7 @@ interface MetricCardProps {
     isPositive: boolean;
   };
   formatter?: (value: number) => string;
+  subtitle?: string;
 }
 
 export const MetricCard: React.FC<MetricCardProps> = ({
@@ -18,6 +19,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   icon,
   trend,
   formatter = formatNumber,
+  subtitle,
 }) => {
   return (
     <div className="metric-card">
@@ -25,6 +27,9 @@ export const MetricCard: React.FC<MetricCardProps> = ({
         <div>
           <p className="metric-label">{title}</p>
           <p className="metric-value">{formatter(value)}</p>
+          {subtitle && (
+            <p className="text-xs text-gray-500 mt-1">{subtitle}</p>
+          )}
           {trend && (
             <div className={`flex items-center mt-2 text-sm ${
               trend.isPositive ? 'text-green-600' : 'text-red-600'

@@ -19,6 +19,7 @@ export const EnvironmentalImpact: React.FC<EnvironmentalImpactProps> = ({ impact
           value={impact.totalCost}
           icon={<DollarSign />}
           formatter={formatCurrency}
+          subtitle="Estimated from model assumptions"
         />
         <MetricCard
           title="Energy Usage"

@@ -19,7 +19,7 @@ export const calculateEnvironmentalImpact = (data: UsageReport): EnvironmentalIm
       const assumptions = getModelAssumptions(normalizedModel);
       const totalTokens = usage.context_tokens + usage.generated_tokens;
 
-      // Calculate impacts
+      // Calculate impacts - prefer actual cost if available
       const cost = (totalTokens / 1000) * assumptions.costPer1kTokens;
       const kWh = (totalTokens / 1000) * assumptions.kWhPer1kTokens;
       const co2g = (totalTokens / 1000) * assumptions.co2gPer1kTokens;

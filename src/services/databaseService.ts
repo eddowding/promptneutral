@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import { UsageReport, ModelUsage } from '../types/usage';
+import { UsageReport, ModelUsage, CostBreakdown } from '../types/usage';
 import { calculateEnvironmentalImpact } from '../utils/environmentalCalculations';
 import { ErrorHandler, Validator, withRetry } from '../utils/errorHandling';
 
@@ -12,6 +12,9 @@ export interface UsageDataRow {
   context_tokens: number;
   generated_tokens: number;
   cost: number;
+  actual_cost_usd?: number;
+  cost_breakdown?: CostBreakdown;
+  cost_source?: 'calculated' | 'api';
   co2_grams: number;
   created_at?: string;
 }
@@ -29,7 +32,12 @@ export class DatabaseService {
   /**
    * Store usage data for a specific date and user
    */
-  async storeUsageData(userId: string, date: string, usageData: Record<string, ModelUsage>): Promise<void> {
+  async storeUsageData(
+    userId: string, 
+    date: string, 
+    usageData: Record<string, ModelUsage>, 
+    costsData?: Record<string, CostBreakdown>
+  ): Promise<void> {
     // Validate inputs
     if (!Validator.isValidUserId(userId)) {
       throw ErrorHandler.handleValidationError('userId', userId, 'must be a valid user ID');
@@ -59,19 +67,31 @@ export class DatabaseService {
         const impact = calculateEnvironmentalImpact(tempReport);
         const co2ForModel = impact.totalCO2g || 0;
         
-        // Estimate cost based on model and tokens (simplified calculation)
-        const cost = this.estimateCost(model, usage);
-
-        rows.push({
+        // Get actual cost from API if available, otherwise calculate
+        const actualCost = costsData?.[date];
+        const calculatedCost = this.estimateCost(model, usage);
+        
+        const row: UsageDataRow = {
           user_id: userId,
           date,
           model,
           requests: usage.requests,
           context_tokens: usage.context_tokens,
           generated_tokens: usage.generated_tokens,
-          cost,
+          cost: actualCost ? actualCost.amount : calculatedCost,
           co2_grams: co2ForModel,
-        });
+        };
+
+        // Add actual cost data if available from API
+        if (actualCost) {
+          row.actual_cost_usd = actualCost.amount;
+          row.cost_breakdown = actualCost;
+          row.cost_source = 'api';
+        } else {
+          row.cost_source = 'calculated';
+        }
+
+        rows.push(row);
       }
 
       if (rows.length === 0) {
