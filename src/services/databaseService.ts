@@ -557,7 +557,7 @@ export class DatabaseService {
    * Heuristic: if the earliest usage date we have is more than `gapThresholdDays`
    * days ago, we assume further back-fill would yield nothing significant.
    */
-  async hasReachedHistoryBoundary(userId: string, gapThresholdDays: number = 60): Promise<boolean> {
+  async hasReachedHistoryBoundary(userId: string, gapThresholdDays: number = 90): Promise<boolean> {
     const earliest = await this.getEarliestUsageDate(userId);
     if (!earliest) return false;
 

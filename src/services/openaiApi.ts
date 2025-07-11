@@ -267,11 +267,11 @@ export class OpenAIApiService {
       return;
     }
 
-    // 2. Heuristic: if the earliest usage date we hold is > 60 days old,
+    // 2. Heuristic: if the earliest usage date we hold is > 90 days old,
     //    we assume we have reached the start of history and can safely stop.
-    const reachedBoundary = await this.databaseService.hasReachedHistoryBoundary(userId, 60);
+    const reachedBoundary = await this.databaseService.hasReachedHistoryBoundary(userId, 90);
     if (reachedBoundary) {
-      console.log('🛑 Reached history boundary (no activity >60 days earlier). Marking as complete.');
+      console.log('🛑 Reached history boundary (no activity >90 days earlier). Marking as complete.');
       await this.databaseService.setHistoricalDataFlag(userId, true);
       onComplete?.();
       return;
@@ -293,7 +293,7 @@ export class OpenAIApiService {
 
         const requiredDays = 90;
         const hasAll = await this.databaseService.hasSufficientHistoricalData(userId, requiredDays);
-        const boundaryMet = await this.databaseService.hasReachedHistoryBoundary(userId, 60);
+        const boundaryMet = await this.databaseService.hasReachedHistoryBoundary(userId, 90);
 
         if (hasAll || boundaryMet) {
           await this.databaseService.setHistoricalDataFlag(userId, true);
@@ -359,20 +359,31 @@ export class OpenAIApiService {
         days = 2;
       }
 
-      // Fetch fresh data from OpenAI API
-      const report = await this.fetchUsageForDays(days);
+      // Calculate date range
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() - 2); // OpenAI API has 1-2 day delay
+      const startDate = new Date(endDate);
+      startDate.setDate(endDate.getDate() - (days - 1));
+      
+      const startStr = startDate.toISOString().split('T')[0];
+      const endStr = endDate.toISOString().split('T')[0];
 
-      // Store each day's data in the database
-      for (const [date, dayData] of Object.entries(report)) {
+      // Fetch both usage and costs data
+      const { usage, costs } = await this.fetchUsageAndCostsForDateRange(startStr, endStr);
+
+      // Store each day's data in the database with costs
+      for (const [date, dayData] of Object.entries(usage)) {
         if ('error' in dayData) {
           console.warn(`⚠️ Skipping ${date} due to error: ${dayData.error}`);
           continue;
         }
 
-        await this.databaseService.storeUsageData(userId, date, dayData);
+        // Pass the costs data for this date if available
+        const dateCosts = costs[date] ? { [date]: costs[date] } : undefined;
+        await this.databaseService.storeUsageData(userId, date, dayData, dateCosts);
       }
 
-      console.log(`✅ Successfully synced ${Object.keys(report).length} days to database`);
+      console.log(`✅ Successfully synced ${Object.keys(usage).length} days to database with costs`);
     } catch (error) {
       console.error('Error syncing data to database:', error);
       throw error;
@@ -704,6 +715,9 @@ export class OpenAIApiService {
 
       console.log(`💰 Syncing costs for last ${days} days...`);
       
+      // Fetch existing usage data to update with costs
+      const existingData = await this.databaseService.fetchUsageData(userId, startDate, endDate);
+      
       // Fetch costs data
       const costsData = await this.fetchCostsForDateRange(startDate, endDate);
       const processedCosts = this.processCostsData(costsData);
@@ -714,10 +728,18 @@ export class OpenAIApiService {
       }
 
       // Update existing usage records with actual costs
-      for (const [date, costInfo] of Object.entries(processedCosts)) {
-        // This would require updating the database directly
-        // For now, we'll just log the costs we received
-        console.log(`💰 ${date}: $${costInfo.amount} ${costInfo.currency}`);
+      for (const [date, dayData] of Object.entries(existingData)) {
+        if ('error' in dayData || !processedCosts[date]) continue;
+        
+        // Re-store the data with the actual costs
+        await this.databaseService.storeUsageData(
+          userId, 
+          date, 
+          dayData, 
+          { [date]: processedCosts[date] }
+        );
+        
+        console.log(`💰 Updated ${date}: $${processedCosts[date].amount} ${processedCosts[date].currency}`);
       }
       
       console.log(`✅ Cost sync completed for ${Object.keys(processedCosts).length} days`);
