@@ -413,12 +413,27 @@ export function HomePageV2() {
                         <span className="text-3xl">🦸</span>
                         Make the Hero Move!
                       </h3>
+                      <p className="text-lg text-neutral-dark mb-4">
+                        You guessed ${parseFloat(userGuess).toFixed(2)} - but you thought it would cost {(parseFloat(userGuess) / convertFromEUR(results.offsetCost)).toFixed(0)}x more!
+                      </p>
+                      <p className="text-neutral-dark mb-2">
+                        So why not be great and offset ${parseFloat(userGuess).toFixed(2)} ({((parseFloat(userGuess) / Object.values(spending).reduce((sum, amount) => sum + amount, 0)) * 100).toFixed(1)}% of your AI spend)?
+                      </p>
                       <p className="text-neutral-dark mb-4">
-                        You guessed ${parseFloat(userGuess).toFixed(2)} - that's {(parseFloat(userGuess) / convertFromEUR(results.offsetCost)).toFixed(1)}x too much! Even at 430x, it's just {((convertFromEUR(results.offsetCost * 430) / Object.values(spending).reduce((sum, amount) => sum + amount, 0)) * 100).toFixed(0)}% of your AI spend.
+                        You've saved massively by using AI. This is a fantastic opportunity to give back and be proud of it, and we can reverse climate change faster!
                       </p>
-                      <p className="text-sm text-neutral mb-6">
-                        You've saved massively by using AI. This is a fantastic opportunity to give back and be proud of it!
-                      </p>
+                      <div className="bg-blue-50 rounded-lg p-4 mb-6">
+                        <p className="text-sm text-neutral-dark mb-2">
+                          Most people overestimate AI offset costs by 500x-10,000x. If you offset 430x that's ~10% of your AI spend - far less than most initial guesses, yet enough to make a massive impact to climate restoration projects around the world.
+                        </p>
+                        <Link 
+                          to="/why-430x" 
+                          className="inline-flex items-center gap-2 text-primary hover:text-primary-700 font-medium text-sm"
+                        >
+                          Learn more about why we need to remove 70-220 Gt of CO₂ by 2050
+                          <ExternalLink className="h-4 w-4" />
+                        </Link>
+                      </div>
                       
                       <div className="grid grid-cols-3 gap-3 mb-4 max-w-md mx-auto">
                         <button
@@ -487,18 +502,21 @@ export function HomePageV2() {
                       </div>
                       
                       <div className="flex flex-col items-center mb-6">
-                        <div className="flex items-center justify-center gap-3 mb-3">
-                          <span className="text-lg font-semibold">Or offset your estimate</span>
+                        <div className="flex items-center justify-center gap-4 mb-4">
+                          <span className="text-lg font-semibold text-neutral-dark">Or offset your estimate</span>
                           <div className="relative bg-white border-2 border-yellow-300 rounded-lg p-3">
-                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-light font-bold text-xl">{currency.symbol}</span>
+                            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-dark font-bold text-xl">{currency.symbol}</span>
                             <input
                               type="text"
-                              value={heroAmount !== '' ? heroAmount : userGuess}
+                              value={heroAmount !== '' ? heroAmount : (convertFromEUR(parseFloat(userGuess) * 1.0)).toFixed(2)}
                               onChange={(e) => setHeroAmount(e.target.value.replace(/[$,]/g, ''))}
                               onKeyDown={handleNumberInput}
                               className="w-36 pl-8 pr-4 text-2xl font-bold text-center bg-transparent focus:outline-none"
                               inputMode="decimal"
                             />
+                          </div>
+                          <div className="text-sm text-neutral">
+                            Your guess: ${parseFloat(userGuess).toFixed(2)} USD
                           </div>
                         </div>
                       </div>
@@ -518,7 +536,7 @@ export function HomePageV2() {
                         className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white py-4 px-8 rounded-lg font-bold hover:from-yellow-600 hover:to-orange-600 transition-all inline-flex items-center gap-2 text-lg shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <span className="text-xl">🌍</span>
-                        Offset My Carbon Impact
+                        Offset My AI Impact
                       </button>
                     </div>
                   </div>
@@ -526,61 +544,49 @@ export function HomePageV2() {
 
                 {/* Why 430x? Explainer */}
                 <div className="mt-8 bg-blue-50 rounded-lg p-6">
-                  <button
-                    onClick={() => setShowWhy430x(!showWhy430x)}
-                    className="w-full flex items-center justify-between text-left"
-                  >
-                    <h3 className="text-lg font-semibold text-primary flex items-center gap-2">
-                      <Info className="h-5 w-5 text-blue-600" />
-                      Why 430x?
-                    </h3>
-                    {showWhy430x ? (
-                      <ChevronUp className="h-5 w-5 text-neutral" />
-                    ) : (
-                      <ChevronDown className="h-5 w-5 text-neutral" />
-                    )}
-                  </button>
+                  <h3 className="text-lg font-semibold text-primary flex items-center gap-2 mb-4">
+                    <Info className="h-5 w-5 text-blue-600" />
+                    Why 430x?
+                  </h3>
                   
-                  {showWhy430x && (
-                    <div className="mt-4 space-y-4 text-neutral-dark">
-                      <div>
-                        <h4 className="font-semibold mb-2">🌍 We're at 430ppm CO₂</h4>
-                        <p className="text-sm">
-                          Earth's atmosphere is about 430ppm CO₂. AI emissions are individually tiny, but cumulatively ENORMOUS. 
-                          And since we're at an inflection point with both AI and climate, let's use this opportunity to invest 
-                          some of the savings that you've made by using AI into planetary-scale restoration projects.
-                        </p>
-                      </div>
-                      
-                      <div>
-                        <h4 className="font-semibold mb-2">💡 Less than you think, still not enough</h4>
-                        <p className="text-sm">
-                          Most people overestimate AI offset costs by 500x-10,000x. If you offset 430x that's ~10% of your AI spend - 
-                          far less than most initial guesses, yet enough to make a massive impact to climate restoration 
-                          projects around the world.
-                        </p>
-                      </div>
-                      
-                      <div>
-                        <h4 className="font-semibold mb-2">🚀 Beyond neutral to climate positive</h4>
-                        <p className="text-sm">
-                          We're suggesting 430x because we need to remove <strong>at least 70 to 220 Gt of CO₂</strong> from the atmosphere 
-                          between now and 2050, even with the fastest feasible emissions reductions. Join the movement of companies 
-                          going beyond neutrality to reverse climate change.
-                        </p>
-                      </div>
-                      
-                      <div className="mt-4">
-                        <Link 
-                          to="/why-430x" 
-                          className="inline-flex items-center gap-2 text-primary hover:text-primary-700 font-medium"
-                        >
-                          Learn more about why we need to remove 70-220 Gt of CO₂ by 2050
-                          <ExternalLink className="h-4 w-4" />
-                        </Link>
-                      </div>
+                  <div className="space-y-4 text-neutral-dark">
+                    <div>
+                      <h4 className="font-semibold mb-2">🌍 We're at 430ppm CO₂</h4>
+                      <p className="text-sm">
+                        Earth's atmosphere is about 430ppm CO₂. AI emissions are individually tiny, but cumulatively ENORMOUS. 
+                        And since we're at an inflection point with both AI and climate, let's use this opportunity to invest 
+                        some of the savings that you've made by using AI into planetary-scale restoration projects.
+                      </p>
                     </div>
-                  )}
+                    
+                    <div>
+                      <h4 className="font-semibold mb-2">💡 Less than you think, still not enough</h4>
+                      <p className="text-sm">
+                        Most people overestimate AI offset costs by 500x-10,000x. If you offset 430x that's ~10% of your AI spend - 
+                        far less than most initial guesses, yet enough to make a massive impact to climate restoration 
+                        projects around the world.
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-semibold mb-2">🚀 Beyond neutral to climate positive</h4>
+                      <p className="text-sm">
+                        We're suggesting 430x because we need to remove <strong>at least 70 to 220 Gt of CO₂</strong> from the atmosphere 
+                        between now and 2050, even with the fastest feasible emissions reductions. Join the movement of companies 
+                        going beyond neutrality to reverse climate change.
+                      </p>
+                    </div>
+                    
+                    <div className="mt-4">
+                      <Link 
+                        to="/why-430x" 
+                        className="inline-flex items-center gap-2 text-primary hover:text-primary-700 font-medium"
+                      >
+                        Learn more about why we need to remove 70-220 Gt of CO₂ by 2050
+                        <ExternalLink className="h-4 w-4" />
+                      </Link>
+                    </div>
+                  </div>
                 </div>
 
               </div>
