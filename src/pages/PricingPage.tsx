@@ -37,12 +37,12 @@ interface CarbonProject {
 }
 
 export const PricingPage: React.FC = () => {
-  const { formatCurrencyFromEUR } = useCurrency();
+  const { currency } = useCurrency();
   const [apiCalls, setApiCalls] = useState(50000);
   const [selectedProject, setSelectedProject] = useState(0);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   
-  const individualPrice = formatCurrencyFromEUR(4.99);
+  const individualPrice = `${currency.symbol}5`;
 
   const pricingTiers: PricingTier[] = [
     {
@@ -279,7 +279,7 @@ export const PricingPage: React.FC = () => {
                 
                 <div className="mt-6 p-4 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-lg">
                   <p className="text-center text-sm text-blue-800">
-                    <strong>Example:</strong> Use ChatGPT + Claude = {formatCurrencyFromEUR(9.98)}/month total
+                    <strong>Example:</strong> Use ChatGPT + Claude = {currency.symbol}10/month total
                   </p>
                 </div>
               </div>

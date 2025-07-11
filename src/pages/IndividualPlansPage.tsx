@@ -52,11 +52,11 @@ const AI_SERVICES = [
 ];
 
 export const IndividualPlansPage: React.FC = () => {
-  const { formatCurrencyFromEUR } = useCurrency();
+  const { currency } = useCurrency();
   const navigate = useNavigate();
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   
-  const monthlyPrice = formatCurrencyFromEUR(4.99);
+  const monthlyPrice = `${currency.symbol}5`;
   
   const toggleService = (serviceId: string) => {
     setSelectedServices(prev => 
@@ -73,7 +73,7 @@ export const IndividualPlansPage: React.FC = () => {
     navigate('/individual-checkout', {
       state: {
         selectedServices,
-        monthlyPrice: 4.99,
+        monthlyPrice: 5,
         totalServices: selectedServices.length
       }
     });
@@ -177,7 +177,7 @@ export const IndividualPlansPage: React.FC = () => {
                   {selectedServices.length} Service{selectedServices.length > 1 ? 's' : ''} Selected
                 </h3>
                 <div className="text-3xl font-bold text-blue-600 mb-2">
-                  {formatCurrencyFromEUR(4.99 * selectedServices.length)}/month
+                  {currency.symbol}{5 * selectedServices.length}/month
                 </div>
                 <p className="text-gray-600">
                   Total for all your selected AI services

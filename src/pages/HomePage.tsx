@@ -20,8 +20,7 @@ import {
 } from 'lucide-react';
 
 export const HomePage: React.FC = () => {
-  const { formatCurrencyFromEUR } = useCurrency();
-  const individualPrice = formatCurrencyFromEUR(4.99); // ~$5 equivalent
+  const { currency } = useCurrency();
 
   return (
     <div className="min-h-screen bg-white">
@@ -33,7 +32,7 @@ export const HomePage: React.FC = () => {
               <Heart className="w-5 h-5 text-blue-600" />
               <div>
                 <h3 className="text-lg font-semibold text-blue-900">For Individuals</h3>
-                <p className="text-sm text-blue-700">Guilt-free AI usage starting at {individualPrice}/month per service</p>
+                <p className="text-sm text-blue-700">Guilt-free AI usage starting at {currency.symbol}5/month per service</p>
               </div>
             </div>
             <div className="flex items-center gap-3">

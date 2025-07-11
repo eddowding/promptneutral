@@ -162,7 +162,7 @@ export function HomePageV2() {
                 <div>
                   <h3 className="text-lg font-semibold text-blue-900">Using AI personally, not for business?</h3>
                   <p className="text-sm text-blue-700">
-                    Simple subscriptions starting at {formatCurrencyFromEUR(4.99)}/month per AI service
+                    Simple subscriptions starting at {currency.symbol}5/month per AI service
                   </p>
                 </div>
               </div>
@@ -316,6 +316,13 @@ export function HomePageV2() {
               <Zap className="h-5 w-5 text-secondary-500" />
               Calculate My AI Carbon Impact
             </button>
+            
+            <p className="text-sm text-neutral text-center mt-3">
+              <Link to="/auth" className="text-primary-600 hover:text-primary-700 underline">
+                Sign in
+              </Link>{' '}
+              to use the advanced calculator with API integration and real-time tracking
+            </p>
           </form>
 
           {results && (

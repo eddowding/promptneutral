@@ -22,7 +22,7 @@ export function IndividualCheckoutPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const checkoutData = location.state as IndividualCheckoutData;
-  const { formatCurrencyFromEUR } = useCurrency();
+  const { currency } = useCurrency();
   
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -121,13 +121,13 @@ export function IndividualCheckoutPage() {
                     {checkoutData.selectedServices.map(serviceId => (
                       <div key={serviceId} className="flex items-center justify-between text-sm">
                         <span>{AI_SERVICE_NAMES[serviceId]}</span>
-                        <span className="font-medium">{formatCurrencyFromEUR(checkoutData.monthlyPrice)}/month</span>
+                        <span className="font-medium">{currency.symbol}{checkoutData.monthlyPrice}/month</span>
                       </div>
                     ))}
                   </div>
                   <div className="border-t pt-2 mt-2 flex items-center justify-between font-medium">
                     <span>Total:</span>
-                    <span>{formatCurrencyFromEUR(totalCost)}/month</span>
+                    <span>{currency.symbol}{totalCost}/month</span>
                   </div>
                 </div>
                 <p className="text-sm italic mt-4">
@@ -182,13 +182,13 @@ export function IndividualCheckoutPage() {
                 {checkoutData.selectedServices.map(serviceId => (
                   <div key={serviceId} className="flex justify-between items-center text-sm">
                     <span className="text-gray-700">{AI_SERVICE_NAMES[serviceId]}</span>
-                    <span className="font-medium">{formatCurrencyFromEUR(checkoutData.monthlyPrice)}/month</span>
+                    <span className="font-medium">{currency.symbol}{checkoutData.monthlyPrice}/month</span>
                   </div>
                 ))}
                 <div className="border-t border-blue-200 pt-2 mt-3">
                   <div className="flex justify-between text-lg font-semibold text-blue-900">
                     <span>Monthly Total:</span>
-                    <span>{formatCurrencyFromEUR(totalCost)}</span>
+                    <span>{currency.symbol}{totalCost}</span>
                   </div>
                 </div>
               </div>
