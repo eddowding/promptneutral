@@ -96,7 +96,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
         <div className="mb-8 text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome back</h2>
-          <p className="text-gray-600">Sign in to your PromptNeutral account</p>
+          <p className="text-gray-600">Sign in to your 430x account</p>
         </div>
 
 

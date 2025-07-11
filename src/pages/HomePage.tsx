@@ -248,13 +248,13 @@ export const HomePage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Trusted by Forward-Thinking Companies</h2>
-            <p className="text-xl text-gray-600">Leading organizations choose PromptNeutral for their sustainability goals</p>
+            <p className="text-xl text-gray-600">Leading organizations choose 430xai for their sustainability goals</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                quote: "PromptNeutral made it incredibly easy to achieve carbon neutrality for our AI operations. The real-time tracking gives us complete peace of mind.",
+                quote: "430xai made it incredibly easy to achieve carbon neutrality for our AI operations. The real-time tracking gives us complete peace of mind.",
                 author: "Sarah Chen",
                 role: "Head of Sustainability, TechCorp"
               },

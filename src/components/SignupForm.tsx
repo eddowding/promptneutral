@@ -111,7 +111,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess }) => {
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
         <div className="mb-8 text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Create your account</h2>
-          <p className="text-gray-600">Join PromptNeutral to track your carbon footprint</p>
+          <p className="text-gray-600">Join 430x to track your carbon footprint</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
