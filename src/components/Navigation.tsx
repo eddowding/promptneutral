@@ -16,10 +16,10 @@ export const Navigation: React.FC = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="p-2 bg-primary-100 rounded-lg">
-              <Leaf className="w-6 h-6 text-primary-600" />
+            <div className="p-2 bg-secondary-100 rounded-lg">
+              <Leaf className="w-6 h-6 text-forest" />
             </div>
-            <span className="text-xl font-bold text-gray-900">430xAI</span>
+            <span className="text-xl font-bold text-primary">430xAI</span>
           </Link>
 
           {/* Navigation Links */}
@@ -29,8 +29,8 @@ export const Navigation: React.FC = () => {
                 to="/admin/feedback" 
                 className={`flex items-center space-x-1 text-sm font-medium transition-colors ${
                   location.pathname === '/admin/feedback' 
-                    ? 'text-primary-600' 
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'text-forest' 
+                    : 'text-gray-600 hover:text-primary'
                 }`}
               >
                 <MessageSquare className="w-4 h-4" />
@@ -52,7 +52,7 @@ export const Navigation: React.FC = () => {
                   </div>
                   <button 
                     onClick={() => logout().catch(console.error)}
-                    className="flex items-center space-x-1 px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                    className="flex items-center space-x-1 px-3 py-2 text-sm font-medium text-gray-600 hover:text-primary hover:bg-gray-100 rounded-lg transition-colors"
                   >
                     <LogOut className="w-4 h-4" />
                     <span>Sign Out</span>
@@ -63,7 +63,7 @@ export const Navigation: React.FC = () => {
               <>
                 <Link 
                   to="/auth"
-                  className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                  className="text-sm font-medium text-gray-600 hover:text-primary transition-colors"
                 >
                   Sign In
                 </Link>

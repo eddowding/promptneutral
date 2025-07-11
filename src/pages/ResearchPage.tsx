@@ -9,18 +9,18 @@ export function ResearchPage() {
   return (
     <>
       <Navigation />
-      <div className="min-h-screen bg-gray-50 pt-20">
+      <div className="min-h-screen bg-background pt-20">
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">
             <button
               onClick={() => navigate('/')}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
+              className="flex items-center gap-2 text-gray-600 hover:text-primary mb-6"
             >
               <ArrowLeft className="h-5 w-5" />
               Back to calculator
             </button>
 
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-4xl font-bold text-primary mb-4">
               Research: Environmental Impact of AI Models
             </h1>
             
@@ -153,25 +153,25 @@ export function ResearchPage() {
               </h2>
               <ol className="space-y-4">
                 <li className="flex gap-3">
-                  <span className="font-bold text-gray-900">1.</span>
+                  <span className="font-bold text-primary">1.</span>
                   <div>
                     <strong>Energy spread still &gt; 100×.</strong> Tiny fast-path models (GPT-4.1 nano, Gemini Flash-Lite) hover around 0.3–0.5 Wh for very long prompts, while heavyweight reasoning modes (o3, DeepSeek R1) exceed 30 Wh per similar job—two orders of magnitude.
                   </div>
                 </li>
                 <li className="flex gap-3">
-                  <span className="font-bold text-gray-900">2.</span>
+                  <span className="font-bold text-primary">2.</span>
                   <div>
                     <strong>Claude 4 adds modest hardware savings.</strong> Anthropic's kernel tweaks and prompt-caching shave ≈ 8% GPU power vs Claude 3.7; Opus remains mid-pack for footprint but high on performance density.
                   </div>
                 </li>
                 <li className="flex gap-3">
-                  <span className="font-bold text-gray-900">3.</span>
+                  <span className="font-bold text-primary">3.</span>
                   <div>
                     <strong>Gemini 2.5 Flash prioritises throughput.</strong> Google reports a 25% efficiency bump and 1.5× speed-up over Flash 2.0; energy per token is now comparable to GPT-4o fast path.
                   </div>
                 </li>
                 <li className="flex gap-3">
-                  <span className="font-bold text-gray-900">4.</span>
+                  <span className="font-bold text-primary">4.</span>
                   <div>
                     <strong>Water: orders of magnitude uncertainty.</strong>
                     <ul className="ml-4 mt-2 space-y-1 list-disc">
@@ -183,7 +183,7 @@ export function ResearchPage() {
                   </div>
                 </li>
                 <li className="flex gap-3">
-                  <span className="font-bold text-gray-900">5.</span>
+                  <span className="font-bold text-primary">5.</span>
                   <div>
                     <strong>Transparency gap remains.</strong> All figures for Gemini 2.5 and Claude 4 are vendor claims or extrapolations—no third-party audit yet. The open-source AI Energy Score project is pressuring for standard disclosure.
                   </div>
@@ -198,7 +198,7 @@ export function ResearchPage() {
               {/* 430ppm Significance */}
               <section className="mb-8">
                 <div className="bg-gradient-to-r from-yellow-50 to-amber-50 rounded-lg p-6 border border-yellow-300">
-                  <h3 className="text-2xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <h3 className="text-2xl font-semibold text-primary mb-4 flex items-center gap-2">
                     <span className="text-3xl">🌍</span>
                     Why 430x? The 430ppm Reality
                   </h3>
@@ -313,7 +313,7 @@ export function ResearchPage() {
                   
                   <div className="space-y-4">
                     <div>
-                      <h5 className="font-semibold text-gray-900">The 430 Coincidence</h5>
+                      <h5 className="font-semibold text-primary">The 430 Coincidence</h5>
                       <p className="text-gray-700 text-sm mt-1">
                         Earth hit 430ppm CO₂ just as AI is transforming business. It's a memorable number that 
                         became our rallying cry! We're at a unique moment where AI creates massive savings while 
@@ -322,7 +322,7 @@ export function ResearchPage() {
                     </div>
                     
                     <div>
-                      <h5 className="font-semibold text-gray-900">The Economics Make Sense</h5>
+                      <h5 className="font-semibold text-primary">The Economics Make Sense</h5>
                       <p className="text-gray-700 text-sm mt-1">
                         People typically overestimate carbon offset costs by 500x-10,000x! Even at 430x, you're 
                         investing just ~10% of your AI spend. Since AI often cuts costs by 50-90%, you keep massive 
@@ -331,7 +331,7 @@ export function ResearchPage() {
                     </div>
                     
                     <div>
-                      <h5 className="font-semibold text-gray-900">From Neutral to Climate Positive</h5>
+                      <h5 className="font-semibold text-primary">From Neutral to Climate Positive</h5>
                       <ul className="text-gray-700 text-sm mt-1 space-y-1">
                         <li>• <strong>1x offset:</strong> Carbon neutral (breaks even)</li>
                         <li>• <strong>4.3x offset:</strong> Carbon negative (removes 3.3x your emissions)</li>
@@ -560,7 +560,7 @@ export function ResearchPage() {
 
             {/* Simple Summary Box */}
             <div className="bg-blue-50 rounded-lg p-6 mb-8 border border-blue-200">
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">The Bottom Line for Users</h3>
+              <h3 className="text-xl font-semibold text-primary mb-3">The Bottom Line for Users</h3>
               <p className="text-gray-700 text-lg mb-4">
                 <strong>A GPT-4o answer costs ~0.11g CO₂ and a thimble-full of water; an o3 'chain-of-thought' 
                 answer costs ~14g CO₂ and a teaspoon of water.</strong>
@@ -577,7 +577,7 @@ export function ResearchPage() {
               <p className="mb-6">Use our calculator to estimate your environmental impact and offset your AI usage.</p>
               <button
                 onClick={() => navigate('/')}
-                className="bg-white text-gray-900 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+                className="bg-white text-primary px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
               >
                 Calculate Your Impact
               </button>

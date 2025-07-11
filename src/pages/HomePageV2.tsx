@@ -126,11 +126,11 @@ export function HomePageV2() {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-blue-50">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
-            <h1 className="text-5xl font-bold text-gray-900 mb-4">
+            <h1 className="text-5xl font-bold text-primary mb-4">
               What's Your AI Carbon Score?
             </h1>
             <p className="text-xl text-neutral">
@@ -140,7 +140,7 @@ export function HomePageV2() {
 
           <form onSubmit={calculateCarbon} className="bg-white rounded-2xl shadow-xl p-8 mb-8">
             <h2 className="text-2xl font-semibold mb-6 flex items-center gap-2">
-              <Calculator className="h-6 w-6 text-primary-600" />
+              <Calculator className="h-6 w-6 text-secondary-600" />
               Enter Your Monthly AI Spending ($)
             </h2>
 
@@ -265,7 +265,7 @@ export function HomePageV2() {
               disabled={!userGuess}
               className="w-full bg-primary-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-primary-700 transition-colors flex items-center justify-center gap-2 mt-6 disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
-              <Zap className="h-5 w-5" />
+              <Zap className="h-5 w-5 text-secondary-500" />
               Calculate My AI Carbon Impact
             </button>
           </form>
@@ -292,8 +292,8 @@ export function HomePageV2() {
               )}
 
               <div className="grid md:grid-cols-2 gap-6 mb-6">
-                <div className="bg-primary-50 rounded-lg p-8 text-center">
-                  <div className="text-5xl font-bold text-gray-900 mb-2">
+                <div className="bg-secondary-50 rounded-lg p-8 text-center">
+                  <div className="text-5xl font-bold text-primary mb-2">
                     {formatCurrencyFromEUR(results.offsetCost)}
                   </div>
                   <div className="text-lg text-neutral">Carbon offset cost</div>
@@ -302,7 +302,7 @@ export function HomePageV2() {
                 <div className="bg-gray-50 rounded-lg p-8 text-center">
                   <div className="flex items-center justify-center gap-2 mb-2">
                     <Cloud className="h-8 w-8 text-neutral" />
-                    <div className="text-5xl font-bold text-gray-900">
+                    <div className="text-5xl font-bold text-primary">
                       {results.totalCO2Tonnes.toFixed(2)}
                     </div>
                   </div>
@@ -314,7 +314,7 @@ export function HomePageV2() {
                 <div className="bg-red-50 rounded-lg p-4 text-center">
                   <div className="flex items-center justify-center gap-1 mb-1">
                     <Beef className="h-4 w-4 text-red-600" />
-                    <div className="text-2xl font-bold text-gray-900">
+                    <div className="text-2xl font-bold text-primary">
                       {formatNumber(results.steakEquivalent)}
                     </div>
                   </div>
@@ -324,7 +324,7 @@ export function HomePageV2() {
                 <div className="bg-orange-50 rounded-lg p-4 text-center">
                   <div className="flex items-center justify-center gap-1 mb-1">
                     <Car className="h-4 w-4 text-orange-600" />
-                    <div className="text-2xl font-bold text-gray-900">
+                    <div className="text-2xl font-bold text-primary">
                       {formatNumber(results.drivingMiles)}
                     </div>
                   </div>
@@ -334,7 +334,7 @@ export function HomePageV2() {
                 <div className="bg-blue-50 rounded-lg p-4 text-center">
                   <div className="flex items-center justify-center gap-1 mb-1">
                     <Plane className="h-4 w-4 text-blue-600" />
-                    <div className="text-2xl font-bold text-gray-900">
+                    <div className="text-2xl font-bold text-primary">
                       {results.flightsLondonNY}
                     </div>
                   </div>
@@ -344,7 +344,7 @@ export function HomePageV2() {
                 <div className="bg-emerald-50 rounded-lg p-4 text-center">
                   <div className="flex items-center justify-center gap-1 mb-1">
                     <TreePine className="h-4 w-4 text-emerald-600" />
-                    <div className="text-2xl font-bold text-gray-900">
+                    <div className="text-2xl font-bold text-primary">
                       {results.treeYears.toLocaleString()}
                     </div>
                   </div>
@@ -354,7 +354,7 @@ export function HomePageV2() {
                 <div className="bg-purple-50 rounded-lg p-4 text-center">
                   <div className="flex items-center justify-center gap-1 mb-1">
                     <Building className="h-4 w-4 text-purple-600" />
-                    <div className="text-2xl font-bold text-gray-900">
+                    <div className="text-2xl font-bold text-primary">
                       {Math.round(results.totalCO2Tonnes * 1000 / 2.3).toLocaleString()}
                     </div>
                   </div>
@@ -368,7 +368,7 @@ export function HomePageV2() {
                   href="/research"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-neutral-dark hover:text-gray-900 font-medium"
+                  className="inline-flex items-center gap-2 text-neutral-dark hover:text-primary font-medium"
                 >
                   <ExternalLink className="h-4 w-4" />
                   Show assumptions and methodology
@@ -399,7 +399,7 @@ export function HomePageV2() {
                 {userGuess && parseFloat(userGuess) > results.offsetCost && (
                   <div className="mt-8 p-6 bg-gradient-to-r from-yellow-50 to-amber-50 rounded-xl border-2 border-yellow-300">
                     <div className="text-center">
-                      <h3 className="text-xl font-bold text-gray-900 mb-2 flex items-center justify-center gap-2">
+                      <h3 className="text-xl font-bold text-primary mb-2 flex items-center justify-center gap-2">
                         <span className="text-2xl">🦸</span>
                         Make the Hero Move!
                       </h3>
@@ -539,7 +539,7 @@ export function HomePageV2() {
                     onClick={() => setShowWhy430x(!showWhy430x)}
                     className="w-full flex items-center justify-between text-left"
                   >
-                    <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                    <h3 className="text-lg font-semibold text-primary flex items-center gap-2">
                       <Info className="h-5 w-5 text-blue-600" />
                       Why 430x?
                     </h3>

@@ -98,14 +98,14 @@ export function CheckoutPage() {
 
   if (showThankYou) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary-50 to-blue-50 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <div className="max-w-lg w-full">
           <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
             <div className="mb-6">
               <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-yellow-300 to-orange-400 rounded-full mb-4">
                 <Construction className="h-10 w-10 text-white" />
               </div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-4">
+              <h1 className="text-3xl font-bold text-primary mb-4">
                 Oops! You caught us building! 🚧
               </h1>
               <div className="space-y-4 text-gray-600">
@@ -154,19 +154,19 @@ export function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-blue-50">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-lg mx-auto">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
+            className="flex items-center gap-2 text-gray-600 hover:text-primary mb-6"
           >
             <ArrowLeft className="h-5 w-5" />
             Back to projects
           </button>
 
           <div className="bg-white rounded-2xl shadow-xl p-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-3xl font-bold text-primary mb-2">
               Complete Your Order
             </h1>
             <p className="text-gray-600 mb-6">
@@ -177,7 +177,7 @@ export function CheckoutPage() {
             </p>
 
             <div className="bg-gray-50 rounded-lg p-4 mb-6">
-              <h3 className="font-semibold text-gray-900 mb-2">Order Summary</h3>
+              <h3 className="font-semibold text-primary mb-2">Order Summary</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Project:</span>
@@ -255,7 +255,7 @@ export function CheckoutPage() {
                     className="mt-1 h-5 w-5 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                   />
                   <div className="flex-1">
-                    <p className="font-medium text-gray-900">
+                    <p className="font-medium text-primary">
                       Make this a monthly contribution
                     </p>
                     <p className="text-sm text-gray-600 mt-1">

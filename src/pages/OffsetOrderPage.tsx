@@ -23,7 +23,7 @@ const projects: Project[] = [
     description: 'Afforestation, Reforestation Revegetation (ARR)',
     location: 'Pakistan',
     pricePerTonne: 40,
-    icon: <TreePine className="h-6 w-6 text-primary-600" />,
+    icon: <TreePine className="h-6 w-6 text-forest" />,
     type: 'Afforestation',
     category: 'nature-based',
     tags: ['High Co-benefits', 'Long Permanence', 'Biodiversity']
@@ -58,7 +58,7 @@ const projects: Project[] = [
     description: 'Feed Additives in cattle to reduce methane emissions',
     location: 'Switzerland',
     pricePerTonne: 130,
-    icon: <Leaf className="h-6 w-6 text-primary-500" />,
+    icon: <Leaf className="h-6 w-6 text-secondary-500" />,
     type: 'Agriculture',
     category: 'nature-based',
     tags: ['High Impact', 'Innovation', 'Sustainable Farming']
@@ -161,20 +161,20 @@ export function OffsetOrderPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-blue-50">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
 
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6"
+            className="flex items-center gap-2 text-gray-600 hover:text-primary mb-6"
           >
             <ArrowLeft className="h-5 w-5" />
             Back to calculator
           </button>
 
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-4xl font-bold text-primary mb-4">
               Choose Your Carbon Offset Project
             </h1>
             <p className="text-xl text-gray-600">
@@ -204,8 +204,8 @@ export function OffsetOrderPage() {
 
             {/* Default project selection */}
             {selectedProject ? (
-              <div className="mb-6 p-6 bg-primary-50 rounded-lg border-2 border-primary-200">
-                <h3 className="font-semibold text-lg mb-3 text-gray-900">Recommended project</h3>
+              <div className="mb-6 p-6 bg-secondary-50 rounded-lg border-2 border-secondary-200">
+                <h3 className="font-semibold text-lg mb-3 text-primary">Recommended project</h3>
                 {selectedProjectData && (
                   <div className="flex items-start gap-3">
                     <div className="flex-shrink-0 pt-1">
@@ -214,7 +214,7 @@ export function OffsetOrderPage() {
                     <div className="flex-1">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <h4 className="font-semibold text-gray-900">{selectedProjectData.name}</h4>
+                          <h4 className="font-semibold text-primary">{selectedProjectData.name}</h4>
                           <p className="text-sm text-gray-600 mt-0.5">{selectedProjectData.description}</p>
                           <div className="flex items-center gap-2 mt-1">
                             <Globe className="h-3 w-3 text-gray-500" />
@@ -223,7 +223,7 @@ export function OffsetOrderPage() {
                           </div>
                         </div>
                         <div className="text-right ml-3">
-                          <p className="text-xl font-bold text-gray-900">
+                          <p className="text-xl font-bold text-primary">
                             {formatCurrencyFromEUR(selectedProjectData.pricePerTonne)}
                           </p>
                           <p className="text-xs text-gray-600">per tonne</p>
@@ -338,7 +338,7 @@ export function OffsetOrderPage() {
                           </div>
                         </div>
                         <div className="text-right ml-3">
-                          <p className="text-xl font-bold text-gray-900">
+                          <p className="text-xl font-bold text-primary">
                             {formatCurrencyFromEUR(project.pricePerTonne)}
                           </p>
                           <p className="text-xs text-gray-600">per tonne</p>
@@ -380,7 +380,7 @@ export function OffsetOrderPage() {
                   {selectedProjectData?.icon}
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900">{selectedProjectData?.name}</p>
+                  <p className="font-semibold text-primary">{selectedProjectData?.name}</p>
                   <p className="text-sm text-gray-600">
                     {parseFloat(quantity.toFixed(3))} tonne{quantity !== 1 ? 's' : ''} × {formatCurrencyFromEUR(selectedProjectData?.pricePerTonne || 0)} + {formatCurrencyFromEUR(0.30)} fee
                   </p>
@@ -389,7 +389,7 @@ export function OffsetOrderPage() {
               <div className="flex items-center gap-6">
                 <div className="text-right">
                   <p className="text-sm text-gray-600">Total</p>
-                  <p className="text-2xl font-bold text-gray-900">{formatCurrencyFromEUR(parseFloat(totalCost))}</p>
+                  <p className="text-2xl font-bold text-primary">{formatCurrencyFromEUR(parseFloat(totalCost))}</p>
                 </div>
                 <button
                   onClick={handlePurchase}
