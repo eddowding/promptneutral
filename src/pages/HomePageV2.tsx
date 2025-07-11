@@ -280,12 +280,12 @@ export function HomePageV2() {
               {userGuess && (
                 <div className="bg-yellow-50 rounded-lg p-4 mb-6">
                   <p className="text-yellow-800 font-medium">
-                    Your guess: ${parseFloat(userGuess).toLocaleString()} | Actual cost: {formatCurrencyFromEUR(results.offsetCost)}
+                    Your guess: ${parseFloat(userGuess).toLocaleString()} | Actual 1x cost: {formatCurrencyFromEUR(results.offsetCost)}
                   </p>
                   <p className="text-sm text-yellow-700 mt-1">
                     {parseFloat(userGuess) > results.offsetCost 
-                      ? `You overestimated by ${((parseFloat(userGuess) / results.offsetCost - 1) * 100).toFixed(0)}%`
-                      : `You underestimated by ${((results.offsetCost / parseFloat(userGuess) - 1) * 100).toFixed(0)}%`
+                      ? `You thought it would cost ${(parseFloat(userGuess) / convertFromEUR(results.offsetCost)).toFixed(0)}x more!`
+                      : `The actual cost is ${(convertFromEUR(results.offsetCost) / parseFloat(userGuess)).toFixed(1)}x your guess`
                     }
                   </p>
                 </div>
@@ -407,10 +407,13 @@ export function HomePageV2() {
                         Make the Hero Move!
                       </h3>
                       <p className="text-gray-700 mb-4">
-                        You guessed ${parseFloat(userGuess).toFixed(2)} - why not go above and beyond?
+                        You guessed ${parseFloat(userGuess).toFixed(2)} - great news, even at 430x it's still less!
                       </p>
                       <p className="text-sm text-gray-600 mb-6">
-                        Choose your impact level or enter a custom amount:
+                        {parseFloat(userGuess) > convertFromEUR(results.offsetCost * 430) 
+                          ? `Even our maximum 430x offset (${formatCurrencyFromEUR(results.offsetCost * 430)}) is less than your guess!`
+                          : 'Choose your impact level or enter a custom amount:'
+                        }
                       </p>
                       
                       <div className="grid grid-cols-3 gap-3 mb-4 max-w-md mx-auto">
@@ -561,10 +564,11 @@ export function HomePageV2() {
                       </div>
                       
                       <div>
-                        <h4 className="font-semibold mb-2">💡 Just ~10% of your AI savings</h4>
+                        <h4 className="font-semibold mb-2">💡 Less than you think, more than enough</h4>
                         <p className="text-sm">
-                          AI typically reduces business costs by 50-90%. Reinvesting just 10% of those savings 
-                          into climate action creates massive impact while you still benefit from huge cost reductions.
+                          Most people overestimate offset costs by 100x-1000x. Even at 430x offset, 
+                          it's typically just ~10% of your AI spend - far less than most initial guesses, 
+                          yet enough to make a massive climate impact.
                         </p>
                       </div>
                       
