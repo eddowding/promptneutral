@@ -211,7 +211,7 @@ export const HomePage: React.FC = () => {
           
           <div className="text-center mt-12">
             <Link 
-              to="/pricing"
+              to="/individual-plans"
               className="inline-block px-8 py-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-lg font-semibold"
             >
               Start Your Free Trial
