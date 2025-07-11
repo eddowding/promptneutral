@@ -179,7 +179,7 @@ export function HomePageV2() {
 
           <div className="text-center mb-12">
             <h1 className="text-5xl font-bold text-primary mb-4">
-              What's Your Business AI Energy Footprint?
+              What's Your AI Energy Footprint?
             </h1>
             <p className="text-xl text-neutral">
               Calculate and offset your company's AI API usage carbon footprint
