@@ -20,6 +20,8 @@ import FeedbackTab from './components/FeedbackTab';
 import FeedbackPage from './pages/admin/FeedbackPage';
 import SouthPoleTest from './components/SouthPoleTest';
 import { Why430xPage } from './pages/Why430xPage';
+import { IndividualPlansPage } from './pages/IndividualPlansPage';
+import { IndividualCheckoutPage } from './pages/IndividualCheckoutPage';
 
 function App() {
   return (
@@ -87,6 +89,13 @@ function App() {
               </>
             } />
             <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/individual-plans" element={
+              <>
+                <Navigation />
+                <IndividualPlansPage />
+              </>
+            } />
+            <Route path="/individual-checkout" element={<IndividualCheckoutPage />} />
             <Route path="/research" element={<ResearchPage />} />
             <Route path="/why-430x" element={<Why430xPage />} />
           </Routes>

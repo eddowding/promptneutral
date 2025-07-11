@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Footer } from '../components/Footer';
+import { useCurrency } from '../contexts/CurrencyContext';
 import { 
   Leaf, 
   Zap, 
@@ -13,12 +14,44 @@ import {
   Award,
   Globe,
   Users,
-  TrendingUp
+  TrendingUp,
+  Heart,
+  Coffee
 } from 'lucide-react';
 
 export const HomePage: React.FC = () => {
+  const { formatCurrencyFromEUR } = useCurrency();
+  const individualPrice = formatCurrencyFromEUR(4.99); // ~$5 equivalent
+
   return (
     <div className="min-h-screen bg-white">
+      {/* For Individuals - Compact Section */}
+      <section className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <Heart className="w-5 h-5 text-blue-600" />
+              <div>
+                <h3 className="text-lg font-semibold text-blue-900">For Individuals</h3>
+                <p className="text-sm text-blue-700">Guilt-free AI usage starting at {individualPrice}/month per service</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <Link 
+                to="/individual-plans"
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              >
+                Get Personal Plan
+              </Link>
+              <div className="text-xs text-blue-600 max-w-xs">
+                <Coffee className="w-3 h-3 inline mr-1" />
+                Simple subscriptions for personal AI use
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 py-20">
         <div className="max-w-7xl mx-auto px-6">
@@ -29,14 +62,14 @@ export const HomePage: React.FC = () => {
             </div>
             
             <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-              Make Your AI Usage 
+              Make Your Business AI 
               <span className="text-green-600"> Carbon Neutral</span>
               <br />Instantly
             </h1>
             
             <p className="text-xl text-gray-600 mb-10 leading-relaxed">
-              Connect to your AI services, calculate real-time carbon impact, and automatically 
-              retire verified carbon credits. Get instant, auditable proof of climate action for every prompt.
+              For businesses with AI API usage: Connect your services, calculate real-time carbon impact, 
+              and automatically retire verified carbon credits. Get instant, auditable proof of climate action.
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6">
@@ -138,8 +171,8 @@ export const HomePage: React.FC = () => {
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">How It Works</h2>
-            <p className="text-xl text-gray-600">Three simple steps to make your AI usage completely carbon neutral</p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">How It Works for Businesses</h2>
+            <p className="text-xl text-gray-600">Three simple steps to make your business AI API usage completely carbon neutral</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

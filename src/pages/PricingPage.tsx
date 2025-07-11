@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Footer } from '../components/Footer';
+import { useCurrency } from '../contexts/CurrencyContext';
 import { 
   Check, 
   X, 
@@ -7,7 +9,10 @@ import {
   Leaf,
   ChevronDown,
   ChevronUp,
-  Globe
+  Globe,
+  Heart,
+  Coffee,
+  ArrowRight
 } from 'lucide-react';
 
 interface PricingTier {
@@ -32,9 +37,12 @@ interface CarbonProject {
 }
 
 export const PricingPage: React.FC = () => {
+  const { formatCurrencyFromEUR } = useCurrency();
   const [apiCalls, setApiCalls] = useState(50000);
   const [selectedProject, setSelectedProject] = useState(0);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+  
+  const individualPrice = formatCurrencyFromEUR(4.99);
 
   const pricingTiers: PricingTier[] = [
     {
@@ -197,6 +205,96 @@ export const PricingPage: React.FC = () => {
               Carbon credits included in all plans with full transparency and verified impact.
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* Individual Plans Section */}
+      <section className="py-16 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+            <div className="lg:w-1/2">
+              <div className="flex items-center gap-3 mb-4">
+                <Heart className="w-6 h-6 text-blue-600" />
+                <h2 className="text-2xl font-bold text-blue-900">For Individuals</h2>
+              </div>
+              <h3 className="text-3xl font-bold text-gray-900 mb-4">
+                Simple AI Carbon Offsets
+              </h3>
+              <p className="text-lg text-gray-600 mb-6">
+                Personal subscriptions for guilt-free AI usage. Choose the services you use 
+                and we'll offset your carbon footprint automatically.
+              </p>
+              <div className="space-y-3 mb-6">
+                <div className="flex items-center gap-3">
+                  <Check className="w-5 h-5 text-blue-600" />
+                  <span className="text-gray-700">Per-service subscriptions starting at {individualPrice}/month</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Check className="w-5 h-5 text-blue-600" />
+                  <span className="text-gray-700">OpenAI, Claude, Google AI, and more</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Check className="w-5 h-5 text-blue-600" />
+                  <span className="text-gray-700">No tracking or complex setup</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Check className="w-5 h-5 text-blue-600" />
+                  <span className="text-gray-700">Cancel anytime</span>
+                </div>
+              </div>
+              <Link 
+                to="/individual-plans"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+              >
+                <Coffee className="w-5 h-5" />
+                Get Personal Plan
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+            
+            <div className="lg:w-1/2">
+              <div className="bg-white rounded-2xl p-8 shadow-xl border border-blue-200">
+                <div className="text-center mb-6">
+                  <div className="text-3xl mb-4">🤖❤️🌱</div>
+                  <h4 className="text-xl font-bold text-gray-900 mb-2">Popular Individual Services</h4>
+                  <p className="text-gray-600">Choose what you use, pay per service</p>
+                </div>
+                
+                <div className="space-y-4">
+                  {[
+                    { name: 'OpenAI (ChatGPT, GPT-4)', icon: '🤖' },
+                    { name: 'Claude (Anthropic)', icon: '🧠' },
+                    { name: 'Google AI (Gemini)', icon: '🔍' },
+                    { name: 'Microsoft AI (Copilot)', icon: '💼' }
+                  ].map((service, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <span className="text-xl">{service.icon}</span>
+                        <span className="font-medium text-gray-900">{service.name}</span>
+                      </div>
+                      <span className="text-blue-600 font-semibold">{individualPrice}/mo</span>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="mt-6 p-4 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-lg">
+                  <p className="text-center text-sm text-blue-800">
+                    <strong>Example:</strong> Use ChatGPT + Claude = {formatCurrencyFromEUR(9.98)}/month total
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Business Plans Divider */}
+      <section className="py-12 bg-white border-b border-gray-200">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Business Plans</h2>
+          <p className="text-xl text-gray-600">
+            For companies with AI API usage that need detailed tracking and compliance
+          </p>
         </div>
       </section>
 
