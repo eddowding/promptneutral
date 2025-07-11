@@ -1,43 +1,107 @@
 import React, { useState, useEffect } from 'react';
-import { Activity, MessageSquare, Zap, TrendingUp, DollarSign } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Activity, MessageSquare, Zap, TrendingUp, DollarSign, ArrowRight } from 'lucide-react';
 import { MetricCard } from '../components/MetricCard';
 import { UsageChart } from '../components/UsageChart';
 import { ModelBreakdown } from '../components/ModelBreakdown';
 import { StackedUsageChart } from '../components/StackedUsageChart';
 import { EnvironmentalImpact } from '../components/EnvironmentalImpact';
-import { ModelAssumptions } from '../components/ModelAssumptions';
 import { CarbonNeutralStatus } from '../components/CarbonNeutralStatus';
 import { OptimizationRecommendations } from '../components/OptimizationRecommendations';
-import { ComplianceReport } from '../components/ComplianceReport';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { ExportButton } from '../components/ExportButton';
-import { SyncStatus } from '../components/SyncStatus';
+import { SimpleSyncStatus } from '../components/SimpleSyncStatus';
 import { HistoricalDataSync } from '../components/HistoricalDataSync';
+import { TimeRangeSelector } from '../components/TimeRangeSelector';
 import { useUsageData } from '../hooks/useUsageData';
 import { getDailySummaries, getModelTotals } from '../utils/dataProcessing';
 import { calculateEnvironmentalImpact, prepareStackedChartData } from '../utils/environmentalCalculations';
 import { UsageReport } from '../types/usage';
+import { useAuth } from '../contexts/AuthContext';
+import { DatabaseService } from '../services/databaseService';
 
 export const DashboardPage: React.FC = () => {
+  const [selectedTimeRange, setSelectedTimeRange] = useState<number>(30); // Default to 30 days
   const [chartTimeRange, setChartTimeRange] = useState<'7d' | '30d' | '90d' | 'all'>('30d');
   const [customRangeData, setCustomRangeData] = useState<UsageReport | null>(null);
   const [isLoadingCustomRange, setIsLoadingCustomRange] = useState(false);
   const [isBackgroundSyncing, setIsBackgroundSyncing] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const { user } = useAuth();
   const { data, data30Days, loading, error, refetch, syncData, syncCosts, lastSyncTime, fetchCustomRange } = useUsageData(true);
+
+  // Combined sync function for both data and costs
+  const handleCombinedSync = async () => {
+    setIsSyncing(true);
+    try {
+      // Sync both data and costs in parallel
+      await Promise.all([
+        syncData(),
+        syncCosts()
+      ]);
+    } catch (error) {
+      console.error('Sync failed:', error);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  // Handle time range changes from the selector
+  const handleTimeRangeChange = (days: number) => {
+    setSelectedTimeRange(days);
+    
+    // Map to chart time range format
+    let newChartTimeRange: '7d' | '30d' | '90d' | 'all';
+    if (days === 7) newChartTimeRange = '7d';
+    else if (days === 14) newChartTimeRange = '30d'; // Map 14 to 30d for now
+    else if (days === 30) newChartTimeRange = '30d';
+    else if (days === 60) newChartTimeRange = '90d'; // Map 60 to 90d for now
+    else if (days === 90) newChartTimeRange = '90d';
+    else newChartTimeRange = 'all';
+    
+    setChartTimeRange(newChartTimeRange);
+  };
 
   // Handle time range changes
   useEffect(() => {
-    const handleTimeRangeChange = async () => {
-      if (chartTimeRange === '30d') {
-        // Use existing 30-day data
+    const loadTimeRangeData = async () => {
+      // Special handling for specific ranges
+      if (selectedTimeRange === 7 && data) {
+        // Use the already loaded 7-day data
         setCustomRangeData(null);
+        setIsLoadingCustomRange(false);
+        return;
+      }
+      
+      if (selectedTimeRange === 30 && data30Days) {
+        // Use the already loaded 30-day data
+        setCustomRangeData(null);
+        setIsLoadingCustomRange(false);
         return;
       }
 
+      // For other ranges, fetch custom data
       setIsLoadingCustomRange(true);
       try {
-        const rangeData = await fetchCustomRange(chartTimeRange);
+        let rangeData: UsageReport | null = null;
+        
+        // Fetch the exact number of days requested
+        if (selectedTimeRange === 14 || selectedTimeRange === 60) {
+          // For 14 and 60 days, we need to fetch custom data
+          const endDate = new Date().toISOString().split('T')[0];
+          const startDate = new Date(Date.now() - (selectedTimeRange - 1) * 24 * 60 * 60 * 1000)
+            .toISOString().split('T')[0];
+          
+          if (user) {
+            const databaseService = DatabaseService.getInstance();
+            rangeData = await databaseService.fetchUsageData(user.id, startDate, endDate);
+          }
+        } else {
+          // Use the existing fetchCustomRange for other ranges
+          rangeData = await fetchCustomRange(chartTimeRange);
+        }
+        
         setCustomRangeData(rangeData);
       } catch (err) {
         console.error('Error fetching custom range:', err);
@@ -46,8 +110,8 @@ export const DashboardPage: React.FC = () => {
       }
     };
 
-    handleTimeRangeChange();
-  }, [chartTimeRange]); // Remove fetchCustomRange from dependencies
+    loadTimeRangeData();
+  }, [selectedTimeRange, chartTimeRange, data, data30Days, user]); // Dependencies
 
   if (loading) {
     return <LoadingSpinner />;
@@ -61,15 +125,24 @@ export const DashboardPage: React.FC = () => {
     return <ErrorMessage error="No data available" onRetry={refetch} />;
   }
 
-  const dailySummaries = getDailySummaries(data);
-  const modelTotals = getModelTotals(data);
+  // Use the selected time range data for all calculations
+  let displayData: UsageReport | null = null;
+  if (selectedTimeRange === 7 && data) {
+    displayData = data;
+  } else if (selectedTimeRange === 30 && data30Days) {
+    displayData = data30Days;
+  } else if (customRangeData) {
+    displayData = customRangeData;
+  } else {
+    displayData = data30Days || data;
+  }
   
-  // Use custom range data if available, otherwise use default 30-day data
-  const chartData = customRangeData || data30Days;
+  const dailySummaries = displayData ? getDailySummaries(displayData) : [];
+  const modelTotals = displayData ? getModelTotals(displayData) : {};
   
-  // Calculate environmental impact and prepare charts
-  const environmentalImpact = calculateEnvironmentalImpact(data30Days);
-  const stackedChartData = prepareStackedChartData(chartData);
+  // Calculate environmental impact and prepare charts using selected time range
+  const environmentalImpact = displayData ? calculateEnvironmentalImpact(displayData) : calculateEnvironmentalImpact({});
+  const stackedChartData = displayData ? prepareStackedChartData(displayData) : [];
   
   
   const totalRequests = dailySummaries.reduce((sum, day) => sum + day.total_requests, 0);
@@ -94,37 +167,31 @@ export const DashboardPage: React.FC = () => {
             )}
           </div>
           <div className="flex items-center space-x-4">
-            <ExportButton data={data} data30Days={data30Days} />
+            <SimpleSyncStatus 
+              lastSyncTime={lastSyncTime}
+              onSync={handleCombinedSync}
+              isLoading={isSyncing}
+            />
+            <TimeRangeSelector 
+              selectedRange={selectedTimeRange}
+              onRangeChange={handleTimeRangeChange}
+            />
+            <ExportButton data={displayData} data30Days={data30Days} />
           </div>
         </div>
 
-        {/* Real-time sync status */}
-        <div className="mb-6 flex gap-4">
-          <SyncStatus 
-            lastSyncTime={lastSyncTime}
-            onSync={syncData}
-            className="max-w-sm"
-          />
-          
-          {/* Cost sync button */}
-          <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-medium text-gray-900">Costs API</h3>
-              <button
-                onClick={syncCosts}
-                className="inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-              >
-                <DollarSign className="h-3 w-3 mr-1" />
-                Sync Costs
-              </button>
-            </div>
-            <p className="text-xs text-gray-600">
-              Fetch actual costs from OpenAI API
-            </p>
-          </div>
-        </div>
 
         <CarbonNeutralStatus impact={environmentalImpact} />
+        
+        {/* Loading overlay for custom time ranges */}
+        {isLoadingCustomRange && (
+          <div className="fixed inset-0 bg-white/50 backdrop-blur-sm z-40 flex items-center justify-center">
+            <div className="bg-white rounded-lg shadow-lg p-6 flex items-center gap-3">
+              <LoadingSpinner />
+              <span className="text-gray-700">Loading {selectedTimeRange} days of data...</span>
+            </div>
+          </div>
+        )}
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <MetricCard
@@ -148,6 +215,21 @@ export const DashboardPage: React.FC = () => {
             icon={<Activity />}
             formatter={(value) => value.toString()}
           />
+        </div>
+
+        <div className="mb-8">
+          {isLoadingCustomRange ? (
+            <div className="chart-container">
+              <div className="flex items-center justify-center h-64">
+                <LoadingSpinner />
+              </div>
+            </div>
+          ) : (
+            <StackedUsageChart 
+              data={stackedChartData} 
+              title="Token Usage by Model" 
+            />
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
@@ -183,53 +265,25 @@ export const DashboardPage: React.FC = () => {
         <ModelBreakdown modelTotals={modelTotals} />
 
         <div className="mt-8">
-          {isLoadingCustomRange ? (
-            <div className="chart-container">
-              <div className="flex items-center justify-center h-64">
-                <LoadingSpinner />
-              </div>
-            </div>
-          ) : (
-            <StackedUsageChart 
-              data={stackedChartData} 
-              title="Token Usage by Model (Stacked)" 
-              onTimeRangeChange={setChartTimeRange}
-              currentRange={chartTimeRange}
-            />
-          )}
-        </div>
-
-        <div className="mt-8">
           <EnvironmentalImpact impact={environmentalImpact} />
         </div>
 
-        <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <OptimizationRecommendations impact={environmentalImpact} />
-          <ComplianceReport impact={environmentalImpact} />
-        </div>
-
         <div className="mt-8">
-          <ModelAssumptions />
+          <OptimizationRecommendations impact={environmentalImpact} />
         </div>
 
         <div className="mt-8 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Usage Summary</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-            <div>
-              <span className="font-medium text-gray-600">Context Tokens:</span>
-              <span className="ml-2 text-gray-900">{totalContextTokens.toLocaleString()}</span>
-            </div>
-            <div>
-              <span className="font-medium text-gray-600">Generated Tokens:</span>
-              <span className="ml-2 text-gray-900">{totalGeneratedTokens.toLocaleString()}</span>
-            </div>
-            <div>
-              <span className="font-medium text-gray-600">Date Range:</span>
-              <span className="ml-2 text-gray-900">
-                {dailySummaries[0]?.date} - {dailySummaries[dailySummaries.length - 1]?.date}
-              </span>
-            </div>
-          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Learn More About Our Methodology</h3>
+          <p className="text-gray-600 mb-4">
+            Curious about how we calculate environmental impact and our research methodology?
+          </p>
+          <Link 
+            to="/research" 
+            className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium"
+          >
+            View Our Research
+            <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
       </main>
       
