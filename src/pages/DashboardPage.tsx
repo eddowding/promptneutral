@@ -86,6 +86,11 @@ export const DashboardPage: React.FC = () => {
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Carbon Impact Dashboard</h1>
             <p className="text-gray-600">Monitor your AI usage and environmental impact in real-time</p>
+            {dailySummaries.length > 0 && (
+              <p className="text-sm text-gray-500 mt-1">
+                Data range: {dailySummaries[0]?.date} to {dailySummaries[dailySummaries.length - 1]?.date}
+              </p>
+            )}
           </div>
           <div className="flex items-center space-x-4">
             <ExportButton data={data} data30Days={data30Days} />

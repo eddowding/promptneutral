@@ -27,12 +27,13 @@ export const ModelAssumptions: React.FC = () => {
         <div className="mt-6 space-y-6">
           {/* Methodology */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h4 className="font-medium text-blue-900 mb-2">Calculation Methodology</h4>
+            <h4 className="font-medium text-blue-900 mb-2">Calculation Methodology (July 2025 Snapshot)</h4>
             <ul className="text-sm text-blue-800 space-y-1">
-              <li>• <strong>Cost:</strong> Based on OpenAI's official pricing per 1,000 tokens</li>
-              <li>• <strong>Energy:</strong> Estimated from model size, compute requirements, and academic research</li>
-              <li>• <strong>Carbon:</strong> Uses global average grid intensity of 475g CO₂/kWh (IEA 2023)</li>
-              <li>• <strong>Tree Offset:</strong> Based on average tree absorption of ~21kg CO₂/year</li>
+              <li>• <strong>Cost:</strong> Based on provider pricing per 1,000 tokens</li>
+              <li>• <strong>Energy:</strong> From third-party measurements (Epoch AI), vendor claims, and expert estimates</li>
+              <li>• <strong>Carbon:</strong> Uses global average grid intensity of 475g CO₂/kWh (2024)</li>
+              <li>• <strong>Water:</strong> 0.25 L/kWh (typical US datacenter)</li>
+              <li>• <strong>Uncertainty:</strong> ±1 order of magnitude (values vary ×50-100 based on GPU, batch size, reasoning mode)</li>
             </ul>
           </div>
 
@@ -68,12 +69,13 @@ export const ModelAssumptions: React.FC = () => {
 
           {/* Sources */}
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-            <h4 className="font-medium text-gray-900 mb-2">Data Sources</h4>
+            <h4 className="font-medium text-gray-900 mb-2">Data Sources (July 2025)</h4>
             <ul className="text-sm text-gray-600 space-y-1">
-              <li>• <strong>Pricing:</strong> OpenAI official pricing (openai.com/pricing)</li>
-              <li>• <strong>Energy estimates:</strong> Academic research on LLM energy consumption</li>
-              <li>• <strong>Grid intensity:</strong> IEA Global Energy Review 2023</li>
-              <li>• <strong>Carbon calculations:</strong> Based on datacenter PUE of 1.2 and cooling overhead</li>
+              <li>• <strong>Third-party measurements:</strong> Epoch AI (GPT-4o), independent studies</li>
+              <li>• <strong>Vendor claims:</strong> Anthropic (Claude 4), Google (Gemini 2.5)</li>
+              <li>• <strong>Grid intensity:</strong> 0.475 kg CO₂/kWh (global avg 2024, IEA)</li>
+              <li>• <strong>Water usage:</strong> 0.25 L/kWh (typical US datacenter)</li>
+              <li>• <strong>Model coverage:</strong> GPT-4o, Claude 4, Gemini 2.5, o3, DeepSeek R1, and more</li>
             </ul>
           </div>
 
@@ -81,9 +83,9 @@ export const ModelAssumptions: React.FC = () => {
           <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
             <h4 className="font-medium text-amber-900 mb-2">Important Notes</h4>
             <p className="text-sm text-amber-800">
-              These are estimates based on available research and may not reflect actual values. 
-              Energy and carbon calculations vary significantly based on datacenter efficiency, 
-              grid composition, and model optimization. Use these figures as approximate indicators only.
+              ⚠️ ±1 order-of-magnitude uncertainty exists. Energy spread still &gt; 100× between models. 
+              Values vary ×50-100 based on GPU type, batch size, and reasoning mode. 
+              Transparency gap remains as most figures for newer models are vendor claims or extrapolations—no third-party audit yet.
             </p>
           </div>
         </div>
