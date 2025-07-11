@@ -1,5 +1,5 @@
 import React from 'react';
-import { Leaf, Zap, Shield, BarChart3, Award, Globe } from 'lucide-react';
+import { Zap, Shield, BarChart3, Award, Globe } from 'lucide-react';
 import { OnboardingData } from './OnboardingWizard';
 
 interface WelcomeStepProps {
@@ -15,9 +15,11 @@ export const WelcomeStep: React.FC<WelcomeStepProps> = ({ onNext }) => {
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center justify-center mb-6">
-          <div className="p-4 bg-green-100 rounded-2xl">
-            <Leaf className="w-12 h-12 text-green-600" />
-          </div>
+          <img 
+            src="/430xlogo.png" 
+            alt="430xAI Logo" 
+            className="w-16 h-16"
+          />
         </div>
         <h1 className="text-4xl font-bold text-gray-900 mb-4">
           Welcome to 430xAI

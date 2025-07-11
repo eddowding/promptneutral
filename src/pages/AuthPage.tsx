@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Leaf } from 'lucide-react';
 import { LoginForm } from '../components/LoginForm';
 import { SignupForm } from '../components/SignupForm';
 import { useAuth } from '../contexts/AuthContext';
@@ -38,10 +37,12 @@ export const AuthPage: React.FC = () => {
         {/* Logo and Brand */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-2">
-            <div className="p-3 bg-green-100 rounded-xl">
-              <Leaf className="w-8 h-8 text-green-600" />
-            </div>
-            <span className="ml-3 text-2xl font-bold text-gray-900">430xAI</span>
+            <img 
+              src="/430xlogo.png" 
+              alt="430xAI Logo" 
+              className="w-12 h-12 mr-3"
+            />
+            <span className="text-2xl font-bold text-gray-900">430xAI</span>
           </div>
           <p className="text-sm text-gray-600">AI savings → Climate impact</p>
         </div>

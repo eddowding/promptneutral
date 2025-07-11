@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Leaf, BarChart3, User, LogOut, Settings, MessageSquare } from 'lucide-react';
+import { BarChart3, User, LogOut, Settings, MessageSquare } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { ADMIN_EMAILS } from '../services/config';
 import { CurrencySelector } from './CurrencySelector';
@@ -16,9 +16,11 @@ export const Navigation: React.FC = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="p-2 bg-secondary-100 rounded-lg">
-              <Leaf className="w-6 h-6 text-forest" />
-            </div>
+            <img 
+              src="/430xlogo.png" 
+              alt="430xAI Logo" 
+              className="w-10 h-10"
+            />
             <div className="flex flex-col">
               <span className="text-xl font-bold text-primary">430xAI</span>
               <span className="text-xs text-neutral">AI savings → Climate impact</span>
