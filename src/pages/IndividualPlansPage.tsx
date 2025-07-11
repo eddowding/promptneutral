@@ -312,9 +312,9 @@ export const IndividualPlansPage: React.FC = () => {
                         <div className="flex items-center gap-3">
                           <Video className="w-5 h-5 text-yellow-600" />
                           <div>
-                            <div className="font-medium text-gray-900">Heavy video generation</div>
+                            <div className="font-medium text-gray-900">Video generation</div>
                             <div className="text-sm text-gray-600">
-                              Add {currency.symbol}{videoAddonMonthlyPrice}/month ({currency.symbol}{videoAddonYearlyPrice}/year) for video creation
+                              Add {currency.symbol}{videoAddonMonthlyPrice}/month ({currency.symbol}{videoAddonYearlyPrice}/year) if you create videos
                             </div>
                           </div>
                         </div>
