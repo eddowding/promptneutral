@@ -115,6 +115,13 @@ export const MODEL_ASSUMPTIONS: ModelEnvironmentalData[] = [
     co2gPerkWh: 475,
     co2gPer1kTokens: 1.9,
   },
+  {
+    model: 'o3-pro',
+    costPer1kTokens: 0.50, // Similar to o3 full
+    kWhPer1kTokens: 0.039, // Same as o3
+    co2gPerkWh: 475,
+    co2gPer1kTokens: 18.525,
+  },
   // DeepSeek R1 - Extended reasoning: 33-40 Wh/k tokens
   {
     model: 'deepseek-r1',

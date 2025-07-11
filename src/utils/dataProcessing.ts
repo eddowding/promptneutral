@@ -14,6 +14,9 @@ export const normalizeModelName = (model: string): string => {
   if (withoutVersion.startsWith('gpt-4')) return 'gpt-4';
   if (withoutVersion.startsWith('gpt-3.5-turbo')) return 'gpt-3.5-turbo';
   if (withoutVersion.startsWith('text-embedding')) return 'text-embedding';
+  if (withoutVersion.startsWith('o3-mini')) return 'o3-mini';
+  if (withoutVersion.startsWith('o3-pro')) return 'o3-pro';
+  if (withoutVersion.startsWith('o3')) return 'o3';
   if (withoutVersion.startsWith('o1')) return 'o1';
   
   return withoutVersion;
