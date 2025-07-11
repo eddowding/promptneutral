@@ -62,6 +62,10 @@ export interface ModelUsage {
   requests: number;
   context_tokens: number;
   generated_tokens: number;
+  // Optional cost data from API
+  actual_cost_usd?: number;
+  cost_breakdown?: CostBreakdown;
+  cost_source?: 'calculated' | 'api';
 }
 
 export interface DayUsage {

@@ -160,6 +160,10 @@ export class DatabaseService {
             requests: row.requests,
             context_tokens: row.context_tokens || row.input_tokens || 0,
             generated_tokens: row.generated_tokens || row.output_tokens || 0,
+            // Include actual cost data if available
+            actual_cost_usd: row.actual_cost_usd,
+            cost_breakdown: row.cost_breakdown,
+            cost_source: row.cost_source || 'calculated',
           };
         }
       }

@@ -16,6 +16,7 @@ export interface EnvironmentalImpact {
       kWh: number;
       co2g: number;
       tokens: number;
+      cost_source?: 'calculated' | 'api';
     };
   };
 }

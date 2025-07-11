@@ -20,7 +20,7 @@ export const calculateEnvironmentalImpact = (data: UsageReport): EnvironmentalIm
       const totalTokens = usage.context_tokens + usage.generated_tokens;
 
       // Calculate impacts - prefer actual cost if available
-      const cost = (totalTokens / 1000) * assumptions.costPer1kTokens;
+      const cost = usage.actual_cost_usd || (totalTokens / 1000) * assumptions.costPer1kTokens;
       const kWh = (totalTokens / 1000) * assumptions.kWhPer1kTokens;
       const co2g = (totalTokens / 1000) * assumptions.co2gPer1kTokens;
 
@@ -36,6 +36,7 @@ export const calculateEnvironmentalImpact = (data: UsageReport): EnvironmentalIm
           kWh: 0,
           co2g: 0,
           tokens: 0,
+          cost_source: usage.cost_source || 'calculated',
         };
       }
 
@@ -43,6 +44,11 @@ export const calculateEnvironmentalImpact = (data: UsageReport): EnvironmentalIm
       impact.modelBreakdown[normalizedModel].kWh += kWh;
       impact.modelBreakdown[normalizedModel].co2g += co2g;
       impact.modelBreakdown[normalizedModel].tokens += totalTokens;
+      
+      // Update cost_source to 'api' if any usage has actual costs
+      if (usage.cost_source === 'api') {
+        impact.modelBreakdown[normalizedModel].cost_source = 'api';
+      }
     });
   });
 

@@ -12,6 +12,7 @@ interface UseUsageDataReturn {
   error: string | null;
   refetch: () => Promise<void>;
   syncData: () => Promise<void>;
+  syncCosts: () => Promise<void>;
   lastSyncTime: Date | null;
   fetchCustomRange: (range: '7d' | '30d' | '90d' | 'all') => Promise<UsageReport | null>;
 }
@@ -193,6 +194,29 @@ export const useUsageData = (useLiveData: boolean = true): UseUsageDataReturn =>
     }
   };
 
+  const syncCosts = async () => {
+    if (!user) {
+      console.warn('Cannot sync costs: user not authenticated');
+      return;
+    }
+
+    try {
+      setError(null);
+      console.log('💰 Syncing costs data...');
+      
+      // Sync costs for the last 7 days
+      await apiService.syncCostsForRecentData(user.id, 7);
+      
+      console.log('✅ Cost sync completed successfully');
+      // Refresh the data to show updated costs
+      await fetchData();
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+      console.error('Error syncing costs:', errorMessage);
+      setError(errorMessage);
+    }
+  };
+
   const fetchCustomRange = useCallback(async (range: '7d' | '30d' | '90d' | 'all'): Promise<UsageReport | null> => {
     if (!user) {
       console.warn('Cannot fetch custom range: user not authenticated');
@@ -295,6 +319,7 @@ export const useUsageData = (useLiveData: boolean = true): UseUsageDataReturn =>
     error,
     refetch: fetchData,
     syncData,
+    syncCosts,
     lastSyncTime,
     fetchCustomRange,
   };

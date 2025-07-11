@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Activity, MessageSquare, Zap, TrendingUp } from 'lucide-react';
+import { Activity, MessageSquare, Zap, TrendingUp, DollarSign } from 'lucide-react';
 import { MetricCard } from '../components/MetricCard';
 import { UsageChart } from '../components/UsageChart';
 import { ModelBreakdown } from '../components/ModelBreakdown';
@@ -24,7 +24,7 @@ export const DashboardPage: React.FC = () => {
   const [customRangeData, setCustomRangeData] = useState<UsageReport | null>(null);
   const [isLoadingCustomRange, setIsLoadingCustomRange] = useState(false);
   const [isBackgroundSyncing, setIsBackgroundSyncing] = useState(true);
-  const { data, data30Days, loading, error, refetch, syncData, lastSyncTime, fetchCustomRange } = useUsageData(true);
+  const { data, data30Days, loading, error, refetch, syncData, syncCosts, lastSyncTime, fetchCustomRange } = useUsageData(true);
 
   // Handle time range changes
   useEffect(() => {
@@ -99,12 +99,29 @@ export const DashboardPage: React.FC = () => {
         </div>
 
         {/* Real-time sync status */}
-        <div className="mb-6">
+        <div className="mb-6 flex gap-4">
           <SyncStatus 
             lastSyncTime={lastSyncTime}
             onSync={syncData}
             className="max-w-sm"
           />
+          
+          {/* Cost sync button */}
+          <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-sm font-medium text-gray-900">Costs API</h3>
+              <button
+                onClick={syncCosts}
+                className="inline-flex items-center px-2.5 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              >
+                <DollarSign className="h-3 w-3 mr-1" />
+                Sync Costs
+              </button>
+            </div>
+            <p className="text-xs text-gray-600">
+              Fetch actual costs from OpenAI API
+            </p>
+          </div>
         </div>
 
         <CarbonNeutralStatus impact={environmentalImpact} />

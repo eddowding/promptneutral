@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { RefreshCw, Database, Clock, AlertCircle, CheckCircle, Wifi, WifiOff } from 'lucide-react';
+import { RefreshCw, Database, Clock, AlertCircle, CheckCircle, Wifi, WifiOff, DollarSign } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { SyncService } from '../services/syncService';
 import { DataMigrationService } from '../utils/dataMigration';

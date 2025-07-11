@@ -208,6 +208,20 @@ export function formatCurrency(amount: number, currency: CurrencyInfo, options?:
   }
 }
 
+// USD conversion functions for OpenAI Costs API
+const USD_TO_EUR_RATE = 0.92; // Approximate rate, should be updated from real exchange rates
+
+export function convertFromUSD(amountUSD: number, targetCurrency: CurrencyInfo): number {
+  // Convert USD → EUR → target currency
+  const amountEUR = amountUSD * USD_TO_EUR_RATE;
+  return convertFromEUR(amountEUR, targetCurrency);
+}
+
+export function formatCurrencyFromUSD(amountUSD: number, currency: CurrencyInfo, options?: { decimals?: number }): string {
+  const convertedAmount = convertFromUSD(amountUSD, currency);
+  return formatCurrency(convertedAmount, currency, options);
+}
+
 // Get stored currency preference or detect new
 export async function getUserCurrency(): Promise<CurrencyInfo> {
   // Check localStorage first

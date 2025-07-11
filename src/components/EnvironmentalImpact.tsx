@@ -9,6 +9,15 @@ interface EnvironmentalImpactProps {
 }
 
 export const EnvironmentalImpact: React.FC<EnvironmentalImpactProps> = ({ impact }) => {
+  // Check if we have any actual cost data
+  const hasActualCosts = impact.modelBreakdown && Object.values(impact.modelBreakdown).some(model => 
+    'cost_source' in model && model.cost_source === 'api'
+  );
+
+  const costSubtitle = hasActualCosts 
+    ? "Includes actual costs from OpenAI API" 
+    : "Estimated from model assumptions";
+
   return (
     <div>
       <h2 className="text-xl font-bold text-gray-900 mb-6">Environmental Impact</h2>
@@ -19,7 +28,7 @@ export const EnvironmentalImpact: React.FC<EnvironmentalImpactProps> = ({ impact
           value={impact.totalCost}
           icon={<DollarSign />}
           formatter={formatCurrency}
-          subtitle="Estimated from model assumptions"
+          subtitle={costSubtitle}
         />
         <MetricCard
           title="Energy Usage"

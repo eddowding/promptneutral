@@ -1,5 +1,5 @@
 import { supabase, settingsService } from '../lib/supabase';
-import { AdminUsageBucket, AdminUsageResult, UsageData, DataFetchStatus } from '../types/usage';
+import { AdminUsageBucket, AdminUsageResult, UsageData, DataFetchStatus, CostBreakdown } from '../types/usage';
 
 const ENDPOINTS = [
   'completions', 'embeddings', 'images', 'moderations',
@@ -8,6 +8,7 @@ const ENDPOINTS = [
 ];
 
 const BASE_URL = 'https://api.openai.com/v1/organization/usage';
+const COSTS_URL = 'https://api.openai.com/v1/organization/costs';
 const DAY_SECONDS = 24 * 3600;
 
 export class AdminApiService {
@@ -293,6 +294,55 @@ export class AdminApiService {
 
     return { shouldFetch: false, reason: 'Data is recent (less than a week old)' };
   }
+
+  /**
+   * Fetch costs data for a date range
+   */
+  async fetchCostsData(startTime: number, endTime: number): Promise<Record<string, CostBreakdown>> {
+    try {
+      const url = new URL(COSTS_URL);
+      url.searchParams.append('start_time', startTime.toString());
+      url.searchParams.append('end_time', endTime.toString());
+      url.searchParams.append('bucket_width', '1d');
+
+      console.log(`💰 Fetching costs from ${new Date(startTime * 1000).toISOString()} to ${new Date(endTime * 1000).toISOString()}`);
+
+      const response = await fetch(url.toString(), {
+        headers: this.getHeaders()
+      });
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          console.log('⚠️ Costs API not available, proceeding without cost data');
+          return {};
+        }
+        const errorText = await response.text();
+        throw new Error(`Costs API error: ${response.status} ${response.statusText} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      const costsByDate: Record<string, CostBreakdown> = {};
+
+      if (data.data && Array.isArray(data.data)) {
+        for (const bucket of data.data) {
+          const date = new Date(bucket.start_time * 1000).toISOString().split('T')[0];
+          costsByDate[date] = {
+            amount: bucket.amount || 0,
+            currency: bucket.currency || 'USD',
+            description: bucket.description,
+            timestamp: bucket.start_time,
+            metadata: bucket.metadata || {}
+          };
+        }
+      }
+
+      console.log(`✓ Fetched costs for ${Object.keys(costsByDate).length} days`);
+      return costsByDate;
+    } catch (error) {
+      console.warn('⚠️ Failed to fetch costs data:', error);
+      return {}; // Return empty costs if API fails
+    }
+  }
 }
 
 export async function createAdminApiService(userId: string): Promise<AdminApiService | null> {
@@ -341,18 +391,53 @@ export async function fetchAndStoreUsageData(
       }
     }
 
-    console.log(`Starting usage data fetch for last ${daysBack} days...`);
-    const usageData = await service.fetchAllUsageData(userId, daysBack);
+    console.log(`Starting usage and costs data fetch for last ${daysBack} days...`);
     
-    console.log(`Fetched ${usageData.length} usage records`);
-    await service.saveUsageDataToDatabase(usageData);
+    // Calculate time range for costs API
+    const endTime = Math.floor(Date.now() / 1000);
+    const startTime = endTime - (daysBack * DAY_SECONDS);
     
-    await service.updateFetchStatus(userId, ENDPOINTS, usageData.length);
+    // Fetch usage and costs data in parallel
+    const [usageData, costsData] = await Promise.all([
+      service.fetchAllUsageData(userId, daysBack),
+      service.fetchCostsData(startTime, endTime)
+    ]);
+    
+    console.log(`Fetched ${usageData.length} usage records and costs for ${Object.keys(costsData).length} days`);
+    
+    // Enhance usage data with actual costs where available
+    const enhancedUsageData = usageData.map(record => {
+      const date = record.date;
+      const costInfo = costsData[date];
+      
+      if (costInfo) {
+        return {
+          ...record,
+          actual_cost_usd: costInfo.amount,
+          cost_breakdown: costInfo,
+          cost_source: 'api' as const
+        };
+      }
+      
+      return {
+        ...record,
+        cost_source: 'calculated' as const
+      };
+    });
+    
+    await service.saveUsageDataToDatabase(enhancedUsageData);
+    
+    await service.updateFetchStatus(userId, ENDPOINTS, enhancedUsageData.length);
+
+    const costsCount = Object.keys(costsData).length;
+    const message = costsCount > 0 
+      ? `Successfully fetched and stored ${enhancedUsageData.length} usage records with costs for ${costsCount} days`
+      : `Successfully fetched and stored ${enhancedUsageData.length} usage records (costs API not available)`;
 
     return {
       success: true,
-      message: `Successfully fetched and stored ${usageData.length} usage records`,
-      recordsProcessed: usageData.length
+      message,
+      recordsProcessed: enhancedUsageData.length
     };
   } catch (error) {
     console.error('Error in fetchAndStoreUsageData:', error);
