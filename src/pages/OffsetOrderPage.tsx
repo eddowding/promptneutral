@@ -130,14 +130,14 @@ export function OffsetOrderPage() {
   // Recalculate quantity when project is selected in hero mode
   useEffect(() => {
     if (selectedProjectData && heroAmount) {
-      // Convert hero amount from local currency to EUR
-      const heroAmountEUR = convertToEUR(heroAmount);
+      // heroAmount is already in EUR when passed from the previous page
+      const heroAmountEUR = heroAmount;
       const processingFee = 0.30;
       const amountForOffset = Math.max(0.01, heroAmountEUR - processingFee);
       const heroQuantity = amountForOffset / selectedProjectData.pricePerTonne;
       setQuantity(Math.floor(heroQuantity * 1000) / 1000); // Floor to 3 decimal places to ensure we don't exceed
     }
-  }, [selectedProject, heroAmount, selectedProjectData, convertToEUR]);
+  }, [selectedProject, heroAmount, selectedProjectData]);
 
   const handlePurchase = () => {
     if (!selectedProject || !selectedProjectData) {
@@ -374,7 +374,7 @@ export function OffsetOrderPage() {
       
       {/* Sticky Cart Footer */}
       {selectedProject && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg">
+        <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-white to-emerald-50 border-t-2 border-emerald-200 shadow-lg backdrop-blur-sm" style={{ background: 'linear-gradient(to right, #ffffff, rgba(0, 125, 84, 0.05))' }}>
           <div className="container mx-auto px-4 py-4">
             <div className="max-w-4xl mx-auto flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -395,7 +395,10 @@ export function OffsetOrderPage() {
                 </div>
                 <button
                   onClick={handlePurchase}
-                  className="bg-primary-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-primary-700 transition-colors flex items-center gap-2"
+                  className="text-white py-3 px-6 rounded-lg font-semibold transition-colors flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105"
+                  style={{ backgroundColor: '#007d54' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#006645'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#007d54'}
                 >
                   <ShoppingCart className="h-5 w-5" />
                   Checkout

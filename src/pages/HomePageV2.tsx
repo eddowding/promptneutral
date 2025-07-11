@@ -46,6 +46,21 @@ export function HomePageV2() {
   const navigate = useNavigate();
   const { currency, formatCurrency, formatCurrencyFromEUR, convertFromEUR, convertToEUR, loading: currencyLoading } = useCurrency();
   
+  // Helper function to convert from USD to user's local currency
+  const convertFromUSD = (amountUSD: number) => {
+    // Convert USD to EUR first, then to user's currency
+    // USD rate is stored as EUR->USD rate, so we need to invert it
+    const usdRate = 1.08; // Fallback rate
+    const amountEUR = amountUSD / usdRate;
+    // Then convert EUR to user's currency
+    return convertFromEUR(amountEUR);
+  };
+
+  // Helper function to convert from user's local currency to EUR for backend
+  const convertToEURFromLocal = (amount: number) => {
+    return convertToEUR(amount);
+  };
+  
   const [spending, setSpending] = useState<ProviderSpending>({
     openai: 0,
     anthropic: 0,
@@ -508,7 +523,7 @@ export function HomePageV2() {
                             <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-dark font-bold text-xl">{currency.symbol}</span>
                             <input
                               type="text"
-                              value={heroAmount !== '' ? heroAmount : (convertFromEUR(parseFloat(userGuess) * 1.0)).toFixed(2)}
+                              value={heroAmount !== '' ? heroAmount : convertFromUSD(parseFloat(userGuess)).toFixed(2)}
                               onChange={(e) => setHeroAmount(e.target.value.replace(/[$,]/g, ''))}
                               onKeyDown={handleNumberInput}
                               className="w-36 pl-8 pr-4 text-2xl font-bold text-center bg-transparent focus:outline-none"
@@ -525,9 +540,9 @@ export function HomePageV2() {
                         onClick={() => navigate('/offset-order', { 
                           state: { 
                             offsetAmount: results.totalCO2Tonnes, 
-                            offsetCost: convertToEUR(parseFloat(heroAmount !== '' ? heroAmount : userGuess)),
-                            heroAmount: convertToEUR(parseFloat(heroAmount !== '' ? heroAmount : userGuess)),
-                            standardCost: results.offsetCost,
+                            offsetCost: results.offsetCost, // This is already in EUR
+                            heroAmount: heroAmount !== '' ? convertToEURFromLocal(parseFloat(heroAmount)) : convertToEURFromLocal(convertFromUSD(parseFloat(userGuess))),
+                            standardCost: results.offsetCost, // This is already in EUR
                             userCurrency: currency.code,
                             aiProviders: spending
                           } 
