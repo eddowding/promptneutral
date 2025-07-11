@@ -141,10 +141,10 @@ export function HomePageV2() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="text-5xl font-bold text-primary mb-4">
-              What's Your AI Carbon Score?
+              AI savings → Climate impact
             </h1>
             <p className="text-xl text-neutral">
-              Calculate the environmental impact of your AI usage
+              Turn your AI cost savings into planetary-scale restoration projects
             </p>
           </div>
 
@@ -407,20 +407,17 @@ export function HomePageV2() {
                 </div>
 
                 {userGuess && parseFloat(userGuess) > results.offsetCost && (
-                  <div className="mt-8 p-6 bg-gradient-to-r from-yellow-50 to-amber-50 rounded-xl border-2 border-yellow-300">
+                  <div className="mt-8 p-6 bg-gradient-to-br from-yellow-50 via-amber-50 to-orange-50 rounded-xl border-2 border-yellow-300 shadow-lg">
                     <div className="text-center">
-                      <h3 className="text-xl font-bold text-primary mb-2 flex items-center justify-center gap-2">
-                        <span className="text-2xl">🦸</span>
+                      <h3 className="text-2xl font-bold text-primary mb-3 flex items-center justify-center gap-2">
+                        <span className="text-3xl">🦸</span>
                         Make the Hero Move!
                       </h3>
                       <p className="text-neutral-dark mb-4">
-                        You guessed ${parseFloat(userGuess).toFixed(2)} - great news, even at 430x it's still less!
+                        You guessed ${parseFloat(userGuess).toFixed(2)} - that's {(parseFloat(userGuess) / convertFromEUR(results.offsetCost)).toFixed(1)}x too much! Even at 430x, it's just {((convertFromEUR(results.offsetCost * 430) / Object.values(spending).reduce((sum, amount) => sum + amount, 0)) * 100).toFixed(0)}% of your AI spend.
                       </p>
                       <p className="text-sm text-neutral mb-6">
-                        {parseFloat(userGuess) > convertFromEUR(results.offsetCost * 430) 
-                          ? `Even our maximum 430x offset (${formatCurrencyFromEUR(results.offsetCost * 430)}) is less than your guess!`
-                          : 'Choose your impact level or enter a custom amount:'
-                        }
+                        You've saved massively by using AI. This is a fantastic opportunity to give back and be proud of it!
                       </p>
                       
                       <div className="grid grid-cols-3 gap-3 mb-4 max-w-md mx-auto">
@@ -439,7 +436,7 @@ export function HomePageV2() {
                             if (totalAISpending > 0) {
                               const offsetAmount = convertFromEUR(Math.round(results.offsetCost * 100) / 100 * 4.3);
                               const percentage = (offsetAmount / totalAISpending * 100).toFixed(1);
-                              return <div className="text-xs text-neutral-light mt-1">{percentage}% of AI spend</div>;
+                              return <div className="text-xs text-neutral mt-1">{percentage}% of AI spend</div>;
                             }
                             return null;
                           })()}
@@ -459,7 +456,7 @@ export function HomePageV2() {
                             if (totalAISpending > 0) {
                               const offsetAmount = convertFromEUR(Math.round(results.offsetCost * 100) / 100 * 43);
                               const percentage = (offsetAmount / totalAISpending * 100).toFixed(1);
-                              return <div className="text-xs text-neutral-light mt-1">{percentage}% of AI spend</div>;
+                              return <div className="text-xs text-neutral mt-1">{percentage}% of AI spend</div>;
                             }
                             return null;
                           })()}
@@ -482,7 +479,7 @@ export function HomePageV2() {
                             if (totalAISpending > 0) {
                               const offsetAmount = convertFromEUR(Math.round(results.offsetCost * 100) / 100 * 430);
                               const percentage = (offsetAmount / totalAISpending * 100).toFixed(1);
-                              return <div className="text-xs text-neutral-light mt-1">{percentage}% of AI spend</div>;
+                              return <div className="text-xs text-neutral mt-1">{percentage}% of AI spend</div>;
                             }
                             return null;
                           })()}
@@ -491,7 +488,7 @@ export function HomePageV2() {
                       
                       <div className="flex flex-col items-center mb-6">
                         <div className="flex items-center justify-center gap-3 mb-3">
-                          <span className="text-lg font-semibold">Or offset for</span>
+                          <span className="text-lg font-semibold">Or offset your estimate</span>
                           <div className="relative bg-white border-2 border-yellow-300 rounded-lg p-3">
                             <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-light font-bold text-xl">{currency.symbol}</span>
                             <input
@@ -504,22 +501,6 @@ export function HomePageV2() {
                             />
                           </div>
                         </div>
-                        {(heroAmount !== '' ? heroAmount : userGuess) && parseFloat(heroAmount !== '' ? heroAmount : userGuess) > 0 && (() => {
-                          const amount = parseFloat(heroAmount !== '' ? heroAmount : userGuess);
-                          const amountEUR = convertToEUR(amount);
-                          const multiplier = (amountEUR / results.offsetCost).toFixed(1);
-                          const totalAISpending = Object.values(spending).reduce((sum, amount) => sum + amount, 0);
-                          const percentage = totalAISpending > 0 ? (amount / totalAISpending * 100).toFixed(1) : null;
-                          
-                          return (
-                            <div className="text-center mt-2">
-                              <div className="text-3xl font-bold text-yellow-700">{multiplier}x</div>
-                              {percentage && (
-                                <div className="text-sm text-neutral mt-1">{percentage}% of AI spend</div>
-                              )}
-                            </div>
-                          );
-                        })()}
                       </div>
                       
                       <button
@@ -534,7 +515,7 @@ export function HomePageV2() {
                           } 
                         })}
                         disabled={!heroAmount && !userGuess}
-                        className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white py-4 px-8 rounded-lg font-bold hover:from-yellow-600 hover:to-yellow-700 transition-all inline-flex items-center gap-2 text-lg shadow-lg transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white py-4 px-8 rounded-lg font-bold hover:from-yellow-600 hover:to-orange-600 transition-all inline-flex items-center gap-2 text-lg shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <span className="text-xl">🌍</span>
                         Offset My Carbon Impact
@@ -586,6 +567,16 @@ export function HomePageV2() {
                           1x offset = carbon neutral. 430x = actively removing historic emissions. 
                           Join the movement of companies going beyond neutrality to reverse climate change.
                         </p>
+                      </div>
+                      
+                      <div className="mt-4">
+                        <Link 
+                          to="/why-430x" 
+                          className="inline-flex items-center gap-2 text-primary hover:text-primary-700 font-medium"
+                        >
+                          Learn more about why we need to remove 70-220 Gt of CO₂ by 2050
+                          <ExternalLink className="h-4 w-4" />
+                        </Link>
                       </div>
                     </div>
                   )}

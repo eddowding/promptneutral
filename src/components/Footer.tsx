@@ -16,7 +16,7 @@ export const Footer: React.FC = () => {
               <span className="text-xl font-bold">430xAI</span>
             </div>
             <p className="text-gray-400 mb-6 max-w-md">
-              Offset your AI carbon footprint by 430% - matching our 430ppm CO₂ reality.
+              AI savings → Climate impact. Turn your AI cost savings into planetary-scale restoration projects.
             </p>
           </div>
 

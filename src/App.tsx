@@ -19,6 +19,7 @@ import { PasswordReset } from './components/PasswordReset';
 import FeedbackTab from './components/FeedbackTab';
 import FeedbackPage from './pages/admin/FeedbackPage';
 import SouthPoleTest from './components/SouthPoleTest';
+import { Why430xPage } from './pages/Why430xPage';
 
 function App() {
   return (
@@ -87,6 +88,7 @@ function App() {
             } />
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/research" element={<ResearchPage />} />
+            <Route path="/why-430x" element={<Why430xPage />} />
           </Routes>
         </div>
       </Router>

@@ -23,8 +23,8 @@ export const WelcomeStep: React.FC<WelcomeStepProps> = ({ onNext }) => {
           Welcome to 430xAI
         </h1>
         <p className="text-xl text-gray-600 leading-relaxed">
-          Offset your AI carbon footprint by 430% - matching our 430ppm CO₂ reality
-          with real-time monitoring and verified carbon credits.
+          AI savings → Climate impact. Turn your AI cost savings into planetary-scale 
+          restoration projects with real-time monitoring and verified carbon credits.
         </p>
       </div>
 
