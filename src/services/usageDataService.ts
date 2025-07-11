@@ -60,9 +60,9 @@ export class UsageDataService {
       date: item.date,
       model: item.model,
       requests: item.requests,
-      context_tokens: item.input_tokens, // Legacy mapping
-      generated_tokens: item.output_tokens, // Legacy mapping
-      total_tokens: item.input_tokens + item.output_tokens,
+      context_tokens: item.context_tokens || item.input_tokens || 0, // Support both field names
+      generated_tokens: item.generated_tokens || item.output_tokens || 0, // Support both field names
+      total_tokens: (item.context_tokens || item.input_tokens || 0) + (item.generated_tokens || item.output_tokens || 0),
       input_cached_tokens: item.input_cached_tokens,
       input_audio_tokens: item.input_audio_tokens,
       output_audio_tokens: item.output_audio_tokens,
@@ -129,7 +129,7 @@ export class UsageDataService {
         };
       }
       
-      acc[item.model].total_tokens += item.input_tokens + item.output_tokens;
+      acc[item.model].total_tokens += (item.context_tokens || item.input_tokens || 0) + (item.generated_tokens || item.output_tokens || 0);
       acc[item.model].total_requests += item.requests;
       acc[item.model].cost += item.cost;
       
@@ -165,7 +165,7 @@ export class UsageDataService {
         };
       }
       
-      acc[item.endpoint].total_tokens += item.input_tokens + item.output_tokens;
+      acc[item.endpoint].total_tokens += (item.context_tokens || item.input_tokens || 0) + (item.generated_tokens || item.output_tokens || 0);
       acc[item.endpoint].total_requests += item.requests;
       acc[item.endpoint].cost += item.cost;
       
@@ -201,7 +201,7 @@ export class UsageDataService {
     return {
       total_cost: usageData.reduce((sum, item) => sum + item.cost, 0),
       total_requests: usageData.reduce((sum, item) => sum + item.requests, 0),
-      total_tokens: usageData.reduce((sum, item) => sum + item.input_tokens + item.output_tokens, 0),
+      total_tokens: usageData.reduce((sum, item) => sum + (item.context_tokens || item.input_tokens || 0) + (item.generated_tokens || item.output_tokens || 0), 0),
       total_co2_grams: usageData.reduce((sum, item) => sum + item.co2_grams, 0),
       unique_models: uniqueModels.size,
       unique_endpoints: uniqueEndpoints.size,

@@ -71,6 +71,7 @@ export const DashboardPage: React.FC = () => {
   const environmentalImpact = calculateEnvironmentalImpact(data30Days);
   const stackedChartData = prepareStackedChartData(chartData);
   
+  
   const totalRequests = dailySummaries.reduce((sum, day) => sum + day.total_requests, 0);
   const totalTokens = dailySummaries.reduce((sum, day) => sum + day.total_tokens, 0);
   const totalContextTokens = dailySummaries.reduce((sum, day) => sum + day.total_context_tokens, 0);

@@ -138,8 +138,8 @@ export class DatabaseService {
           
           dayUsage[row.model] = {
             requests: row.requests,
-            context_tokens: row.context_tokens,
-            generated_tokens: row.generated_tokens,
+            context_tokens: row.context_tokens || row.input_tokens || 0,
+            generated_tokens: row.generated_tokens || row.output_tokens || 0,
           };
         }
       }

@@ -35,6 +35,8 @@ export interface UsageData {
   input_cached_tokens: number;
   input_audio_tokens: number;
   output_audio_tokens: number;
+  context_tokens?: number; // Legacy field
+  generated_tokens?: number; // Legacy field
   project_id?: string;
   api_key_id?: string;
   batch?: string;
