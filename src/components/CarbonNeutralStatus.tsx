@@ -21,18 +21,7 @@ export const CarbonNeutralStatus: React.FC<CarbonNeutralStatusProps> = ({ impact
           </div>
           <div>
             <h2 className="text-xl font-bold text-green-900">Carbon Neutral Status</h2>
-            <p className="text-sm text-green-700">EU Green Claims Directive Compliant</p>
           </div>
-        </div>
-        <div className="flex items-center space-x-2">
-          {isNeutralized ? (
-            <CheckCircle className="w-6 h-6 text-green-600" />
-          ) : (
-            <Clock className="w-6 h-6 text-amber-500" />
-          )}
-          <span className={`font-medium ${isNeutralized ? 'text-green-600' : 'text-amber-600'}`}>
-            {isNeutralized ? '100% Neutralized' : 'Pending'}
-          </span>
         </div>
       </div>
 
@@ -71,17 +60,6 @@ export const CarbonNeutralStatus: React.FC<CarbonNeutralStatusProps> = ({ impact
         </div>
       </div>
 
-      <div className="mt-6 flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <Shield className="w-4 h-4 text-green-600" />
-          <span className="text-sm text-green-700">
-            Blockchain verified • Audit ready • Real-time retirement
-          </span>
-        </div>
-        <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
-          View Certificate
-        </button>
-      </div>
     </div>
   );
 };
