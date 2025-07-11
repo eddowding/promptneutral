@@ -36,11 +36,14 @@ export const AuthPage: React.FC = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         {/* Logo and Brand */}
-        <div className="flex items-center justify-center mb-8">
-          <div className="p-3 bg-green-100 rounded-xl">
-            <Leaf className="w-8 h-8 text-green-600" />
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center mb-2">
+            <div className="p-3 bg-green-100 rounded-xl">
+              <Leaf className="w-8 h-8 text-green-600" />
+            </div>
+            <span className="ml-3 text-2xl font-bold text-gray-900">430xAI</span>
           </div>
-          <span className="ml-3 text-2xl font-bold text-gray-900">430xAI</span>
+          <p className="text-sm text-gray-600">AI savings → Climate impact</p>
         </div>
 
         {/* Tab Navigation */}

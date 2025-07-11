@@ -141,7 +141,7 @@ export function HomePageV2() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h1 className="text-5xl font-bold text-primary mb-4">
-              AI savings → Climate impact
+              What's Your AI Energy Footprint?
             </h1>
             <p className="text-xl text-neutral">
               Turn your AI cost savings into planetary-scale restoration projects
@@ -546,26 +546,27 @@ export function HomePageV2() {
                       <div>
                         <h4 className="font-semibold mb-2">🌍 We're at 430ppm CO₂</h4>
                         <p className="text-sm">
-                          Earth's atmosphere hit 430ppm CO₂ - a fun coincidence that became our rallying cry! 
-                          We're at an inflection point with both AI and climate. While AI saves you massive costs, 
-                          let's reinvest 10-100x our footprint into regenerative environmental projects.
+                          Earth's atmosphere is about 430ppm CO₂. AI emissions are individually tiny, but cumulatively ENORMOUS. 
+                          And since we're at an inflection point with both AI and climate, let's use this opportunity to invest 
+                          some of the savings that you've made by using AI into planetary-scale restoration projects.
                         </p>
                       </div>
                       
                       <div>
-                        <h4 className="font-semibold mb-2">💡 Less than you think, more than enough</h4>
+                        <h4 className="font-semibold mb-2">💡 Less than you think, still not enough</h4>
                         <p className="text-sm">
-                          Most people overestimate offset costs by 500x-10,000x. Even at 430x offset, 
-                          it's typically just ~10% of your AI spend - far less than most initial guesses, 
-                          yet enough to make a massive climate impact.
+                          Most people overestimate AI offset costs by 500x-10,000x. If you offset 430x that's ~10% of your AI spend - 
+                          far less than most initial guesses, yet enough to make a massive impact to climate restoration 
+                          projects around the world.
                         </p>
                       </div>
                       
                       <div>
                         <h4 className="font-semibold mb-2">🚀 Beyond neutral to climate positive</h4>
                         <p className="text-sm">
-                          1x offset = carbon neutral. 430x = actively removing historic emissions. 
-                          Join the movement of companies going beyond neutrality to reverse climate change.
+                          We're suggesting 430x because we need to remove <strong>at least 70 to 220 Gt of CO₂</strong> from the atmosphere 
+                          between now and 2050, even with the fastest feasible emissions reductions. Join the movement of companies 
+                          going beyond neutrality to reverse climate change.
                         </p>
                       </div>
                       

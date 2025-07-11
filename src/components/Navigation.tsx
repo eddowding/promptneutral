@@ -19,7 +19,10 @@ export const Navigation: React.FC = () => {
             <div className="p-2 bg-secondary-100 rounded-lg">
               <Leaf className="w-6 h-6 text-forest" />
             </div>
-            <span className="text-xl font-bold text-primary">430xAI</span>
+            <div className="flex flex-col">
+              <span className="text-xl font-bold text-primary">430xAI</span>
+              <span className="text-xs text-neutral">AI savings → Climate impact</span>
+            </div>
           </Link>
 
           {/* Navigation Links */}
