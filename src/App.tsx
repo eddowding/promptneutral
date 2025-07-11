@@ -10,7 +10,6 @@ import { DashboardPage } from './pages/DashboardPage';
 import { OffsetOrderPage } from './pages/OffsetOrderPage';
 import { CheckoutPage } from './pages/CheckoutPage';
 import { ResearchPage } from './pages/ResearchPage';
-import { PricingPage } from './pages/PricingPage';
 import { AuthPage } from './pages/AuthPage';
 import { OnboardingPage } from './pages/OnboardingPage';
 import { SettingsPage } from './pages/SettingsPage';
@@ -22,6 +21,7 @@ import SouthPoleTest from './components/SouthPoleTest';
 import { Why430xPage } from './pages/Why430xPage';
 import { IndividualPlansPage } from './pages/IndividualPlansPage';
 import { IndividualCheckoutPage } from './pages/IndividualCheckoutPage';
+import { ContactPage } from './pages/ContactPage';
 
 function App() {
   return (
@@ -41,12 +41,6 @@ function App() {
               <>
                 <Navigation />
                 <AuthPage />
-              </>
-            } />
-            <Route path="/pricing" element={
-              <>
-                <Navigation />
-                <PricingPage />
               </>
             } />
             <Route path="/verify-email" element={<EmailVerification />} />
@@ -98,6 +92,7 @@ function App() {
             <Route path="/individual-checkout" element={<IndividualCheckoutPage />} />
             <Route path="/research" element={<ResearchPage />} />
             <Route path="/why-430x" element={<Why430xPage />} />
+            <Route path="/contact" element={<ContactPage />} />
           </Routes>
         </div>
       </Router>

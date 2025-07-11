@@ -219,8 +219,8 @@ export const IndividualPlansPage: React.FC = () => {
           </h1>
           
           <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-            Match your AI service subscriptions with carbon offsets. 
-            Simple yearly pricing based on your actual usage tier.
+            We're pretty confident that given how efficient the models actually are, you'll be doing more than your bit by offsetting. 
+            We're hoping that it saves you so much time and effort in the rest of your life that you'll have a little extra to be able to give back.
           </p>
           
           <div className="flex items-center justify-center gap-8 text-sm text-gray-600">
@@ -236,6 +236,16 @@ export const IndividualPlansPage: React.FC = () => {
               <Leaf className="w-4 h-4 text-blue-600" />
               Verified offsets
             </div>
+          </div>
+          
+          <div className="mt-6">
+            <Link 
+              to="/why-430x" 
+              className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium"
+            >
+              Learn more about our mission
+              <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
         </div>
       </section>
