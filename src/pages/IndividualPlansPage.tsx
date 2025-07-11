@@ -11,104 +11,195 @@ import {
   Sparkles,
   Clock,
   Shield,
-  TreePine
+  Video,
+  Star,
+  Zap
 } from 'lucide-react';
+
+interface ServiceTier {
+  id: string;
+  name: string;
+  yearlyPrice: number;
+  description: string;
+  popular?: boolean;
+}
+
+interface ServiceConfig {
+  id: string;
+  name: string;
+  icon: string;
+  tiers: ServiceTier[];
+  hasVideoAddon?: boolean;
+}
 
 interface ServiceSelection {
   serviceId: string;
-  amount: number;
+  tierId: string;
+  yearlyPrice: number;
+  hasVideoAddon?: boolean;
 }
 
-const AI_SERVICES = [
+const AI_SERVICES: ServiceConfig[] = [
   {
     id: 'openai',
     name: 'OpenAI',
-    description: 'ChatGPT, GPT-4, DALL-E, and other OpenAI services',
     icon: '🤖',
-    popular: true,
-    basePrice: 3
+    hasVideoAddon: true,
+    tiers: [
+      {
+        id: 'free',
+        name: 'Free',
+        yearlyPrice: 12,
+        description: 'Using ChatGPT free tier'
+      },
+      {
+        id: 'plus',
+        name: 'Plus',
+        yearlyPrice: 25,
+        description: 'ChatGPT Plus ($20/month)',
+        popular: true
+      },
+      {
+        id: 'pro',
+        name: 'Pro',
+        yearlyPrice: 60,
+        description: 'ChatGPT Pro & API usage'
+      }
+    ]
   },
   {
     id: 'claude',
     name: 'Claude (Anthropic)',
-    description: 'Claude AI assistant and API usage',
     icon: '🧠',
-    popular: true,
-    basePrice: 3
+    tiers: [
+      {
+        id: 'free',
+        name: 'Free',
+        yearlyPrice: 12,
+        description: 'Using Claude free tier'
+      },
+      {
+        id: 'pro',
+        name: 'Pro',
+        yearlyPrice: 25,
+        description: 'Claude Pro subscription',
+        popular: true
+      },
+      {
+        id: 'max',
+        name: 'Max',
+        yearlyPrice: 60,
+        description: 'Heavy Claude usage & API'
+      }
+    ]
   },
   {
     id: 'google',
     name: 'Google AI',
-    description: 'Gemini, Bard, and Google AI services',
     icon: '🔍',
-    popular: false,
-    basePrice: 3  // Google is specifically £3/€3/$3
+    tiers: [
+      {
+        id: 'free',
+        name: 'Free',
+        yearlyPrice: 12,
+        description: 'Gemini free tier'
+      },
+      {
+        id: 'plus',
+        name: 'Advanced',
+        yearlyPrice: 25,
+        description: 'Gemini Advanced'
+      }
+    ]
   },
   {
     id: 'microsoft',
     name: 'Microsoft AI',
-    description: 'Copilot, Azure AI, and Microsoft services',
     icon: '💼',
-    popular: false,
-    basePrice: 3
-  },
-  {
-    id: 'other',
-    name: 'Other AI Services',
-    description: 'Any other AI service not listed above',
-    icon: '⚡',
-    popular: false,
-    basePrice: 3
+    tiers: [
+      {
+        id: 'free',
+        name: 'Free',
+        yearlyPrice: 12,
+        description: 'Copilot free tier'
+      },
+      {
+        id: 'plus',
+        name: 'Pro',
+        yearlyPrice: 25,
+        description: 'Copilot Pro subscription'
+      }
+    ]
   }
 ];
-
-const PRICE_TIERS = [3, 4, 5, 6, 8];
 
 export const IndividualPlansPage: React.FC = () => {
   const { currency } = useCurrency();
   const navigate = useNavigate();
   const [selectedServices, setSelectedServices] = useState<ServiceSelection[]>([]);
   
-  const toggleService = (serviceId: string, amount: number) => {
+  const videoAddonMonthlyPrice = 3;
+  const videoAddonYearlyPrice = videoAddonMonthlyPrice * 12;
+  
+  const toggleService = (serviceId: string, tierId: string, yearlyPrice: number) => {
     setSelectedServices(prev => {
       const existing = prev.find(s => s.serviceId === serviceId);
-      if (existing) {
-        if (existing.amount === amount) {
-          // Remove if clicking the same amount
-          return prev.filter(s => s.serviceId !== serviceId);
-        } else {
-          // Update amount if different
-          return prev.map(s => s.serviceId === serviceId ? { serviceId, amount } : s);
-        }
+      if (existing && existing.tierId === tierId) {
+        // Remove if clicking the same tier
+        return prev.filter(s => s.serviceId !== serviceId);
+      } else if (existing) {
+        // Update tier if different
+        return prev.map(s => 
+          s.serviceId === serviceId 
+            ? { ...s, tierId, yearlyPrice }
+            : s
+        );
       } else {
         // Add new selection
-        return [...prev, { serviceId, amount }];
+        return [...prev, { serviceId, tierId, yearlyPrice }];
       }
     });
   };
 
-  const isServiceSelected = (serviceId: string) => {
-    return selectedServices.some(s => s.serviceId === serviceId);
+  const toggleVideoAddon = (serviceId: string) => {
+    setSelectedServices(prev => 
+      prev.map(s => 
+        s.serviceId === serviceId 
+          ? { ...s, hasVideoAddon: !s.hasVideoAddon }
+          : s
+      )
+    );
   };
 
-  const getSelectedAmount = (serviceId: string) => {
+  const getSelectedTier = (serviceId: string) => {
     const selection = selectedServices.find(s => s.serviceId === serviceId);
-    return selection?.amount || 0;
+    return selection?.tierId || null;
   };
 
-  const getTotalAmount = () => {
-    return selectedServices.reduce((total, s) => total + s.amount, 0);
+  const hasVideoAddon = (serviceId: string) => {
+    const selection = selectedServices.find(s => s.serviceId === serviceId);
+    return selection?.hasVideoAddon || false;
+  };
+
+  const getTotalYearly = () => {
+    return selectedServices.reduce((total, s) => {
+      const videoAddon = s.hasVideoAddon ? videoAddonYearlyPrice : 0;
+      return total + s.yearlyPrice + videoAddon;
+    }, 0);
+  };
+
+  const getTotalMonthly = () => {
+    return Math.round(getTotalYearly() / 12);
   };
 
   const handleSubscribe = () => {
     if (selectedServices.length === 0) return;
     
-    // Navigate to individual checkout with selected services
     navigate('/individual-checkout', {
       state: {
-        selectedServices: selectedServices.map(s => s.serviceId),
-        servicePrices: selectedServices,
-        totalAmount: getTotalAmount()
+        selectedServices: selectedServices,
+        totalYearly: getTotalYearly(),
+        totalMonthly: getTotalMonthly()
       }
     });
   };
@@ -124,19 +215,18 @@ export const IndividualPlansPage: React.FC = () => {
           </div>
           
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Guilt-Free AI for 
-            <span className="text-blue-600"> Everyone</span>
+            Offset Your Personal AI Usage
           </h1>
           
           <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-            Choose your impact level. Start from just {currency.symbol}3/month per service. 
-            Offset more to support additional climate projects.
+            Match your AI service subscriptions with carbon offsets. 
+            Simple yearly pricing based on your actual usage tier.
           </p>
           
           <div className="flex items-center justify-center gap-8 text-sm text-gray-600">
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-blue-600" />
-              30-second setup
+              Quick setup
             </div>
             <div className="flex items-center gap-2">
               <Shield className="w-4 h-4 text-blue-600" />
@@ -150,140 +240,167 @@ export const IndividualPlansPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Impact Levels */}
-      <section className="py-12 bg-gray-50 border-b border-gray-200">
-        <div className="max-w-4xl mx-auto px-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Choose Your Impact Level</h2>
-          <div className="grid grid-cols-5 gap-3 max-w-3xl mx-auto">
-            {PRICE_TIERS.map((tier, index) => (
-              <div key={tier} className="text-center">
-                <div className="bg-white rounded-lg p-4 border border-gray-200">
-                  <div className="text-lg font-bold text-gray-900">{currency.symbol}{tier}</div>
-                  <div className="text-xs text-gray-600 mt-1">
-                    {index === 0 && 'Essential'}
-                    {index === 1 && 'Standard'}
-                    {index === 2 && 'Plus'}
-                    {index === 3 && 'Premium'}
-                    {index === 4 && 'Hero'}
-                  </div>
-                  <TreePine className={`w-4 h-4 mx-auto mt-2 ${
-                    index === 0 ? 'text-green-400' :
-                    index === 1 ? 'text-green-500' :
-                    index === 2 ? 'text-green-600' :
-                    index === 3 ? 'text-green-700' :
-                    'text-green-800'
-                  }`} />
-                </div>
-              </div>
-            ))}
-          </div>
-          <p className="text-center text-sm text-gray-600 mt-4">
-            All tiers offset your AI usage - higher tiers support additional climate projects
-          </p>
-        </div>
-      </section>
-
       {/* Service Selection */}
       <section id="services" className="py-20 bg-white">
-        <div className="max-w-5xl mx-auto px-6">
+        <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Select Your AI Services</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Select Your AI Services & Plans</h2>
             <p className="text-xl text-gray-600">
-              Choose the services you use and your preferred impact level for each
+              Choose the tier that matches your subscription for each service
             </p>
           </div>
           
-          <div className="space-y-6">
+          <div className="space-y-8">
             {AI_SERVICES.map((service) => (
-              <div
-                key={service.id}
-                className={`border-2 rounded-xl p-6 transition-all ${
-                  isServiceSelected(service.id)
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                {service.popular && (
-                  <div className="inline-block px-3 py-1 bg-blue-600 text-white text-xs font-medium rounded-full mb-3">
-                    Popular
-                  </div>
-                )}
-                
-                <div className="flex items-start gap-4 mb-4">
-                  <div className="text-3xl">{service.icon}</div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900">{service.name}</h3>
-                    <p className="text-gray-600 text-sm mt-1">{service.description}</p>
+              <div key={service.id} className="bg-white rounded-xl border-2 border-gray-200 overflow-hidden">
+                <div className="p-6 bg-gray-50 border-b border-gray-200">
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl">{service.icon}</span>
+                    <h3 className="text-xl font-semibold text-gray-900">{service.name}</h3>
                   </div>
                 </div>
-
-                <div className="flex flex-wrap gap-2">
-                  {PRICE_TIERS.map((tier) => (
-                    <button
-                      key={tier}
-                      onClick={() => toggleService(service.id, tier)}
-                      className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                        getSelectedAmount(service.id) === tier
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                      }`}
-                    >
-                      {currency.symbol}{tier}/mo
-                    </button>
-                  ))}
+                
+                <div className="p-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {service.tiers.map((tier) => (
+                      <button
+                        key={tier.id}
+                        onClick={() => toggleService(service.id, tier.id, tier.yearlyPrice)}
+                        className={`relative p-4 rounded-lg border-2 transition-all ${
+                          getSelectedTier(service.id) === tier.id
+                            ? 'border-blue-500 bg-blue-50'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        {tier.popular && (
+                          <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                            <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-600 text-white text-xs font-medium rounded-full">
+                              <Star className="w-3 h-3" />
+                              Popular
+                            </span>
+                          </div>
+                        )}
+                        
+                        <div className="text-lg font-semibold text-gray-900 mb-1">
+                          {tier.name}
+                        </div>
+                        <div className="text-2xl font-bold text-gray-900 mb-2">
+                          {currency.symbol}{tier.yearlyPrice}/yr
+                        </div>
+                        <div className="text-sm text-gray-500 mb-3">
+                          ~{currency.symbol}{Math.round(tier.yearlyPrice / 12)}/month
+                        </div>
+                        <div className="text-xs text-gray-600">
+                          {tier.description}
+                        </div>
+                        
+                        {getSelectedTier(service.id) === tier.id && (
+                          <div className="absolute top-2 right-2">
+                            <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                              <Check className="w-4 h-4 text-white" />
+                            </div>
+                          </div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                  
+                  {/* Video Add-on for OpenAI */}
+                  {service.hasVideoAddon && getSelectedTier(service.id) && (
+                    <div className="mt-4 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                      <label className="flex items-center justify-between cursor-pointer">
+                        <div className="flex items-center gap-3">
+                          <Video className="w-5 h-5 text-yellow-600" />
+                          <div>
+                            <div className="font-medium text-gray-900">Heavy video generation</div>
+                            <div className="text-sm text-gray-600">
+                              Add {currency.symbol}{videoAddonMonthlyPrice}/month ({currency.symbol}{videoAddonYearlyPrice}/year) for video creation
+                            </div>
+                          </div>
+                        </div>
+                        <input
+                          type="checkbox"
+                          checked={hasVideoAddon(service.id)}
+                          onChange={() => toggleVideoAddon(service.id)}
+                          className="w-5 h-5 text-blue-600 rounded"
+                        />
+                      </label>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
           </div>
           
-          {/* Summary and Subscribe */}
+          {/* Summary */}
           {selectedServices.length > 0 && (
-            <div className="mt-12 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 text-center">
-              <div className="mb-6">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                  {selectedServices.length} Service{selectedServices.length > 1 ? 's' : ''} Selected
+            <div className="mt-12 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8">
+              <div className="max-w-3xl mx-auto">
+                <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">
+                  Your Carbon Offset Plan
                 </h3>
-                <div className="text-3xl font-bold text-blue-600 mb-2">
-                  {currency.symbol}{getTotalAmount()}/month
+                
+                <div className="bg-white rounded-lg p-6 mb-6">
+                  <div className="space-y-3">
+                    {selectedServices.map(selection => {
+                      const service = AI_SERVICES.find(s => s.id === selection.serviceId);
+                      const tier = service?.tiers.find(t => t.id === selection.tierId);
+                      return (
+                        <div key={selection.serviceId} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+                          <div className="flex items-center gap-3">
+                            <span className="text-xl">{service?.icon}</span>
+                            <div>
+                              <span className="font-medium">{service?.name}</span>
+                              <span className="text-gray-500 text-sm ml-2">({tier?.name})</span>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-medium">{currency.symbol}{selection.yearlyPrice}/yr</div>
+                            {selection.hasVideoAddon && (
+                              <div className="text-sm text-yellow-600">
+                                + {currency.symbol}{videoAddonYearlyPrice}/yr video
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  
+                  <div className="border-t border-gray-200 pt-4 mt-4">
+                    <div className="flex justify-between items-baseline">
+                      <span className="text-lg font-semibold text-gray-900">Total</span>
+                      <div className="text-right">
+                        <div className="text-2xl font-bold text-blue-600">
+                          {currency.symbol}{getTotalYearly()}/year
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          ~{currency.symbol}{getTotalMonthly()}/month
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <p className="text-gray-600">
-                  Total monthly contribution
+                
+                <button
+                  onClick={handleSubscribe}
+                  className="w-full md:w-auto mx-auto block px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-lg font-semibold"
+                >
+                  Subscribe Now
+                  <ArrowRight className="w-5 h-5 ml-2 inline" />
+                </button>
+                
+                <p className="text-center text-sm text-gray-600 mt-4">
+                  Billed annually • Cancel anytime • Immediate carbon offset
                 </p>
               </div>
-              
-              <div className="space-y-3 mb-8 max-w-md mx-auto">
-                {selectedServices.map(selection => {
-                  const service = AI_SERVICES.find(s => s.id === selection.serviceId);
-                  return (
-                    <div key={selection.serviceId} className="flex items-center justify-between bg-white rounded-lg p-3">
-                      <div className="flex items-center gap-3">
-                        <span className="text-xl">{service?.icon}</span>
-                        <span className="font-medium">{service?.name}</span>
-                      </div>
-                      <span className="text-gray-600">{currency.symbol}{selection.amount}/month</span>
-                    </div>
-                  );
-                })}
-              </div>
-              
-              <button
-                onClick={handleSubscribe}
-                className="w-full md:w-auto px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-lg font-semibold"
-              >
-                Subscribe Now
-                <ArrowRight className="w-5 h-5 ml-2 inline" />
-              </button>
-              
-              <p className="text-sm text-gray-600 mt-4">
-                Start offsetting your AI carbon footprint today. Cancel anytime.
-              </p>
             </div>
           )}
           
           {selectedServices.length === 0 && (
             <div className="text-center py-12">
               <Sparkles className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">Select services and impact levels to get started</p>
+              <p className="text-gray-500">Select your AI services and subscription tiers to get started</p>
             </div>
           )}
         </div>
@@ -293,20 +410,20 @@ export const IndividualPlansPage: React.FC = () => {
       <section className="py-20 bg-gray-50">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Why Choose Individual Plans?</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Simple, Transparent, Impactful</h2>
             <p className="text-xl text-gray-600">
-              Perfect for personal AI users who want to make a positive impact
+              Your AI subscriptions matched with verified carbon offsets
             </p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <Coffee className="w-8 h-8 text-blue-600" />
+                <Zap className="w-8 h-8 text-blue-600" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Simple & Flexible</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Match Your Usage</h3>
               <p className="text-gray-600">
-                Choose your services and impact level. No complex tracking or setup required.
+                Pricing tiers that match your actual AI service subscriptions
               </p>
             </div>
             
@@ -316,7 +433,7 @@ export const IndividualPlansPage: React.FC = () => {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Real Impact</h3>
               <p className="text-gray-600">
-                Every subscription funds verified carbon credits that make a real difference.
+                100% of your contribution goes to verified carbon offset projects
               </p>
             </div>
             
@@ -326,7 +443,7 @@ export const IndividualPlansPage: React.FC = () => {
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Peace of Mind</h3>
               <p className="text-gray-600">
-                Use AI guilt-free knowing your carbon footprint is being offset.
+                Use AI guilt-free knowing you're offsetting your carbon footprint
               </p>
             </div>
           </div>
@@ -337,10 +454,10 @@ export const IndividualPlansPage: React.FC = () => {
       <section className="py-20 bg-gradient-to-r from-blue-600 to-indigo-600">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">
-            Ready for Guilt-Free AI?
+            Ready to Offset Your AI Usage?
           </h2>
           <p className="text-xl text-blue-100 mb-8">
-            Join individuals worldwide making their AI usage carbon neutral.
+            Join thousands making their personal AI usage carbon neutral
           </p>
           <Link 
             to="#services"
@@ -353,7 +470,7 @@ export const IndividualPlansPage: React.FC = () => {
             Select Your Services Above
           </Link>
           <p className="text-blue-100 text-sm mt-6">
-            No long-term commitment • Cancel anytime • Immediate impact
+            Starting from just {currency.symbol}12/year • Cancel anytime
           </p>
         </div>
       </section>

@@ -1,29 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { ArrowLeft, Mail, Heart, Coffee, Check } from 'lucide-react';
+import { ArrowLeft, Mail, Heart, Coffee, Check, Video } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useCurrency } from '../contexts/CurrencyContext';
 
-interface ServicePrice {
+interface ServiceSelection {
   serviceId: string;
-  amount: number;
+  tierId: string;
+  yearlyPrice: number;
+  hasVideoAddon?: boolean;
 }
 
 interface IndividualCheckoutData {
-  selectedServices: string[];
-  servicePrices?: ServicePrice[];
-  totalAmount?: number;
-  // Legacy fields for backward compatibility
-  monthlyPrice?: number;
-  totalServices?: number;
+  selectedServices: ServiceSelection[];
+  totalYearly: number;
+  totalMonthly: number;
 }
 
 const AI_SERVICE_NAMES: Record<string, string> = {
   'openai': 'OpenAI',
   'claude': 'Claude (Anthropic)',
   'google': 'Google AI',
-  'microsoft': 'Microsoft AI',
-  'other': 'Other AI Services'
+  'microsoft': 'Microsoft AI'
+};
+
+const TIER_NAMES: Record<string, string> = {
+  'free': 'Free',
+  'plus': 'Plus',
+  'pro': 'Pro',
+  'max': 'Max'
 };
 
 export function IndividualCheckoutPage() {
@@ -46,11 +51,6 @@ export function IndividualCheckoutPage() {
     return null;
   }
 
-  // Handle both new and legacy data formats
-  const totalCost = checkoutData.totalAmount || 
-    (checkoutData.monthlyPrice && checkoutData.totalServices ? 
-      checkoutData.monthlyPrice * checkoutData.totalServices : 0);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -68,14 +68,15 @@ export function IndividualCheckoutPage() {
         email,
         project_id: 'individual-subscription',
         project_name: 'Individual AI Carbon Offset Subscription',
-        tonnes_offset: 0.1 * (checkoutData.selectedServices.length), // Estimate for individual usage
-        price_per_tonne: totalCost * 10 / checkoutData.selectedServices.length, // Adjusted for small tonnage
-        total_cost: totalCost,
-        ai_carbon_footprint: 0.1 * (checkoutData.selectedServices.length),
+        tonnes_offset: 0.1 * checkoutData.selectedServices.length, // Estimate for individual usage
+        price_per_tonne: checkoutData.totalYearly / checkoutData.selectedServices.length,
+        total_cost: checkoutData.totalYearly,
+        ai_carbon_footprint: 0.1 * checkoutData.selectedServices.length,
         status: 'pending',
-        is_monthly: true,
+        is_monthly: false,
         subscription_type: 'individual',
-        ai_services: checkoutData.selectedServices,
+        subscription_details: checkoutData.selectedServices,
+        billing_period: 'yearly',
         created_at: new Date().toISOString()
       };
 
@@ -125,32 +126,37 @@ export function IndividualCheckoutPage() {
                   {checkoutData.selectedServices.length > 1 ? ' subscriptions are' : ' subscription is'} ready!
                 </p>
                 <div className="bg-blue-50 rounded-lg p-4 mt-6">
-                  <p className="text-sm">
-                    <strong>Your selected services:</strong>
+                  <p className="text-sm font-bold mb-3">
+                    Your Carbon Offset Plan:
                   </p>
-                  <div className="mt-2 space-y-1">
-                    {checkoutData.servicePrices ? 
-                      checkoutData.servicePrices.map(service => (
-                        <div key={service.serviceId} className="flex items-center justify-between text-sm">
+                  <div className="space-y-2">
+                    {checkoutData.selectedServices.map(service => (
+                      <div key={service.serviceId} className="flex items-center justify-between text-sm">
+                        <div className="flex items-center gap-2">
                           <span>{AI_SERVICE_NAMES[service.serviceId]}</span>
-                          <span className="font-medium">{currency.symbol}{service.amount}/month</span>
+                          <span className="text-gray-500">({TIER_NAMES[service.tierId] || service.tierId})</span>
+                          {service.hasVideoAddon && (
+                            <Video className="w-3 h-3 text-yellow-600" />
+                          )}
                         </div>
-                      )) :
-                      checkoutData.selectedServices.map(serviceId => (
-                        <div key={serviceId} className="flex items-center justify-between text-sm">
-                          <span>{AI_SERVICE_NAMES[serviceId]}</span>
-                          <span className="font-medium">{currency.symbol}{checkoutData.monthlyPrice}/month</span>
-                        </div>
-                      ))
-                    }
+                        <span className="font-medium">
+                          {currency.symbol}{service.yearlyPrice + (service.hasVideoAddon ? 36 : 0)}/year
+                        </span>
+                      </div>
+                    ))}
                   </div>
-                  <div className="border-t pt-2 mt-2 flex items-center justify-between font-medium">
+                  <div className="border-t pt-2 mt-3 flex items-center justify-between font-bold">
                     <span>Total:</span>
-                    <span>{currency.symbol}{totalCost}/month</span>
+                    <div className="text-right">
+                      <div>{currency.symbol}{checkoutData.totalYearly}/year</div>
+                      <div className="text-xs font-normal text-gray-500">
+                        (~{currency.symbol}{checkoutData.totalMonthly}/month)
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <p className="text-sm italic mt-4">
-                  Every month, your subscription will fund verified carbon credits 
+                  Every year, your subscription will fund verified carbon credits 
                   to offset your AI usage. Simple, guilt-free, impactful! 🌱
                 </p>
               </div>
@@ -196,26 +202,33 @@ export function IndividualCheckoutPage() {
             </div>
 
             <div className="bg-blue-50 rounded-lg p-4 mb-6">
-              <h3 className="font-semibold text-blue-900 mb-3">Subscription Summary</h3>
+              <h3 className="font-semibold text-blue-900 mb-3">Annual Subscription Summary</h3>
               <div className="space-y-2">
-                {checkoutData.servicePrices ? 
-                  checkoutData.servicePrices.map(service => (
-                    <div key={service.serviceId} className="flex justify-between items-center text-sm">
+                {checkoutData.selectedServices.map(service => (
+                  <div key={service.serviceId} className="flex justify-between items-center text-sm">
+                    <div className="flex items-center gap-2">
                       <span className="text-gray-700">{AI_SERVICE_NAMES[service.serviceId]}</span>
-                      <span className="font-medium">{currency.symbol}{service.amount}/month</span>
+                      <span className="text-gray-500">({TIER_NAMES[service.tierId] || service.tierId})</span>
+                      {service.hasVideoAddon && (
+                        <Video className="w-3 h-3 text-yellow-600" />
+                      )}
                     </div>
-                  )) :
-                  checkoutData.selectedServices.map(serviceId => (
-                    <div key={serviceId} className="flex justify-between items-center text-sm">
-                      <span className="text-gray-700">{AI_SERVICE_NAMES[serviceId]}</span>
-                      <span className="font-medium">{currency.symbol}{checkoutData.monthlyPrice}/month</span>
-                    </div>
-                  ))
-                }
+                    <span className="font-medium">
+                      {currency.symbol}{service.yearlyPrice + (service.hasVideoAddon ? 36 : 0)}/yr
+                    </span>
+                  </div>
+                ))}
                 <div className="border-t border-blue-200 pt-2 mt-3">
-                  <div className="flex justify-between text-lg font-semibold text-blue-900">
-                    <span>Monthly Total:</span>
-                    <span>{currency.symbol}{totalCost}</span>
+                  <div className="flex justify-between items-baseline">
+                    <span className="text-lg font-semibold text-blue-900">Annual Total:</span>
+                    <div className="text-right">
+                      <div className="text-lg font-semibold text-blue-900">
+                        {currency.symbol}{checkoutData.totalYearly}
+                      </div>
+                      <div className="text-xs text-gray-600">
+                        ~{currency.symbol}{checkoutData.totalMonthly}/month
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -227,10 +240,10 @@ export function IndividualCheckoutPage() {
                 <div>
                   <h4 className="font-medium text-green-900 mb-1">What's Included</h4>
                   <ul className="text-sm text-green-700 space-y-1">
-                    <li>• Monthly carbon offsets for your selected AI services</li>
+                    <li>• Annual carbon offsets for your selected AI services</li>
                     <li>• Verified carbon credits from Gold Standard projects</li>
-                    <li>• Guilt-free AI usage with automatic renewals</li>
-                    <li>• Cancel anytime, no long-term commitment</li>
+                    <li>• Annual billing for simplicity (save vs monthly)</li>
+                    <li>• Cancel anytime, pro-rated refunds available</li>
                   </ul>
                 </div>
               </div>
@@ -254,7 +267,7 @@ export function IndividualCheckoutPage() {
                   />
                 </div>
                 <p className="mt-2 text-sm text-gray-600">
-                  We'll send subscription updates and carbon impact reports to this email
+                  We'll send subscription updates and annual carbon impact reports to this email
                 </p>
               </div>
 
@@ -263,7 +276,7 @@ export function IndividualCheckoutPage() {
                 disabled={isSubmitting}
                 className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? 'Processing...' : 'Start Monthly Subscription'}
+                {isSubmitting ? 'Processing...' : 'Start Annual Subscription'}
               </button>
 
               <p className="text-xs text-center text-gray-500">

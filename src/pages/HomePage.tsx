@@ -32,7 +32,7 @@ export const HomePage: React.FC = () => {
               <Heart className="w-5 h-5 text-blue-600" />
               <div>
                 <h3 className="text-lg font-semibold text-blue-900">For Individuals</h3>
-                <p className="text-sm text-blue-700">Guilt-free AI usage starting at {currency.symbol}3/month per service</p>
+                <p className="text-sm text-blue-700">Guilt-free AI usage from {currency.symbol}12/year per service</p>
               </div>
             </div>
             <div className="flex items-center gap-3">

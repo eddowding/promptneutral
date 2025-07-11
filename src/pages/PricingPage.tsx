@@ -41,8 +41,6 @@ export const PricingPage: React.FC = () => {
   const [apiCalls, setApiCalls] = useState(50000);
   const [selectedProject, setSelectedProject] = useState(0);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
-  
-  const individualPrice = `${currency.symbol}5`;
 
   const pricingTiers: PricingTier[] = [
     {
@@ -227,7 +225,7 @@ export const PricingPage: React.FC = () => {
               <div className="space-y-3 mb-6">
                 <div className="flex items-center gap-3">
                   <Check className="w-5 h-5 text-blue-600" />
-                  <span className="text-gray-700">Per-service subscriptions from {currency.symbol}3-{currency.symbol}8/month</span>
+                  <span className="text-gray-700">Annual subscriptions from {currency.symbol}12-{currency.symbol}60/year</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Check className="w-5 h-5 text-blue-600" />
@@ -262,24 +260,24 @@ export const PricingPage: React.FC = () => {
                 
                 <div className="space-y-4">
                   {[
-                    { name: 'OpenAI (ChatGPT, GPT-4)', icon: '🤖' },
-                    { name: 'Claude (Anthropic)', icon: '🧠' },
-                    { name: 'Google AI (Gemini)', icon: '🔍' },
-                    { name: 'Microsoft AI (Copilot)', icon: '💼' }
+                    { name: 'OpenAI Free', icon: '🤖', price: 12 },
+                    { name: 'OpenAI Plus ($20/mo)', icon: '🤖', price: 25 },
+                    { name: 'Claude Pro', icon: '🧠', price: 25 },
+                    { name: 'Google AI Advanced', icon: '🔍', price: 25 }
                   ].map((service, index) => (
                     <div key={index} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
                       <div className="flex items-center gap-3">
                         <span className="text-xl">{service.icon}</span>
                         <span className="font-medium text-gray-900">{service.name}</span>
                       </div>
-                      <span className="text-blue-600 font-semibold">{currency.symbol}3/mo</span>
+                      <span className="text-blue-600 font-semibold">{currency.symbol}{service.price}/yr</span>
                     </div>
                   ))}
                 </div>
                 
                 <div className="mt-6 p-4 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-lg">
                   <p className="text-center text-sm text-blue-800">
-                    <strong>Example:</strong> Use ChatGPT + Claude = {currency.symbol}6/month (Essential tier)
+                    <strong>Example:</strong> OpenAI Plus + Claude Pro = {currency.symbol}50/year
                   </p>
                 </div>
               </div>
