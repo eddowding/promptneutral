@@ -205,7 +205,7 @@ export const IndividualPlansPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white pb-24">
       {/* Header */}
       <section className="bg-gradient-to-r from-blue-50 to-indigo-50 py-16">
         <div className="max-w-4xl mx-auto px-6 text-center">
@@ -332,70 +332,6 @@ export const IndividualPlansPage: React.FC = () => {
             ))}
           </div>
           
-          {/* Summary */}
-          {selectedServices.length > 0 && (
-            <div className="mt-12 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8">
-              <div className="max-w-3xl mx-auto">
-                <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-                  Your Carbon Offset Plan
-                </h3>
-                
-                <div className="bg-white rounded-lg p-6 mb-6">
-                  <div className="space-y-3">
-                    {selectedServices.map(selection => {
-                      const service = AI_SERVICES.find(s => s.id === selection.serviceId);
-                      const tier = service?.tiers.find(t => t.id === selection.tierId);
-                      return (
-                        <div key={selection.serviceId} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
-                          <div className="flex items-center gap-3">
-                            <span className="text-xl">{service?.icon}</span>
-                            <div>
-                              <span className="font-medium">{service?.name}</span>
-                              <span className="text-gray-500 text-sm ml-2">({tier?.name})</span>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div className="font-medium">{currency.symbol}{selection.yearlyPrice}/yr</div>
-                            {selection.hasVideoAddon && (
-                              <div className="text-sm text-yellow-600">
-                                + {currency.symbol}{videoAddonYearlyPrice}/yr video
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  
-                  <div className="border-t border-gray-200 pt-4 mt-4">
-                    <div className="flex justify-between items-baseline">
-                      <span className="text-lg font-semibold text-gray-900">Total</span>
-                      <div className="text-right">
-                        <div className="text-2xl font-bold text-blue-600">
-                          {currency.symbol}{getTotalYearly()}/year
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          ~{currency.symbol}{getTotalMonthly()}/month
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <button
-                  onClick={handleSubscribe}
-                  className="w-full md:w-auto mx-auto block px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-lg font-semibold"
-                >
-                  Subscribe Now
-                  <ArrowRight className="w-5 h-5 ml-2 inline" />
-                </button>
-                
-                <p className="text-center text-sm text-gray-600 mt-4">
-                  Billed annually • Cancel anytime • Immediate carbon offset
-                </p>
-              </div>
-            </div>
-          )}
           
           {selectedServices.length === 0 && (
             <div className="text-center py-12">
@@ -476,6 +412,48 @@ export const IndividualPlansPage: React.FC = () => {
       </section>
 
       <Footer />
+
+      {/* Sticky Cart Footer */}
+      {selectedServices.length > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
+          <div className="max-w-6xl mx-auto px-6 py-4">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-6">
+                <div>
+                  <p className="text-sm text-gray-500">
+                    {selectedServices.length} service{selectedServices.length > 1 ? 's' : ''} selected
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {currency.symbol}{getTotalYearly()}/year
+                    <span className="text-sm font-normal text-gray-500 ml-2">
+                      (~{currency.symbol}{getTotalMonthly()}/mo)
+                    </span>
+                  </p>
+                </div>
+                <div className="hidden md:flex items-center gap-2">
+                  {selectedServices.map(service => {
+                    const config = AI_SERVICES.find(s => s.id === service.serviceId);
+                    return (
+                      <div key={service.serviceId} className="flex items-center gap-1 px-3 py-1 bg-gray-100 rounded-full text-sm">
+                        <span>{config?.icon}</span>
+                        <span>{config?.name}</span>
+                        {service.hasVideoAddon && <Video className="w-3 h-3 text-yellow-600 ml-1" />}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+              <button
+                onClick={handleSubscribe}
+                className="w-full sm:w-auto px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-lg font-semibold flex items-center justify-center gap-2"
+              >
+                Subscribe Now
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
