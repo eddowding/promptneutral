@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Calculator, Zap, Plane, Beef, TreePine, Cloud, ShoppingCart, ExternalLink, Car, Building, Info, ChevronDown, ChevronUp } from 'lucide-react';
+import { Calculator, Zap, Plane, Beef, TreePine, Cloud, ShoppingCart, ExternalLink, Car, Building, Info, ChevronDown, ChevronUp, Heart, Coffee, ArrowRight } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useCurrency } from '../contexts/CurrencyContext';
 
@@ -154,19 +154,42 @@ export function HomePageV2() {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
+          {/* For Individuals Section */}
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 mb-8 border border-blue-200">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <Heart className="w-6 h-6 text-blue-600 flex-shrink-0" />
+                <div>
+                  <h3 className="text-lg font-semibold text-blue-900">Using AI personally, not for business?</h3>
+                  <p className="text-sm text-blue-700">
+                    Simple subscriptions starting at {formatCurrencyFromEUR(4.99)}/month per AI service
+                  </p>
+                </div>
+              </div>
+              <Link 
+                to="/individual-plans"
+                className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium whitespace-nowrap"
+              >
+                <Coffee className="w-4 h-4" />
+                Get Personal Plan
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+
           <div className="text-center mb-12">
             <h1 className="text-5xl font-bold text-primary mb-4">
-              What's Your AI Energy Footprint?
+              What's Your Business AI Energy Footprint?
             </h1>
             <p className="text-xl text-neutral">
-              Turn your AI cost savings into planetary-scale restoration projects
+              Calculate and offset your company's AI API usage carbon footprint
             </p>
           </div>
 
           <form onSubmit={calculateCarbon} className="bg-white rounded-2xl shadow-xl p-8 mb-8">
             <h2 className="text-2xl font-semibold mb-6 flex items-center gap-2">
               <Calculator className="h-6 w-6 text-secondary-600" />
-              Enter Your Monthly AI Spending ($)
+              Enter Your Business's Monthly AI API Spending ($)
             </h2>
 
             <div className="grid md:grid-cols-2 gap-6 mb-8">
