@@ -227,7 +227,7 @@ export const PricingPage: React.FC = () => {
               <div className="space-y-3 mb-6">
                 <div className="flex items-center gap-3">
                   <Check className="w-5 h-5 text-blue-600" />
-                  <span className="text-gray-700">Per-service subscriptions starting at {individualPrice}/month</span>
+                  <span className="text-gray-700">Per-service subscriptions from {currency.symbol}3-{currency.symbol}8/month</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Check className="w-5 h-5 text-blue-600" />
@@ -272,14 +272,14 @@ export const PricingPage: React.FC = () => {
                         <span className="text-xl">{service.icon}</span>
                         <span className="font-medium text-gray-900">{service.name}</span>
                       </div>
-                      <span className="text-blue-600 font-semibold">{individualPrice}/mo</span>
+                      <span className="text-blue-600 font-semibold">{currency.symbol}3/mo</span>
                     </div>
                   ))}
                 </div>
                 
                 <div className="mt-6 p-4 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-lg">
                   <p className="text-center text-sm text-blue-800">
-                    <strong>Example:</strong> Use ChatGPT + Claude = {currency.symbol}10/month total
+                    <strong>Example:</strong> Use ChatGPT + Claude = {currency.symbol}6/month (Essential tier)
                   </p>
                 </div>
               </div>

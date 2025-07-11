@@ -10,8 +10,14 @@ import {
   Leaf,
   Sparkles,
   Clock,
-  Shield
+  Shield,
+  TreePine
 } from 'lucide-react';
+
+interface ServiceSelection {
+  serviceId: string;
+  amount: number;
+}
 
 const AI_SERVICES = [
   {
@@ -19,51 +25,79 @@ const AI_SERVICES = [
     name: 'OpenAI',
     description: 'ChatGPT, GPT-4, DALL-E, and other OpenAI services',
     icon: '🤖',
-    popular: true
+    popular: true,
+    basePrice: 3
   },
   {
     id: 'claude',
     name: 'Claude (Anthropic)',
     description: 'Claude AI assistant and API usage',
     icon: '🧠',
-    popular: true
+    popular: true,
+    basePrice: 3
   },
   {
     id: 'google',
     name: 'Google AI',
     description: 'Gemini, Bard, and Google AI services',
     icon: '🔍',
-    popular: false
+    popular: false,
+    basePrice: 3  // Google is specifically £3/€3/$3
   },
   {
     id: 'microsoft',
     name: 'Microsoft AI',
     description: 'Copilot, Azure AI, and Microsoft services',
     icon: '💼',
-    popular: false
+    popular: false,
+    basePrice: 3
   },
   {
     id: 'other',
     name: 'Other AI Services',
     description: 'Any other AI service not listed above',
     icon: '⚡',
-    popular: false
+    popular: false,
+    basePrice: 3
   }
 ];
+
+const PRICE_TIERS = [3, 4, 5, 6, 8];
 
 export const IndividualPlansPage: React.FC = () => {
   const { currency } = useCurrency();
   const navigate = useNavigate();
-  const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [selectedServices, setSelectedServices] = useState<ServiceSelection[]>([]);
   
-  const monthlyPrice = `${currency.symbol}5`;
-  
-  const toggleService = (serviceId: string) => {
-    setSelectedServices(prev => 
-      prev.includes(serviceId) 
-        ? prev.filter(id => id !== serviceId)
-        : [...prev, serviceId]
-    );
+  const toggleService = (serviceId: string, amount: number) => {
+    setSelectedServices(prev => {
+      const existing = prev.find(s => s.serviceId === serviceId);
+      if (existing) {
+        if (existing.amount === amount) {
+          // Remove if clicking the same amount
+          return prev.filter(s => s.serviceId !== serviceId);
+        } else {
+          // Update amount if different
+          return prev.map(s => s.serviceId === serviceId ? { serviceId, amount } : s);
+        }
+      } else {
+        // Add new selection
+        return [...prev, { serviceId, amount }];
+      }
+    });
+  };
+
+  const isServiceSelected = (serviceId: string) => {
+    return selectedServices.some(s => s.serviceId === serviceId);
+  };
+
+  const getSelectedAmount = (serviceId: string) => {
+    const selection = selectedServices.find(s => s.serviceId === serviceId);
+    return selection?.amount || 0;
+  };
+
+  const getTotalAmount = () => {
+    return selectedServices.reduce((total, s) => total + s.amount, 0);
   };
 
   const handleSubscribe = () => {
@@ -72,9 +106,9 @@ export const IndividualPlansPage: React.FC = () => {
     // Navigate to individual checkout with selected services
     navigate('/individual-checkout', {
       state: {
-        selectedServices,
-        monthlyPrice: 5,
-        totalServices: selectedServices.length
+        selectedServices: selectedServices.map(s => s.serviceId),
+        servicePrices: selectedServices,
+        totalAmount: getTotalAmount()
       }
     });
   };
@@ -95,8 +129,8 @@ export const IndividualPlansPage: React.FC = () => {
           </h1>
           
           <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-            Simple monthly subscriptions to offset your personal AI usage. 
-            Choose which services you use and we'll handle the rest.
+            Choose your impact level. Start from just {currency.symbol}3/month per service. 
+            Offset more to support additional climate projects.
           </p>
           
           <div className="flex items-center justify-center gap-8 text-sm text-gray-600">
@@ -116,54 +150,87 @@ export const IndividualPlansPage: React.FC = () => {
         </div>
       </section>
 
+      {/* Impact Levels */}
+      <section className="py-12 bg-gray-50 border-b border-gray-200">
+        <div className="max-w-4xl mx-auto px-6">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Choose Your Impact Level</h2>
+          <div className="grid grid-cols-5 gap-3 max-w-3xl mx-auto">
+            {PRICE_TIERS.map((tier, index) => (
+              <div key={tier} className="text-center">
+                <div className="bg-white rounded-lg p-4 border border-gray-200">
+                  <div className="text-lg font-bold text-gray-900">{currency.symbol}{tier}</div>
+                  <div className="text-xs text-gray-600 mt-1">
+                    {index === 0 && 'Essential'}
+                    {index === 1 && 'Standard'}
+                    {index === 2 && 'Plus'}
+                    {index === 3 && 'Premium'}
+                    {index === 4 && 'Hero'}
+                  </div>
+                  <TreePine className={`w-4 h-4 mx-auto mt-2 ${
+                    index === 0 ? 'text-green-400' :
+                    index === 1 ? 'text-green-500' :
+                    index === 2 ? 'text-green-600' :
+                    index === 3 ? 'text-green-700' :
+                    'text-green-800'
+                  }`} />
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="text-center text-sm text-gray-600 mt-4">
+            All tiers offset your AI usage - higher tiers support additional climate projects
+          </p>
+        </div>
+      </section>
+
       {/* Service Selection */}
       <section id="services" className="py-20 bg-white">
-        <div className="max-w-4xl mx-auto px-6">
+        <div className="max-w-5xl mx-auto px-6">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Choose Your AI Services</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Select Your AI Services</h2>
             <p className="text-xl text-gray-600">
-              Select the AI services you use. Each subscription is {monthlyPrice}/month.
+              Choose the services you use and your preferred impact level for each
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+          <div className="space-y-6">
             {AI_SERVICES.map((service) => (
               <div
                 key={service.id}
-                onClick={() => toggleService(service.id)}
-                className={`relative border-2 rounded-xl p-6 cursor-pointer transition-all ${
-                  selectedServices.includes(service.id)
+                className={`border-2 rounded-xl p-6 transition-all ${
+                  isServiceSelected(service.id)
                     ? 'border-blue-500 bg-blue-50'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
                 {service.popular && (
-                  <div className="absolute -top-3 left-4 px-3 py-1 bg-blue-600 text-white text-xs font-medium rounded-full">
+                  <div className="inline-block px-3 py-1 bg-blue-600 text-white text-xs font-medium rounded-full mb-3">
                     Popular
                   </div>
                 )}
                 
-                <div className="flex items-start gap-4">
+                <div className="flex items-start gap-4 mb-4">
                   <div className="text-3xl">{service.icon}</div>
                   <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold text-gray-900">{service.name}</h3>
-                      <div className={`w-5 h-5 border-2 rounded ${
-                        selectedServices.includes(service.id)
-                          ? 'border-blue-500 bg-blue-500'
-                          : 'border-gray-300'
-                      }`}>
-                        {selectedServices.includes(service.id) && (
-                          <Check className="w-3 h-3 text-white m-0.5" />
-                        )}
-                      </div>
-                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900">{service.name}</h3>
                     <p className="text-gray-600 text-sm mt-1">{service.description}</p>
-                    <div className="flex items-center gap-2 mt-3">
-                      <span className="text-lg font-bold text-gray-900">{monthlyPrice}</span>
-                      <span className="text-sm text-gray-500">/month</span>
-                    </div>
                   </div>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {PRICE_TIERS.map((tier) => (
+                    <button
+                      key={tier}
+                      onClick={() => toggleService(service.id, tier)}
+                      className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                        getSelectedAmount(service.id) === tier
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      {currency.symbol}{tier}/mo
+                    </button>
+                  ))}
                 </div>
               </div>
             ))}
@@ -171,29 +238,29 @@ export const IndividualPlansPage: React.FC = () => {
           
           {/* Summary and Subscribe */}
           {selectedServices.length > 0 && (
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 text-center">
+            <div className="mt-12 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 text-center">
               <div className="mb-6">
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">
                   {selectedServices.length} Service{selectedServices.length > 1 ? 's' : ''} Selected
                 </h3>
                 <div className="text-3xl font-bold text-blue-600 mb-2">
-                  {currency.symbol}{5 * selectedServices.length}/month
+                  {currency.symbol}{getTotalAmount()}/month
                 </div>
                 <p className="text-gray-600">
-                  Total for all your selected AI services
+                  Total monthly contribution
                 </p>
               </div>
               
-              <div className="space-y-3 mb-8">
-                {selectedServices.map(serviceId => {
-                  const service = AI_SERVICES.find(s => s.id === serviceId);
+              <div className="space-y-3 mb-8 max-w-md mx-auto">
+                {selectedServices.map(selection => {
+                  const service = AI_SERVICES.find(s => s.id === selection.serviceId);
                   return (
-                    <div key={serviceId} className="flex items-center justify-between bg-white rounded-lg p-3">
+                    <div key={selection.serviceId} className="flex items-center justify-between bg-white rounded-lg p-3">
                       <div className="flex items-center gap-3">
                         <span className="text-xl">{service?.icon}</span>
                         <span className="font-medium">{service?.name}</span>
                       </div>
-                      <span className="text-gray-600">{monthlyPrice}/month</span>
+                      <span className="text-gray-600">{currency.symbol}{selection.amount}/month</span>
                     </div>
                   );
                 })}
@@ -216,7 +283,7 @@ export const IndividualPlansPage: React.FC = () => {
           {selectedServices.length === 0 && (
             <div className="text-center py-12">
               <Sparkles className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">Select the AI services you use to get started</p>
+              <p className="text-gray-500">Select services and impact levels to get started</p>
             </div>
           )}
         </div>
@@ -237,9 +304,9 @@ export const IndividualPlansPage: React.FC = () => {
               <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
                 <Coffee className="w-8 h-8 text-blue-600" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Simple & Easy</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Simple & Flexible</h3>
               <p className="text-gray-600">
-                No complex tracking or setup. Just choose your services and we handle everything.
+                Choose your services and impact level. No complex tracking or setup required.
               </p>
             </div>
             

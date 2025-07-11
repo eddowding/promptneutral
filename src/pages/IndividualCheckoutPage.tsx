@@ -4,10 +4,18 @@ import { ArrowLeft, Mail, Heart, Coffee, Check } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useCurrency } from '../contexts/CurrencyContext';
 
+interface ServicePrice {
+  serviceId: string;
+  amount: number;
+}
+
 interface IndividualCheckoutData {
   selectedServices: string[];
-  monthlyPrice: number;
-  totalServices: number;
+  servicePrices?: ServicePrice[];
+  totalAmount?: number;
+  // Legacy fields for backward compatibility
+  monthlyPrice?: number;
+  totalServices?: number;
 }
 
 const AI_SERVICE_NAMES: Record<string, string> = {
@@ -38,7 +46,10 @@ export function IndividualCheckoutPage() {
     return null;
   }
 
-  const totalCost = checkoutData.monthlyPrice * checkoutData.totalServices;
+  // Handle both new and legacy data formats
+  const totalCost = checkoutData.totalAmount || 
+    (checkoutData.monthlyPrice && checkoutData.totalServices ? 
+      checkoutData.monthlyPrice * checkoutData.totalServices : 0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,10 +68,10 @@ export function IndividualCheckoutPage() {
         email,
         project_id: 'individual-subscription',
         project_name: 'Individual AI Carbon Offset Subscription',
-        tonnes_offset: 0.1 * checkoutData.totalServices, // Estimate for individual usage
-        price_per_tonne: checkoutData.monthlyPrice * 10, // Adjusted for small tonnage
+        tonnes_offset: 0.1 * (checkoutData.selectedServices.length), // Estimate for individual usage
+        price_per_tonne: totalCost * 10 / checkoutData.selectedServices.length, // Adjusted for small tonnage
         total_cost: totalCost,
-        ai_carbon_footprint: 0.1 * checkoutData.totalServices,
+        ai_carbon_footprint: 0.1 * (checkoutData.selectedServices.length),
         status: 'pending',
         is_monthly: true,
         subscription_type: 'individual',
@@ -111,19 +122,27 @@ export function IndividualCheckoutPage() {
                   We're putting the finishing touches on our individual subscription system. 
                   We'll email you at{' '}
                   <span className="font-medium text-blue-600">{email}</span> as soon as your 
-                  {checkoutData.totalServices > 1 ? ' subscriptions are' : ' subscription is'} ready!
+                  {checkoutData.selectedServices.length > 1 ? ' subscriptions are' : ' subscription is'} ready!
                 </p>
                 <div className="bg-blue-50 rounded-lg p-4 mt-6">
                   <p className="text-sm">
                     <strong>Your selected services:</strong>
                   </p>
                   <div className="mt-2 space-y-1">
-                    {checkoutData.selectedServices.map(serviceId => (
-                      <div key={serviceId} className="flex items-center justify-between text-sm">
-                        <span>{AI_SERVICE_NAMES[serviceId]}</span>
-                        <span className="font-medium">{currency.symbol}{checkoutData.monthlyPrice}/month</span>
-                      </div>
-                    ))}
+                    {checkoutData.servicePrices ? 
+                      checkoutData.servicePrices.map(service => (
+                        <div key={service.serviceId} className="flex items-center justify-between text-sm">
+                          <span>{AI_SERVICE_NAMES[service.serviceId]}</span>
+                          <span className="font-medium">{currency.symbol}{service.amount}/month</span>
+                        </div>
+                      )) :
+                      checkoutData.selectedServices.map(serviceId => (
+                        <div key={serviceId} className="flex items-center justify-between text-sm">
+                          <span>{AI_SERVICE_NAMES[serviceId]}</span>
+                          <span className="font-medium">{currency.symbol}{checkoutData.monthlyPrice}/month</span>
+                        </div>
+                      ))
+                    }
                   </div>
                   <div className="border-t pt-2 mt-2 flex items-center justify-between font-medium">
                     <span>Total:</span>
@@ -179,12 +198,20 @@ export function IndividualCheckoutPage() {
             <div className="bg-blue-50 rounded-lg p-4 mb-6">
               <h3 className="font-semibold text-blue-900 mb-3">Subscription Summary</h3>
               <div className="space-y-2">
-                {checkoutData.selectedServices.map(serviceId => (
-                  <div key={serviceId} className="flex justify-between items-center text-sm">
-                    <span className="text-gray-700">{AI_SERVICE_NAMES[serviceId]}</span>
-                    <span className="font-medium">{currency.symbol}{checkoutData.monthlyPrice}/month</span>
-                  </div>
-                ))}
+                {checkoutData.servicePrices ? 
+                  checkoutData.servicePrices.map(service => (
+                    <div key={service.serviceId} className="flex justify-between items-center text-sm">
+                      <span className="text-gray-700">{AI_SERVICE_NAMES[service.serviceId]}</span>
+                      <span className="font-medium">{currency.symbol}{service.amount}/month</span>
+                    </div>
+                  )) :
+                  checkoutData.selectedServices.map(serviceId => (
+                    <div key={serviceId} className="flex justify-between items-center text-sm">
+                      <span className="text-gray-700">{AI_SERVICE_NAMES[serviceId]}</span>
+                      <span className="font-medium">{currency.symbol}{checkoutData.monthlyPrice}/month</span>
+                    </div>
+                  ))
+                }
                 <div className="border-t border-blue-200 pt-2 mt-3">
                   <div className="flex justify-between text-lg font-semibold text-blue-900">
                     <span>Monthly Total:</span>

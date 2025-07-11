@@ -162,7 +162,7 @@ export function HomePageV2() {
                 <div>
                   <h3 className="text-lg font-semibold text-blue-900">Using AI personally, not for business?</h3>
                   <p className="text-sm text-blue-700">
-                    Simple subscriptions starting at {currency.symbol}5/month per AI service
+                    Simple subscriptions starting at {currency.symbol}3/month per AI service
                   </p>
                 </div>
               </div>
