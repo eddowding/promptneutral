@@ -1,6 +1,7 @@
 import { UsageReport } from '../types/usage';
 import { EnvironmentalImpact, StackedChartData } from '../types/environmental';
 import { getModelAssumptions } from '../data/modelAssumptions';
+import { normalizeModelName } from './dataProcessing';
 
 export const calculateEnvironmentalImpact = (data: UsageReport): EnvironmentalImpact => {
   const impact: EnvironmentalImpact = {
@@ -14,7 +15,8 @@ export const calculateEnvironmentalImpact = (data: UsageReport): EnvironmentalIm
     if ('error' in dayData) return;
 
     Object.entries(dayData).forEach(([model, usage]) => {
-      const assumptions = getModelAssumptions(model);
+      const normalizedModel = normalizeModelName(model);
+      const assumptions = getModelAssumptions(normalizedModel);
       const totalTokens = usage.context_tokens + usage.generated_tokens;
 
       // Calculate impacts
@@ -27,9 +29,9 @@ export const calculateEnvironmentalImpact = (data: UsageReport): EnvironmentalIm
       impact.totalKWh += kWh;
       impact.totalCO2g += co2g;
 
-      // Add to model breakdown
-      if (!impact.modelBreakdown[model]) {
-        impact.modelBreakdown[model] = {
+      // Add to model breakdown using normalized name
+      if (!impact.modelBreakdown[normalizedModel]) {
+        impact.modelBreakdown[normalizedModel] = {
           cost: 0,
           kWh: 0,
           co2g: 0,
@@ -37,10 +39,10 @@ export const calculateEnvironmentalImpact = (data: UsageReport): EnvironmentalIm
         };
       }
 
-      impact.modelBreakdown[model].cost += cost;
-      impact.modelBreakdown[model].kWh += kWh;
-      impact.modelBreakdown[model].co2g += co2g;
-      impact.modelBreakdown[model].tokens += totalTokens;
+      impact.modelBreakdown[normalizedModel].cost += cost;
+      impact.modelBreakdown[normalizedModel].kWh += kWh;
+      impact.modelBreakdown[normalizedModel].co2g += co2g;
+      impact.modelBreakdown[normalizedModel].tokens += totalTokens;
     });
   });
 
@@ -54,18 +56,23 @@ export const prepareStackedChartData = (data: UsageReport): StackedChartData[] =
     .filter(([_, dayData]) => !('error' in dayData))
     .sort(([a], [b]) => a.localeCompare(b));
 
-  console.log(`Preparing stacked chart data for ${validEntries.length} days`);
-
   validEntries.forEach(([date, dayData]) => {
     const dayItem: StackedChartData = { date };
+    const modelGroups: Record<string, number> = {};
     let hasData = false;
 
     Object.entries(dayData).forEach(([model, usage]) => {
       const totalTokens = usage.context_tokens + usage.generated_tokens;
       if (totalTokens > 0) {
-        dayItem[model] = totalTokens;
+        const normalizedModel = normalizeModelName(model);
+        modelGroups[normalizedModel] = (modelGroups[normalizedModel] || 0) + totalTokens;
         hasData = true;
       }
+    });
+
+    // Add aggregated model data to the day item
+    Object.entries(modelGroups).forEach(([model, tokens]) => {
+      dayItem[model] = tokens;
     });
 
     // Only add days that have actual usage data
@@ -74,7 +81,6 @@ export const prepareStackedChartData = (data: UsageReport): StackedChartData[] =
     }
   });
 
-  console.log(`Chart data prepared with ${chartData.length} days containing usage`);
   return chartData;
 };
 

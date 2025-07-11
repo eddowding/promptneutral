@@ -1,5 +1,24 @@
 import { UsageReport, ChartDataPoint, DailySummary, ModelUsage } from '../types/usage';
 
+// Helper function to normalize model names by removing version suffixes
+export const normalizeModelName = (model: string): string => {
+  // Remove date suffixes like -2024-05-13 or -20240513
+  const withoutDate = model.replace(/-\d{4}-\d{2}-\d{2}$/, '').replace(/-\d{8}$/, '');
+  
+  // Remove other version suffixes like -preview, -0125, etc.
+  const withoutVersion = withoutDate.replace(/-preview$/, '').replace(/-\d{4}$/, '');
+  
+  // Special cases
+  if (withoutVersion.startsWith('gpt-4-turbo')) return 'gpt-4-turbo';
+  if (withoutVersion.startsWith('gpt-4o')) return 'gpt-4o';
+  if (withoutVersion.startsWith('gpt-4')) return 'gpt-4';
+  if (withoutVersion.startsWith('gpt-3.5-turbo')) return 'gpt-3.5-turbo';
+  if (withoutVersion.startsWith('text-embedding')) return 'text-embedding';
+  if (withoutVersion.startsWith('o1')) return 'o1';
+  
+  return withoutVersion;
+};
+
 export const processUsageData = (data: UsageReport): ChartDataPoint[] => {
   const chartData: ChartDataPoint[] = [];
   
@@ -54,12 +73,13 @@ export const getModelTotals = (data: UsageReport) => {
     if ('error' in dayData) return;
     
     Object.entries(dayData).forEach(([model, usage]) => {
-      if (!modelTotals[model]) {
-        modelTotals[model] = { requests: 0, context_tokens: 0, generated_tokens: 0 };
+      const normalizedModel = normalizeModelName(model);
+      if (!modelTotals[normalizedModel]) {
+        modelTotals[normalizedModel] = { requests: 0, context_tokens: 0, generated_tokens: 0 };
       }
-      modelTotals[model].requests += usage.requests;
-      modelTotals[model].context_tokens += usage.context_tokens;
-      modelTotals[model].generated_tokens += usage.generated_tokens;
+      modelTotals[normalizedModel].requests += usage.requests;
+      modelTotals[normalizedModel].context_tokens += usage.context_tokens;
+      modelTotals[normalizedModel].generated_tokens += usage.generated_tokens;
     });
   });
   
