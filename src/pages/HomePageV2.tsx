@@ -462,7 +462,7 @@ export function HomePageV2() {
                         You guessed ${parseFloat(userGuess).toFixed(2)} - but you thought it would cost {(parseFloat(userGuess) / convertFromEUR(results.offsetCost)).toFixed(0)}x more!
                       </p>
                       <p className="text-neutral-dark mb-2">
-                        So why not be great and offset ${parseFloat(userGuess).toFixed(2)} ({((parseFloat(userGuess) / Object.values(spending).reduce((sum, amount) => sum + amount, 0)) * 100).toFixed(1)}% of your AI spend)?
+                        So why not be great and offset ${parseFloat(userGuess).toFixed(2)} anyway? It's just {((parseFloat(userGuess) / Object.values(spending).reduce((sum, amount) => sum + amount, 0)) * 100).toFixed(1)}% of your AI spend :-)
                       </p>
                       <p className="text-neutral-dark mb-4">
                         You've saved massively by using AI. This is a fantastic opportunity to give back and be proud of it, and we can reverse climate change faster!
