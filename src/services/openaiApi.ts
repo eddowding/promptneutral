@@ -283,15 +283,15 @@ export class OpenAIApiService {
       
       console.log('🔄 Background: Using admin API to fetch historical data...');
       
-      // Fetch as far back as possible (10 years ≈ 3650 days) and force refresh regardless of recency
-      const result = await fetchAndStoreUsageData(userId, true, 3650);
+      // Fetch up to 3 months (90 days) of historical data and force refresh regardless of recency
+      const result = await fetchAndStoreUsageData(userId, true, 90);
       
       if (result.success) {
         // Heuristic: mark as complete if we either
         // a) have at least requiredDays of data, OR
         // b) the earliest usage we have is 60+ days ago (no earlier usage)
 
-        const requiredDays = 3650;
+        const requiredDays = 90;
         const hasAll = await this.databaseService.hasSufficientHistoricalData(userId, requiredDays);
         const boundaryMet = await this.databaseService.hasReachedHistoryBoundary(userId, 60);
 
@@ -304,7 +304,7 @@ export class OpenAIApiService {
         
         // Emit completion event
         window.dispatchEvent(new CustomEvent('historicalDataProgress', {
-          detail: { found: 3650, total: 3650 }
+          detail: { found: 90, total: 90 }
         }));
       } else {
         console.error('Background fetch failed:', result.message);
