@@ -415,7 +415,7 @@ export const IndividualPlansPage: React.FC = () => {
 
       {/* Sticky Cart Footer */}
       {selectedServices.length > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
+        <div className="fixed bottom-0 left-0 right-0 bg-green-50 border-t border-green-200 shadow-lg z-50">
           <div className="max-w-6xl mx-auto px-6 py-4">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-6">
@@ -434,7 +434,7 @@ export const IndividualPlansPage: React.FC = () => {
                   {selectedServices.map(service => {
                     const config = AI_SERVICES.find(s => s.id === service.serviceId);
                     return (
-                      <div key={service.serviceId} className="flex items-center gap-1 px-3 py-1 bg-gray-100 rounded-full text-sm">
+                      <div key={service.serviceId} className="flex items-center gap-1 px-3 py-1 bg-white rounded-full text-sm border border-green-200">
                         <span>{config?.icon}</span>
                         <span>{config?.name}</span>
                         {service.hasVideoAddon && <Video className="w-3 h-3 text-yellow-600 ml-1" />}
@@ -445,7 +445,7 @@ export const IndividualPlansPage: React.FC = () => {
               </div>
               <button
                 onClick={handleSubscribe}
-                className="w-full sm:w-auto px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-lg font-semibold flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-lg font-semibold flex items-center justify-center gap-2 shadow-md"
               >
                 Subscribe Now
                 <ArrowRight className="w-5 h-5" />
