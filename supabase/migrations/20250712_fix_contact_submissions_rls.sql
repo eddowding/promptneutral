@@ -10,9 +10,8 @@ CREATE POLICY "Anyone can submit contact form" ON contact_submissions
   TO anon, authenticated
   WITH CHECK (true);
 
--- Also ensure the anon role can execute the insert
+-- Grant INSERT permission to anon role (no sequence needed since we use gen_random_uuid())
 GRANT INSERT ON contact_submissions TO anon;
-GRANT USAGE ON SEQUENCE contact_submissions_id_seq TO anon;
 
 -- Make sure authenticated users can still view
 DROP POLICY IF EXISTS "Authenticated users can view submissions" ON contact_submissions;
