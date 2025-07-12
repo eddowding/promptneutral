@@ -119,13 +119,18 @@ const PublicFeedbackModal: React.FC<PublicFeedbackModalProps> = ({ isOpen, onClo
 
   if (!isOpen) return null;
 
+  console.log('PublicFeedbackModal rendering, isOpen:', isOpen);
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden">
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-xl font-semibold text-gray-900">Send Feedback</h2>
           <button
-            onClick={onClose}
+            onClick={() => {
+              console.log('Close button clicked');
+              onClose();
+            }}
             className="text-gray-400 hover:text-gray-600 transition-colors"
             aria-label="Close modal"
           >
