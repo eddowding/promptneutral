@@ -57,6 +57,8 @@ const PublicFeedbackModal: React.FC<PublicFeedbackModalProps> = ({ isOpen, onClo
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('Feedback form submitted');
+    
     if (!formData.message.trim()) {
       setErrorMessage('Please enter your feedback');
       setSubmitStatus('error');
@@ -68,20 +70,29 @@ const PublicFeedbackModal: React.FC<PublicFeedbackModalProps> = ({ isOpen, onClo
     setErrorMessage('');
 
     try {
+      console.log('Checking supabase client:', !!supabase);
+      
       if (!supabase) {
+        console.error('Supabase client is null');
         throw new Error('Unable to connect to database');
       }
 
+      const payload = {
+        name: formData.name.trim() || 'Anonymous',
+        email: formData.email.trim() || 'feedback@notzero.app',
+        subject: 'Website Feedback',
+        company: `Feedback from: ${currentUrl}`,
+        message: formData.message.trim()
+      };
+      
+      console.log('Submitting feedback with payload:', payload);
+
       const { data, error } = await supabase
         .from('contact_submissions')
-        .insert([{
-          name: formData.name.trim() || 'Anonymous',
-          email: formData.email.trim() || 'feedback@notzero.app',
-          subject: 'Website Feedback',
-          company: `Feedback from: ${currentUrl}`,
-          message: formData.message.trim()
-        }])
+        .insert([payload])
         .select();
+
+      console.log('Supabase response:', { data, error });
 
       if (error) {
         console.error('Feedback submission error:', error);
@@ -97,10 +108,12 @@ const PublicFeedbackModal: React.FC<PublicFeedbackModalProps> = ({ isOpen, onClo
         setSubmitStatus('idle');
       }, 2000);
     } catch (error) {
+      console.error('Caught error in feedback submission:', error);
       setSubmitStatus('error');
       setErrorMessage(error instanceof Error ? error.message : 'Failed to submit feedback');
     } finally {
       setIsSubmitting(false);
+      console.log('Feedback submission complete, isSubmitting:', false);
     }
   };
 
