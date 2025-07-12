@@ -15,7 +15,7 @@ import { OnboardingPage } from './pages/OnboardingPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { EmailVerification } from './components/EmailVerification';
 import { PasswordReset } from './components/PasswordReset';
-import FeedbackTab from './components/FeedbackTab';
+import PublicFeedbackTab from './components/PublicFeedbackTab';
 import FeedbackPage from './pages/admin/FeedbackPage';
 import SouthPoleTest from './components/SouthPoleTest';
 import { Why430xPage } from './pages/Why430xPage';
@@ -29,7 +29,7 @@ function App() {
       <CurrencyProvider>
         <Router>
           <div className="min-h-screen bg-white">
-            <FeedbackTab />
+            <PublicFeedbackTab />
             <Routes>
             <Route path="/" element={
               <>

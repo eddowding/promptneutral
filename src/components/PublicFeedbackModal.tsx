@@ -1,0 +1,198 @@
+import React, { useState } from 'react';
+import { X, Send, CheckCircle, AlertCircle } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
+
+interface PublicFeedbackModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const PublicFeedbackModal: React.FC<PublicFeedbackModalProps> = ({ isOpen, onClose }) => {
+  const { session } = useAuth();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const currentUrl = window.location.href;
+
+  // Pre-fill email if user is authenticated
+  React.useEffect(() => {
+    if (session?.user?.email) {
+      setFormData(prev => ({ ...prev, email: session.user.email || '' }));
+    }
+  }, [session]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.message.trim()) {
+      setErrorMessage('Please enter your feedback');
+      setSubmitStatus('error');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+    setErrorMessage('');
+
+    try {
+      if (!supabase) {
+        throw new Error('Unable to connect to database');
+      }
+
+      const { error } = await supabase
+        .from('contact_submissions')
+        .insert([{
+          name: formData.name.trim() || 'Anonymous',
+          email: formData.email.trim() || 'feedback@notzero.app',
+          message: formData.message.trim(),
+          url: currentUrl,
+          submission_type: 'feedback'
+        }]);
+
+      if (error) throw error;
+
+      setSubmitStatus('success');
+      setFormData({ name: '', email: '', message: '' });
+
+      // Auto-close after success
+      setTimeout(() => {
+        onClose();
+        setSubmitStatus('idle');
+      }, 2000);
+    } catch (error) {
+      setSubmitStatus('error');
+      setErrorMessage(error instanceof Error ? error.message : 'Failed to submit feedback');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden">
+        <div className="flex items-center justify-between p-4 border-b">
+          <h2 className="text-xl font-semibold text-gray-900">Send Feedback</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 transition-colors"
+            aria-label="Close modal"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-4 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Current Page
+            </label>
+            <div className="text-sm text-gray-500 bg-gray-50 p-2 rounded break-all">
+              {currentUrl}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="feedback-name" className="block text-sm font-medium text-gray-700 mb-1">
+                Name (optional)
+              </label>
+              <input
+                type="text"
+                id="feedback-name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                placeholder="Your name"
+                disabled={isSubmitting}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="feedback-email" className="block text-sm font-medium text-gray-700 mb-1">
+                Email (optional)
+              </label>
+              <input
+                type="email"
+                id="feedback-email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                placeholder="your@email.com"
+                disabled={isSubmitting}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="feedback-message" className="block text-sm font-medium text-gray-700 mb-1">
+              Your Feedback <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              id="feedback-message"
+              value={formData.message}
+              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+              rows={5}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+              placeholder="Share your thoughts, ideas, or report issues..."
+              required
+              disabled={isSubmitting}
+            />
+          </div>
+
+          {submitStatus === 'success' && (
+            <div className="flex items-center text-green-600 text-sm">
+              <CheckCircle className="w-4 h-4 mr-2" />
+              Thank you for your feedback!
+            </div>
+          )}
+
+          {submitStatus === 'error' && (
+            <div className="flex items-center text-red-600 text-sm">
+              <AlertCircle className="w-4 h-4 mr-2" />
+              {errorMessage}
+            </div>
+          )}
+
+          <div className="flex justify-end space-x-3 pt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+              disabled={isSubmitting}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting || !formData.message.trim()}
+              className="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+            >
+              {isSubmitting ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Sending...
+                </>
+              ) : (
+                <>
+                  <Send className="w-4 h-4 mr-2" />
+                  Send Feedback
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default PublicFeedbackModal;
