@@ -5,10 +5,15 @@ import PublicFeedbackModal from './PublicFeedbackModal';
 const PublicFeedbackTab: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  console.log('PublicFeedbackTab rendered, modal open:', isModalOpen);
+
   return (
     <>
       <button
-        onClick={() => setIsModalOpen(true)}
+        onClick={() => {
+          console.log('Feedback tab clicked, opening modal');
+          setIsModalOpen(true);
+        }}
         className="fixed right-0 top-1/2 -translate-y-1/2 bg-green-600 text-white px-3 py-8 rounded-l-lg shadow-lg hover:bg-green-700 transition-colors duration-200 z-40 group"
         aria-label="Give feedback"
       >
