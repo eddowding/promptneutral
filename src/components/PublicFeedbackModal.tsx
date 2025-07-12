@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Send, CheckCircle, AlertCircle } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { createClient } from '@supabase/supabase-js';
 import { useAuth } from '../contexts/AuthContext';
 
 interface PublicFeedbackModalProps {
@@ -71,9 +72,23 @@ const PublicFeedbackModal: React.FC<PublicFeedbackModalProps> = ({ isOpen, onClo
 
     try {
       console.log('Checking supabase client:', !!supabase);
+      console.log('Is Supabase configured:', isSupabaseConfigured);
+      console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
+      console.log('Has Supabase key:', !!import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
       
-      if (!supabase) {
-        console.error('Supabase client is null');
+      // Workaround: create client directly if null
+      let supabaseClient = supabase;
+      
+      if (!supabaseClient && import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY) {
+        console.log('Creating Supabase client directly as workaround');
+        supabaseClient = createClient(
+          import.meta.env.VITE_SUPABASE_URL,
+          import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+        );
+      }
+      
+      if (!supabaseClient) {
+        console.error('Still no Supabase client after workaround attempt');
         throw new Error('Unable to connect to database');
       }
 
@@ -87,7 +102,7 @@ const PublicFeedbackModal: React.FC<PublicFeedbackModalProps> = ({ isOpen, onClo
       
       console.log('Submitting feedback with payload:', payload);
 
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('contact_submissions')
         .insert([payload])
         .select();
