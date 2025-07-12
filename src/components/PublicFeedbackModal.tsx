@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Send, CheckCircle, AlertCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -21,12 +21,38 @@ const PublicFeedbackModal: React.FC<PublicFeedbackModalProps> = ({ isOpen, onClo
 
   const currentUrl = window.location.href;
 
-  // Pre-fill email if user is authenticated
-  React.useEffect(() => {
+  // Load saved data from localStorage or use authenticated user's email
+  useEffect(() => {
     if (session?.user?.email) {
       setFormData(prev => ({ ...prev, email: session.user.email || '' }));
+    } else {
+      const savedEmail = localStorage.getItem('feedbackEmail');
+      const savedName = localStorage.getItem('feedbackName');
+      if (savedEmail || savedName) {
+        setFormData(prev => ({ 
+          ...prev, 
+          email: savedEmail || '',
+          name: savedName || ''
+        }));
+      }
     }
   }, [session]);
+
+  // Save email to localStorage when it changes
+  const handleEmailChange = (email: string) => {
+    setFormData({ ...formData, email });
+    if (email.trim()) {
+      localStorage.setItem('feedbackEmail', email.trim());
+    }
+  };
+
+  // Save name to localStorage when it changes
+  const handleNameChange = (name: string) => {
+    setFormData({ ...formData, name });
+    if (name.trim()) {
+      localStorage.setItem('feedbackName', name.trim());
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,9 +77,8 @@ const PublicFeedbackModal: React.FC<PublicFeedbackModalProps> = ({ isOpen, onClo
         .insert([{
           name: formData.name.trim() || 'Anonymous',
           email: formData.email.trim() || 'feedback@notzero.app',
-          message: formData.message.trim(),
-          url: currentUrl,
-          submission_type: 'feedback'
+          company: `Feedback from: ${currentUrl}`,
+          message: formData.message.trim()
         }]);
 
       if (error) throw error;
@@ -109,7 +134,7 @@ const PublicFeedbackModal: React.FC<PublicFeedbackModalProps> = ({ isOpen, onClo
                 type="text"
                 id="feedback-name"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) => handleNameChange(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
                 placeholder="Your name"
                 disabled={isSubmitting}
@@ -124,7 +149,7 @@ const PublicFeedbackModal: React.FC<PublicFeedbackModalProps> = ({ isOpen, onClo
                 type="email"
                 id="feedback-email"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) => handleEmailChange(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
                 placeholder="your@email.com"
                 disabled={isSubmitting}
