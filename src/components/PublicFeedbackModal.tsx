@@ -77,6 +77,7 @@ const PublicFeedbackModal: React.FC<PublicFeedbackModalProps> = ({ isOpen, onClo
         .insert([{
           name: formData.name.trim() || 'Anonymous',
           email: formData.email.trim() || 'feedback@notzero.app',
+          subject: 'Website Feedback',
           company: `Feedback from: ${currentUrl}`,
           message: formData.message.trim()
         }]);
