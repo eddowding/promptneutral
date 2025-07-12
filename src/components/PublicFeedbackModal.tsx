@@ -21,6 +21,16 @@ const PublicFeedbackModal: React.FC<PublicFeedbackModalProps> = ({ isOpen, onClo
   const [errorMessage, setErrorMessage] = useState('');
 
   const currentUrl = window.location.href;
+  
+  // Log on component mount
+  useEffect(() => {
+    console.log('PublicFeedbackModal mounted, supabase available:', !!supabase);
+    console.log('Environment check on mount:', {
+      url: import.meta.env.VITE_SUPABASE_URL,
+      hasKey: !!import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+      isConfigured: isSupabaseConfigured
+    });
+  }, []);
 
   // Load saved data from localStorage or use authenticated user's email
   useEffect(() => {
@@ -75,6 +85,7 @@ const PublicFeedbackModal: React.FC<PublicFeedbackModalProps> = ({ isOpen, onClo
       console.log('Is Supabase configured:', isSupabaseConfigured);
       console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
       console.log('Has Supabase key:', !!import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
+      console.log('All env vars:', Object.keys(import.meta.env));
       
       // Workaround: create client directly if null
       let supabaseClient = supabase;
