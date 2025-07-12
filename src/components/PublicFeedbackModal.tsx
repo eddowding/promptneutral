@@ -72,7 +72,7 @@ const PublicFeedbackModal: React.FC<PublicFeedbackModalProps> = ({ isOpen, onClo
         throw new Error('Unable to connect to database');
       }
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('contact_submissions')
         .insert([{
           name: formData.name.trim() || 'Anonymous',
@@ -80,9 +80,13 @@ const PublicFeedbackModal: React.FC<PublicFeedbackModalProps> = ({ isOpen, onClo
           subject: 'Website Feedback',
           company: `Feedback from: ${currentUrl}`,
           message: formData.message.trim()
-        }]);
+        }])
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Feedback submission error:', error);
+        throw new Error(error.message || 'Failed to submit feedback');
+      }
 
       setSubmitStatus('success');
       setFormData({ name: '', email: '', message: '' });
