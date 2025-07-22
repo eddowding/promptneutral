@@ -1,5 +1,6 @@
 import React from 'react';
-import { Leaf, Shield, CheckCircle, Clock } from 'lucide-react';
+import { Leaf, Shield, CheckCircle, Clock, ShoppingCart } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { EnvironmentalImpact } from '../types/environmental';
 import { formatCO2, formatCurrency } from '../utils/environmentalCalculations';
 
@@ -8,9 +9,10 @@ interface CarbonNeutralStatusProps {
 }
 
 export const CarbonNeutralStatus: React.FC<CarbonNeutralStatusProps> = ({ impact }) => {
-  // Simulate carbon credits pricing (in reality this would come from your API)
-  const creditCost = impact.totalCO2g / 1000 * 15; // $15 per kg CO2
-  const isNeutralized = true; // In reality, check if credits have been purchased
+  const navigate = useNavigate();
+  // Calculate carbon credits pricing based on default project (Indus Delta at 40 EUR/tonne)
+  const creditCost = (impact.totalCO2g / 1000000) * 40; // 40 EUR per tonne CO2 (converting g to tonnes)
+  const isNeutralized = false; // In reality, check if credits have been purchased
 
   return (
     <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-6 mb-8">
@@ -55,11 +57,31 @@ export const CarbonNeutralStatus: React.FC<CarbonNeutralStatusProps> = ({ impact
           </div>
           <div className="text-2xl font-bold text-gray-900">{formatCurrency(creditCost)}</div>
           <div className="text-xs text-gray-500 mt-1">
-            $15/kg CO₂ avg. price
+            €40/tonne CO₂ (Indus Delta project)
           </div>
         </div>
       </div>
 
+      {!isNeutralized && creditCost > 0 && (
+        <div className="mt-6 text-center">
+          <button
+            onClick={() => navigate('/offset-order', { 
+              state: { 
+                offsetAmount: impact.totalCO2g / 1000000, // Convert g to tonnes
+                offsetCost: creditCost,
+                fromDashboard: true
+              } 
+            })}
+            className="bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition-colors inline-flex items-center gap-2"
+          >
+            <ShoppingCart className="h-5 w-5" />
+            Offset Your Carbon Impact for ${creditCost.toFixed(2)}
+          </button>
+          <p className="mt-2 text-sm text-gray-600">
+            Support verified carbon offset projects
+          </p>
+        </div>
+      )}
     </div>
   );
 };

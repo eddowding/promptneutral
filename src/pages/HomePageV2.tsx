@@ -38,7 +38,7 @@ const CO2_PER_KWH = 0.475;
 
 const STEAK_CO2_KG = 27;
 const FLIGHT_LONDON_NY_CO2_KG = 986;
-const OFFSET_COST_PER_TONNE = 15;
+const OFFSET_COST_PER_TONNE = 40; // EUR per tonne - based on default Indus Delta project
 const CAR_CO2_PER_MILE_KG = 0.404;
 const TREE_CO2_PER_YEAR_KG = 21.77;
 
@@ -352,6 +352,7 @@ export function HomePageV2() {
                     {formatCurrencyFromEUR(results.offsetCost)}
                   </div>
                   <div className="text-lg text-neutral">Carbon offset cost</div>
+                  <div className="text-xs text-neutral-light mt-1">Based on Indus Delta project</div>
                 </div>
 
                 <div className="bg-gray-50 rounded-lg p-8 text-center">
